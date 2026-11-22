@@ -26,7 +26,7 @@ describe("share-proportional board seats", () => {
         politicalCapital: 50,
         reputation: 50,
       }) as Heya & { ichimon: string };
-      h.ichimon = "dewanoumi";
+      h.ichimon = "Dewanoumi";
       world.heyas.set(`a${i}`, h);
       world.oyakata.set(`oya-a${i}`, MockFactory.createOyakata(`oya-a${i}`, { heyaId: `a${i}` }));
       stocks[`stk-a${i}`] = {
@@ -41,7 +41,7 @@ describe("share-proportional board seats", () => {
         politicalCapital: 50,
         reputation: 50,
       }) as Heya & { ichimon: string };
-      g.ichimon = "tokitsukaze";
+      g.ichimon = "Tokitsukaze";
       world.heyas.set(`z${i}`, g);
       world.oyakata.set(`oya-z${i}`, MockFactory.createOyakata(`oya-z${i}`, { heyaId: `z${i}` }));
     }

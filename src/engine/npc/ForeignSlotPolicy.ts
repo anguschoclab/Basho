@@ -27,14 +27,18 @@ import {
   FOREIGN_SLOT_AGGRESSION_TRAIT_WEIGHT,
   FOREIGN_SLOT_BELIEVER_QUIRK_BONUS,
   FOREIGN_SUNK_COST_RETENTION_MULT,
+  FOREIGN_BID_BLOCKING_QUIRKS,
+  FOREIGN_BID_TAPER_START_AGE,
+  FOREIGN_BID_TAPER_END_AGE,
 } from "@/constants/engine/recruitment";
 
 export { candidateConsumesForeignSlot };
 
 /**
  * Whether the heya's single foreign slot is currently spoken for — counting
- * both rostered foreign rikishi (citizenship-aware, so naturalization frees
- * the slot) and foreign candidates already signed but not yet materialized.
+ * rostered foreign-slot rikishi (the slot binds at debut citizenship;
+ * post-debut naturalization does NOT free it) plus foreign candidates
+ * already signed but not yet materialized.
  */
 export function foreignSlotOccupied(world: WorldState, heyaId: Id): boolean {
   return (getForeignCountsByHeya(world).get(heyaId) ?? 0) >= 1;
@@ -46,12 +50,25 @@ export function foreignSlotOccupied(world: WorldState, heyaId: Id): boolean {
  * conservative stables that treat the slot as a last resort.
  */
 export function foreignSlotBidAggression(oyakata: Oyakata): number {
+  // Domestic-only pipelines: these oyakata never take a foreigner — the
+  // 0.4 trait floor must not rescue them.
+  if (FOREIGN_BID_BLOCKING_QUIRKS.some((q) => oyakata.quirks?.includes(q))) return 0;
+  // Late-tenure taper: no new foreign pipeline opens near retirement.
+  const age = oyakata.age ?? 50;
+  if (age >= FOREIGN_BID_TAPER_END_AGE) return 0;
   const t = oyakata.traits;
   const traitEdge = (t.risk + t.ambition - 100) * FOREIGN_SLOT_AGGRESSION_TRAIT_WEIGHT;
   const quirkBonus = oyakata.quirks?.includes("Foreign Talent Believer")
     ? FOREIGN_SLOT_BELIEVER_QUIRK_BONUS
     : 0;
-  return Math.max(0.4, Math.min(1.5, FOREIGN_SLOT_BASE_AGGRESSION + traitEdge + quirkBonus));
+  const base = Math.max(0.4, Math.min(1.5, FOREIGN_SLOT_BASE_AGGRESSION + traitEdge + quirkBonus));
+  if (age >= FOREIGN_BID_TAPER_START_AGE) {
+    return (
+      base *
+      (1 - (age - FOREIGN_BID_TAPER_START_AGE) / (FOREIGN_BID_TAPER_END_AGE - FOREIGN_BID_TAPER_START_AGE))
+    );
+  }
+  return base;
 }
 
 /**

@@ -29,6 +29,11 @@ import {
   RETIREMENT_STAT_DIMINISHING_POWER,
   RETIREMENT_DEFAULT_POWER,
 } from "@/constants/engine/career";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import {
+  FOREIGN_STALL_DIVISIONS,
+  FOREIGN_STALL_BASHO,
+} from "@/constants/engine/recruitment";
 
 /**
  * Evaluates whether a rikishi should retire based on age, injuries, rank pressure, and performance.
@@ -106,6 +111,20 @@ export function checkRetirement(
           ? "Yokozuna Chronic Injury Retirement"
           : "Yokozuna Performance Retirement";
       }
+    }
+  }
+
+  // 3b. Foreign Stall-Attrition — a foreign-slot consumer who stalls below
+  // makushita for a sustained stretch faces intai pressure a domestic
+  // rikishi doesn't (the beya's single slot is a scarce resource; it does
+  // not stay parked on a stalled foreign prospect).
+  if (countsAsForeign(rikishi, currentYear) && FOREIGN_STALL_DIVISIONS.has(rikishi.division)) {
+    const recent = (rikishi.careerHistory ?? []).slice(-FOREIGN_STALL_BASHO);
+    if (
+      recent.length >= FOREIGN_STALL_BASHO &&
+      recent.every((h) => FOREIGN_STALL_DIVISIONS.has(h.division) && h.wins <= h.losses)
+    ) {
+      return "Foreign Prospect Stagnation";
     }
   }
 

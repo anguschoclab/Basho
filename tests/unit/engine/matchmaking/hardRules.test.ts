@@ -64,11 +64,12 @@ describe("no rematches outside ketteisen", () => {
     // Seed a prior meeting into the card so the faced-set contains a↔b.
     basho.matches.push({
       id: "m-prior",
+      boutId: "m-prior",
       day: 3,
       eastRikishiId: "a",
       westRikishiId: "b",
       result: { winnerRikishiId: "a", loserRikishiId: "b", kimarite: "yorikiri" },
-    } as MatchSchedule);
+    } as unknown as MatchSchedule);
     const pool = [mk("a", "heya-a"), mk("b", "heya-b")];
     for (const r of pool) basho.standings.set(r.id, { wins: 5, losses: 3 });
     const pairings = buildSwissTorikumi(basho, pool, { seed: "t", day: 9 });
@@ -85,12 +86,14 @@ describe("published cards are locked", () => {
     const basho = MockFactory.createBasho({ day: 5 });
     const futureMatch: MatchSchedule = {
       id: "m-future",
+      boutId: "m-future",
       day: 8,
       eastRikishiId: "hurt",
       westRikishiId: "opp",
     } as MatchSchedule;
     basho.matches.push(futureMatch, {
       id: "m-future2",
+      boutId: "m-future2",
       day: 8,
       eastRikishiId: "c",
       westRikishiId: "d",

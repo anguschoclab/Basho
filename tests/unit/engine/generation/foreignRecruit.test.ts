@@ -32,6 +32,10 @@ const isForeign = (r: Rikishi) =>
   r.citizenshipStatus === "foreign" ||
   (r.nationality !== "Japan" && r.nationality !== "JP" && r.nationality !== "Japanese");
 
+// Slot-consumer semantics (JSA): dual citizens do NOT consume the
+// one-foreigner slot even though they are foreign-born.
+const consumesSlot = (r: Rikishi) => isForeign(r) && r.citizenshipStatus !== "dual";
+
 describe("genesis foreign occupancy", () => {
   it("~69% of heyas carry a foreign-slot consumer", () => {
     const { rikishi } = genesis();
@@ -48,7 +52,7 @@ describe("genesis foreign occupancy", () => {
     const { rikishi } = genesis();
     const perHeya = new Map<string, number>();
     for (const r of rikishi.values()) {
-      if (!isForeign(r)) continue;
+      if (!consumesSlot(r)) continue;
       perHeya.set(r.heyaId, (perHeya.get(r.heyaId) ?? 0) + 1);
     }
     for (const [, count] of perHeya) {

@@ -16,9 +16,11 @@ import type { Gyoji } from "@/engine/types/gyoji";
 import { generateGyoji, assignGyojiToBout, recordGyojiBout } from "@/engine/officials/GyojiService";
 
 describe("division gating", () => {
-  it("a juryo-ranked gyōji is never assigned to a makuuchi bout", () => {
+  it("a juryo-ranked gyōji is never assigned to a top-level bout", () => {
     const juryoGyoji = generateGyoji("spec", "juryo", 0);
-    expect(assignGyojiToBout([juryoGyoji], "makuuchi")).toBeNull();
+    // A highest-importance (yokozuna-level) bout may not draw a Juryo-tier
+    // gyōji — the real hierarchy gates makuuchi bouts to makuuchi+ ranks.
+    expect(assignGyojiToBout([juryoGyoji], "spec-bout", 10)).toBeNull();
   });
 });
 

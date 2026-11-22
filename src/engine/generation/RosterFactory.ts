@@ -12,12 +12,17 @@ import { Oyakata } from "@/engine/types/oyakata";
 import { Rikishi } from "@/engine/types/rikishi";
 import { generateFullRikishi } from "@/engine/generation/CandidateBuilder";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import { rollForeignOrigin } from "@/engine/utils/identity";
 import { Division, Rank, Side } from "@/engine/types/banzuke";
 import {
   YOKOZUNA_COUNT_MIN,
   YOKOZUNA_COUNT_MAX,
   ROSTER_TIER_FALLBACK_CHANCE,
 } from "@/constants/engine/generation";
+import {
+  GENESIS_FOREIGN_HEYA_OCCUPANCY,
+  GENESIS_FOREIGN_DIVISION_TABLE,
+} from "@/constants/engine/recruitment";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 export function createRosters(
@@ -42,6 +47,55 @@ export function createRosters(
     };
     return (tierOrder[b.statureBand] ?? 0) - (tierOrder[a.statureBand] ?? 0);
   });
+
+  // JSA realism — ~69% of active heyas host exactly one foreign-born
+  // rikishi; the rest run domestic-only pipelines. Mark the host set up
+  // front (tier-weighted — established/powerful stables host more often),
+  // then draw which division each host's foreigner occupies (sekitori skew).
+  const markedForForeign = new Set<string>();
+  {
+    const tierWeight: Record<string, number> = {
+      legendary: 6,
+      powerful: 5,
+      established: 3,
+      rebuilding: 2,
+      fragile: 1,
+      new: 1,
+    };
+    const pool = heyaByTier.map((h) => ({ h, w: tierWeight[h.statureBand] ?? 1 }));
+    const target = Math.round(heyaList.length * GENESIS_FOREIGN_HEYA_OCCUPANCY);
+    while (markedForForeign.size < target && pool.length > 0) {
+      const total = pool.reduce((a, p) => a + p.w, 0);
+      let roll = worldRng.next() * total;
+      let idx = 0;
+      for (; idx < pool.length - 1; idx++) {
+        roll -= pool[idx].w;
+        if (roll <= 0) break;
+      }
+      markedForForeign.add(pool.splice(idx, 1)[0].h.id);
+    }
+  }
+  const foreignDivisionByHeya = new Map<string, Division>();
+  for (const heyaId of markedForForeign) {
+    const roll = worldRng.next();
+    let acc = 0;
+    let division: Division = "makushita";
+    for (const [d, w] of GENESIS_FOREIGN_DIVISION_TABLE) {
+      acc += w;
+      if (roll < acc) {
+        division = d;
+        break;
+      }
+    }
+    foreignDivisionByHeya.set(heyaId, division);
+  }
+
+  /** Stamp a generated rikishi as a foreign slot-consumer. */
+  const applyGenesisForeign = (r: Rikishi): void => {
+    r.nationality = rollForeignOrigin(worldRng);
+    r.origin = r.nationality;
+    r.citizenshipStatus = "foreign";
+  };
 
   const yokozunaCount = worldRng.int(YOKOZUNA_COUNT_MIN, YOKOZUNA_COUNT_MAX);
   const rankConfigs: { rank: Rank; division: Division; count: number; tierWeight: number }[] = [
@@ -102,20 +156,36 @@ export function createRosters(
 
       let assigned = heya;
       if (countsAsForeign(r, DEFAULT_START_YEAR)) {
-        if (foreignOccupied.has(assigned.id)) {
-          const freeStables = eligibleStables.filter((h) => !foreignOccupied.has(h.id));
-          if (freeStables.length > 0) {
-            assigned = worldRng.pick(freeStables);
+        const marked = markedForForeign.has(assigned.id);
+        if (marked && !foreignOccupied.has(assigned.id)) {
+          // Natural foreigner lands in a marked host — he IS the slot.
+          foreignOccupied.add(assigned.id);
+        } else {
+          // Unmarked heya or already-occupied host — redirect to a free
+          // marked stable; if none exists the foreigner simply doesn't
+          // exist at genesis (honest post-2010 read: a domestic recruit
+          // was signed instead — never a silent naturalization).
+          const freeMarked = eligibleStables.filter(
+            (h) => markedForForeign.has(h.id) && !foreignOccupied.has(h.id)
+          );
+          if (freeMarked.length > 0) {
+            assigned = worldRng.pick(freeMarked);
+            foreignOccupied.add(assigned.id);
           } else {
-            // Every stable's foreign slot is taken — a wrestler who would have
-            // debuted as a foreign national simply doesn't exist at genesis:
-            // generate a Japanese recruit instead (the honest post-2010 read —
-            // never silently stamp a post-debut naturalization).
             r.nationality = "Japan";
             r.origin = "Japan";
+            r.citizenshipStatus = "native";
           }
         }
-        if (countsAsForeign(r, DEFAULT_START_YEAR)) foreignOccupied.add(assigned.id);
+      } else if (
+        markedForForeign.has(assigned.id) &&
+        !foreignOccupied.has(assigned.id) &&
+        config.division === foreignDivisionByHeya.get(assigned.id)
+      ) {
+        // Marked host reaches its drawn division — this member becomes the
+        // stable's foreigner (sekitori-skewed composition).
+        applyGenesisForeign(r);
+        foreignOccupied.add(assigned.id);
       }
 
       r.heyaId = assigned.id;
@@ -123,6 +193,34 @@ export function createRosters(
       rikishiMap.set(r.id, r);
     }
   });
+
+  // Backfill: a marked heya whose drawn division never produced a member
+  // still hosts one foreigner — convert the roster member whose division
+  // is closest to the drawn slot (sekitori-side fallback order).
+  const FALLBACK_ORDER: Division[] = [
+    "makushita",
+    "juryo",
+    "sandanme",
+    "makuuchi",
+    "jonidan",
+    "jonokuchi",
+  ];
+  for (const heyaId of markedForForeign) {
+    if (foreignOccupied.has(heyaId)) continue;
+    const heya = heyaMap.get(heyaId);
+    const members = (heya?.rikishiIds ?? [])
+      .map((id) => rikishiMap.get(id))
+      .filter((r): r is Rikishi => !!r && !r.isRetired && !countsAsForeign(r, DEFAULT_START_YEAR));
+    if (members.length === 0) continue;
+    const drawn = foreignDivisionByHeya.get(heyaId);
+    const ordered = [drawn, ...FALLBACK_ORDER.filter((d) => d !== drawn)] as Division[];
+    const pick =
+      ordered
+        .map((d) => members.find((m) => m.division === d))
+        .find((m): m is Rikishi => !!m) ?? members[0];
+    applyGenesisForeign(pick);
+    foreignOccupied.add(heyaId);
+  }
 
   return rikishiMap;
 }

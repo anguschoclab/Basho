@@ -146,10 +146,13 @@ describe("J→M promotion ceiling", () => {
 
 describe("BashoPerformance crossover evidence", () => {
   it("performance records carry crossover-vs-makuuchi evidence fields", () => {
-    const p: BashoPerformance = perf("j1", 10, 5, {
+    const p = perf("j1", 10, 5, {
       crossDivisionWins: 2,
       crossoverPulledUp: false,
-    } as Partial<BashoPerformance>);
+    } as Partial<BashoPerformance>) as BashoPerformance & {
+      crossDivisionWins?: number;
+      crossoverPulledUp?: boolean;
+    };
     expect(p.crossDivisionWins).toBe(2);
     expect(p.crossoverPulledUp).toBe(false);
   });

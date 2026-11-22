@@ -222,6 +222,11 @@ export function isCandidateSignable(
   candidate: TalentCandidate,
   heyaId: Id
 ): boolean {
+  // WS-2 — a tsukedashi credential expires one year after it is earned
+  // (JSA: the debut-priority window does not stay open indefinitely).
+  if (candidate.tsukedashi && candidate.tsukedashiExpiryYear !== undefined) {
+    if (world.year >= candidate.tsukedashiExpiryYear) return false;
+  }
   if (!isCandidateAgeEligible(world, candidate)) return false;
   if (candidate.availabilityState !== "available" && candidate.availabilityState !== "in_talks") {
     return false;

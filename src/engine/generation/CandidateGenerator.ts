@@ -57,7 +57,16 @@ import {
   DUAL_CITIZEN_RECRUIT_SHARE,
   TSUKEDASHI_UNIVERSITY_SHARE,
   TSUKEDASHI_HS_SHARE,
+  FOREIGN_DEBUT_AGE_MIN,
+  FOREIGN_DEBUT_AGE_MAX,
+  FOREIGN_PA_FLOOR,
+  FOREIGN_DEVSPEED_MULT,
+  FOREIGN_SDTD_CHANCE,
+  TSUKEDASHI_PA_FLOOR,
+  TSUKEDASHI_DEVSPEED_MIN,
+  TSUKEDASHI_EXPIRY_YEARS,
 } from "@/constants/engine/recruitment";
+import { rollForeignOrigin } from "@/engine/utils/identity";
 
 function rollDevelopmentProfile(rng: SeededRNG): DevelopmentProfile {
   const roll = rng.next();
@@ -173,19 +182,62 @@ export function generateCandidate(args: {
   const amateurStarTag = !isEmergentProdigy && rng.next() < AMATEUR_STAR_TAG_CHANCE;
 
   const schoolOrigin = rollSchoolOrigin(poolType, rng);
+  const tsukedashi = rollTsukedashi(poolType, amateurStarTag, rng);
+
+  // WS-1c — foreign recruits arrive older with proven ability: the
+  // selection funnel is harsher, so survivors carry a PA floor and a
+  // faster development track than domestic teens.
+  if (poolType === "foreign") {
+    for (const key of [
+      "power",
+      "speed",
+      "technique",
+      "stamina",
+      "mental",
+      "adaptability",
+      "balance",
+    ] as const) {
+      paPkg.stats[key] = Math.max(paPkg.stats[key], FOREIGN_PA_FLOOR);
+    }
+    paPkg.developmentSpeed *= FOREIGN_DEVSPEED_MULT;
+  }
+
+  // WS-2 — a tsukedashi credential is earned quality, not a label:
+  // national champions carry a combat-PA floor and a faster development
+  // track, and the credential expires after TSUKEDASHI_EXPIRY_YEARS.
+  let tsukedashiExpiryYear: number | undefined;
+  if (tsukedashi) {
+    for (const key of [
+      "power",
+      "speed",
+      "technique",
+      "stamina",
+      "mental",
+      "adaptability",
+      "balance",
+    ] as const) {
+      paPkg.stats[key] = Math.max(paPkg.stats[key], TSUKEDASHI_PA_FLOOR);
+    }
+    paPkg.developmentSpeed = Math.max(paPkg.developmentSpeed, TSUKEDASHI_DEVSPEED_MIN);
+    tsukedashiExpiryYear = currentYear + TSUKEDASHI_EXPIRY_YEARS;
+  }
 
   return {
     candidateId: id,
     personId,
     name,
     nationality,
+    // Foreign recruits debut at 18–22 (harsh selection funnel); domestic
+    // candidates keep the standard teen band.
     birthYear:
-      currentYear -
-      (DEBUT_AGE_BASE +
-        rng.int(
-          0,
-          poolType === "university" ? UNIVERSITY_BIRTH_YEAR_RANGE : OTHER_BIRTH_YEAR_RANGE
-        )),
+      poolType === "foreign"
+        ? currentYear - rng.int(FOREIGN_DEBUT_AGE_MIN, FOREIGN_DEBUT_AGE_MAX)
+        : currentYear -
+          (DEBUT_AGE_BASE +
+            rng.int(
+              0,
+              poolType === "university" ? UNIVERSITY_BIRTH_YEAR_RANGE : OTHER_BIRTH_YEAR_RANGE
+            )),
     originRegion: origin,
     schoolOrigin,
 
@@ -212,7 +264,8 @@ export function generateCandidate(args: {
     // The flag its readers check (eventSurfacing, CandidatePoolPage) —
     // previously never set even when the tag landed (S7-43).
     isAmateurStar: amateurStarTag || undefined,
-    tsukedashi: rollTsukedashi(poolType, amateurStarTag, rng),
+    tsukedashi,
+    tsukedashiExpiryYear,
     // §5.3 — a small share of foreign-born recruits hold Japanese citizenship.
     dualCitizen: poolType === "foreign" ? rng.next() < DUAL_CITIZEN_RECRUIT_SHARE : undefined,
 
@@ -248,10 +301,9 @@ function rollOriginIdentity(
   rng: SeededRNG,
   id: string
 ): { origin: string; name: string; personId: string; nationality: string } {
-  const FOREIGN_ORIGINS = ["Mongolia", "Georgia", "Russia", "Brazil", "USA", "Kazakhstan"];
   const origin =
     poolType === "foreign"
-      ? seededPick(rng, FOREIGN_ORIGINS)
+      ? rollForeignOrigin(rng)
       : seededPick(rng, [
           ...SUMO_HOTBEDS.filter((h) => h !== "Mongolia" && h !== "Georgia" && h !== "Egypt"),
           ...JAPANESE_PREFECTURES.slice(0, JAPANESE_PREFECTURES_COUNT),
@@ -278,6 +330,11 @@ function rollTsukedashi(
   amateurStarTag: boolean,
   rng: SeededRNG
 ): TalentCandidate["tsukedashi"] {
+  // Rare foreign sandanme-tsukedashi — the Kinbozan path (foreign amateur
+  // champions can hold Sd credentials; makushita TD is never foreign).
+  if (poolType === "foreign") {
+    return rng.next() < FOREIGN_SDTD_CHANCE ? "sandanme" : undefined;
+  }
   if (!amateurStarTag) return undefined;
   if (poolType === "university")
     return rng.next() < TSUKEDASHI_UNIVERSITY_SHARE ? "makushita" : undefined;

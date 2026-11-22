@@ -7,7 +7,7 @@ import { RikishiStats, Rikishi } from "@/engine/types/rikishi";
 import { Rank, Division, Side } from "@/engine/types/banzuke";
 import { CombatProfile, Style, CombatArchetype } from "@/engine/types/combat";
 import { clamp } from "@/engine/utils/math";
-import { isForeign } from "@/engine/utils/identity";
+import { isForeign, rollForeignOrigin } from "@/engine/utils/identity";
 import { generateShikona } from "@/engine/shikona/generateShikona";
 import {
   rollArchetype,
@@ -35,8 +35,6 @@ import { assignQuirk } from "@/engine/generation/QuirkAssignment";
 import { maybeAssignEarlyShikona } from "@/engine/generation/FightingNameEarly";
 import { assignRecruitmentCohort } from "@/engine/generation/CohortTracking";
 import {
-  FOREIGN_RECRUIT_CHANCE,
-  MONGOLIAN_SHARE,
   PA_BOOST_REF,
   PA_BOOST_DIVISOR,
   PA_BOOST_MAX,
@@ -44,7 +42,10 @@ import {
   PROFILE_BOOST_LATE_BLOOMER,
   PROFILE_BOOST_JOURNEYMAN,
 } from "@/constants/engine/generation";
-import { DUAL_CITIZEN_RECRUIT_SHARE } from "@/constants/engine/recruitment";
+import {
+  DUAL_CITIZEN_RECRUIT_SHARE,
+  FOREIGN_RECRUIT_CHANCE_BY_DIVISION,
+} from "@/constants/engine/recruitment";
 
 export function createBaseInfo(
   id: string,
@@ -209,12 +210,11 @@ export function generateFullRikishi(args: {
   // Development profile — consistency-checked against age/rank
   const developmentProfile = rollDevelopmentProfile(rng, age, rank);
 
-  // Nationality first for regional PA biases (Phase 3)
+  // Nationality first for regional PA biases (Phase 3). Division-skewed —
+  // foreign rikishi concentrate at sekitori (~23% vs ~3% lower divisions).
   const nationality =
-    rng.next() < FOREIGN_RECRUIT_CHANCE
-      ? rng.next() < MONGOLIAN_SHARE
-        ? "Mongolia"
-        : rng.pick(["Georgia", "Russia", "Bulgaria", "Estonia", "Brazil", "Hawaii"])
+    rng.next() < (FOREIGN_RECRUIT_CHANCE_BY_DIVISION[division] ?? 0)
+      ? rollForeignOrigin(rng)
       : "Japan";
 
   // Roll PA (potential ceiling) once, then derive CA from age-based maturity

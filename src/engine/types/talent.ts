@@ -132,6 +132,11 @@ export interface TalentCandidate {
    * "sandanme" (other national titles) at Sd80; the age gate is under-25.
    */
   tsukedashi?: "makushita" | "sandanme";
+  /**
+   * Year the tsukedashi credential expires (JSA: one-year window after
+   * qualifying). Undefined while the credential is live or absent.
+   */
+  tsukedashiExpiryYear?: number;
   /** Whether this candidate is an ultra-rare emergent prodigy (1.5% chance). */
   isEmergentProdigy?: boolean;
 

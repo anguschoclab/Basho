@@ -21,8 +21,8 @@ describe("tsukedashi expiry gate", () => {
   it("a candidate whose credential expired last year is not signable", () => {
     const world = baseWorld();
     const cand = MockFactory.createCandidate("c1", {
-      tags: ["tsukedashi_makushita"],
-    });
+      tsukedashi: "makushita",
+    } as Partial<TalentCandidate>);
     (cand as TalentCandidate & { tsukedashiExpiryYear?: number }).tsukedashiExpiryYear = 2025;
     expect(isCandidateSignable(world, cand, "h1")).toBe(false);
   });

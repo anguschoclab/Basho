@@ -135,7 +135,11 @@ export function rollPotential(args: {
 
   // Define Regional Biases (Phase 3)
   const isMongolian = nationality === "Mongolia";
-  const isEastEuropean = ["Georgia", "Russia", "Bulgaria", "Estonia"].includes(nationality ?? "");
+  // Post-2022 pipelines: Ukraine + Kazakhstan wrestlers carry the same
+  // Eastern-European frame bias as the legacy Georgia/Russia corridor.
+  const isEastEuropean = ["Georgia", "Russia", "Bulgaria", "Estonia", "Ukraine", "Kazakhstan"].includes(
+    nationality ?? ""
+  );
   const isAmericas = ["Brazil", "USA", "Hawaii"].includes(nationality ?? "");
 
   const mods = (profile.statModifiers || {}) as Record<string, number | undefined>;

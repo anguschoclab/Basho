@@ -64,7 +64,7 @@ describe("sanshō spec — committee composition metadata", () => {
       // Each committee decision should record its panel composition —
       // the real sanshō committee is shimpan + press + ijiin, not a
       // faceless score.
-      expect(d.composition).toBeDefined();
+      expect((d as { composition?: unknown }).composition).toBeDefined();
     }
   });
 });

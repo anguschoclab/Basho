@@ -18,6 +18,7 @@ import { checkRetirement } from "@/engine/lifecycle/retirementCheck";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { CareerSnapshot } from "@/engine/types/history";
 
 const oyakata = (quirks: string[], age = 50): Oyakata =>
   MockFactory.createOyakata("oy1", { quirks, age } as Partial<Oyakata>);
@@ -43,12 +44,17 @@ describe("stall-attrition pressure on foreign-slot consumers", () => {
       birthYear: 1997, // 29 in 2026
       division: "sandanme",
       rank: "sandanme",
-      careerHistory: Array.from({ length: 8 }, (_, i) => ({
-        year: 2024 + Math.floor(i / 6),
-        bashoNumber: (i % 6) + 1,
-        wins: 2,
-        losses: 5,
-      })),
+      careerHistory: Array.from(
+        { length: 8 },
+        (_, i) =>
+          ({
+            year: 2024 + Math.floor(i / 6),
+            bashoNumber: (i % 6) + 1,
+            division: "sandanme",
+            wins: 2,
+            losses: 5,
+          }) as unknown as CareerSnapshot
+      ),
     } as Partial<Rikishi>);
 
   it("a stalled foreign rikishi retires while an identical native continues", () => {
