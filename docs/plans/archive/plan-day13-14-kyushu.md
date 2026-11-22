@@ -343,8 +343,8 @@ residuals.
   sibling_lead (pre-bout), mid-basho return, phase-two, H2H
   surge/giant-killer/breakthrough.
 - W E/G/H/J/K/M/F: hometown tiers + prefecture_showdown, grip-transition
-  PBP + one-kimarite streak, bonds (schoolmates/practice_partners), venue
-  + dohyo conditions, day-recap headlines, signature-grip metrics +
+  PBP + one-kimarite streak, bonds (schoolmates/practice_partners), venue +
+  dohyo conditions, day-recap headlines, signature-grip metrics +
   first-top-division meetings, superlatives/oldest-kachi.
 - Older sets: mono-ii/foul review arc + torinaoshi, leaderboard
   (division-scoped), kachi/make-koshi stakes set, age/veteran beats,
