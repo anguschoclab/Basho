@@ -7,7 +7,8 @@ evidence that produced it. Produced via the `sumo-transcript` skill; the
 day-12 transcript in the same paste is already shipped as W P (`223622ed`)
 and is excluded.
 
-**Execution log**
+## Execution log
+
 - RED tests `88d2f8fd` — 39 tests, 23 clean feature-only failures.
 - Implementation `b590b051` — all Z1–Z13 beats, tags, constants, bard
   templates, JSDoc, golden snapshot regenerated + reviewed (no MISSING).
@@ -19,7 +20,8 @@ and is excluded.
   function-length ratchet — kachi-koshi sub-cascade extracted to
   `selectKachiKoshiType` (pure move, no behavior change).
 
-**Residuals / deviations**
+## Residuals / deviations
+
 - Z12 repeat-spoiler: gated on the winner NOT being a contender (existing
   spoiler rule) — a contender's repeat scalp stays silent by design.
 - Z9: `prefecture_showdown_win` post-bout copy still says "prefecture" for
