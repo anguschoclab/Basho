@@ -107,6 +107,13 @@ export interface Heya {
    * exception decays as the grandfathered rikishi retire or transfer out.
    */
   grandfatheredForeignCount?: number;
+  /**
+   * WS-5 — disciplinary custody (azukari): a suspended stable lingers
+   * inactive while its roster trains under a supervising host heya
+   * (Miyagino→Isegahama). Permanent dissolution requires ~2yr of custody
+   * plus the disgraced master's resignation with no revival proposal.
+   */
+  custodyStatus?: { hostHeyaId: string; sinceYear: number };
   politicalCapital?: number;
   location?: string;
 

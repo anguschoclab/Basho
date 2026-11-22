@@ -90,6 +90,11 @@ export interface Rikishi {
   shikona: string;
   realName?: string;
   heyaId: Id;
+  /**
+   * WS-5 — while set, the rikishi's home heya is suspended and he trains
+   * under this supervising stable (disciplinary azukari custody).
+   */
+  inCustodyOf?: Id;
   nationality: string;
   birthYear: number;
   birthMonth?: number;

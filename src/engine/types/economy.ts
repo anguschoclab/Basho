@@ -18,7 +18,13 @@ export interface RikishiEconomics {
 
 // Governance Types
 /** Type representing governance status. */
-export type GovernanceStatus = "good_standing" | "warning" | "probation" | "sanctioned";
+export type GovernanceStatus =
+  | "good_standing"
+  | "warning"
+  | "probation"
+  | "sanctioned"
+  /** WS-5 — disciplinary custody: stable closed, roster under a host heya. */
+  | "suspended";
 
 // Welfare / Compliance (Institutional)
 /** Type representing compliance state. */

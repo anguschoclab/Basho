@@ -11,6 +11,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { bumpTenure } from "@/engine/legacy/tenure";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya } from "@/engine/core/queries";
+import { findMergerTarget } from "@/engine/economy/mergers";
 import { ELECTION_INCUMBENCY_BONUS } from "@/constants/engine/succession";
 import { BOARD_COMMITTEE } from "@/constants/engine/committee";
 import { conveneCommittee } from "@/engine/committee/committee";
@@ -53,12 +54,25 @@ export function reportScandal(
     "governance",
     `ruling_${world.dayIndexGlobal}_${heyaId}_${reason}_${world.governanceLog?.length ?? 0}`
   );
+  // WS-5 — a critical scandal that pushes a heya into the danger band
+  // (~70) triggers a board-imposed CLOSURE process, not another warning.
+  // The stable is suspended into custody (azukari) under a supervising
+  // heya — same-ichimon first via findMergerTarget — and permanent
+  // dissolution follows only after the custody window + master exit.
+  const isDisciplinaryClosure = severity === "critical" && newScandalScore >= 70;
+
   const ruling: GovernanceRuling = {
     id: rng.uuid("GR"),
     date: `Year ${world.year}, Day ${world.dayIndexGlobal}`,
     heyaId,
-    type: "warning",
-    severity: severity === "critical" ? "high" : severity === "major" ? "medium" : "low",
+    type: isDisciplinaryClosure ? "closure" : "warning",
+    severity: isDisciplinaryClosure
+      ? "terminal"
+      : severity === "critical"
+        ? "high"
+        : severity === "major"
+          ? "medium"
+          : "low",
     reason,
     effects: {
       scandalScoreDelta: scoreBump,
@@ -67,6 +81,19 @@ export function reportScandal(
 
   // Append ruling to governanceLog via ImpactBuilder
   builder.appendToWorldArray("governanceLog", [ruling]);
+
+  if (isDisciplinaryClosure) {
+    const hostId = findMergerTarget(world, heyaId);
+    if (hostId) {
+      builder.updateHeya(heyaId, {
+        custodyStatus: { hostHeyaId: hostId, sinceYear: world.year },
+        governanceStatus: "suspended",
+      });
+      for (const rId of heya.rikishiIds ?? []) {
+        builder.updateRikishi(rId, { inCustodyOf: hostId });
+      }
+    }
+  }
 
   builder.logEvent(
     "GOVERNANCE_RULING",
