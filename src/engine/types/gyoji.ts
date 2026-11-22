@@ -38,6 +38,15 @@ export interface Gyoji {
     boutsOfficiated: number;
     reversals: number;
   }>;
+  /**
+   * WS-9 — hereditary tate-gyōji names (Kimura Shōnosuke / Shikimori
+   * Inosuke); only the top tier carries a hereditary title.
+   */
+  hereditaryTitle?: string;
+  /** WS-9 — >9 yearly reversals at makuuchi+ → salary cut pending. */
+  salaryCutPending?: boolean;
+  /** WS-9 — >9 yearly reversals below makuuchi → promotion freeze until year. */
+  frozenUntilYear?: number;
 }
 
 /** Defines the structure for a shimpan (judge) entity. */
@@ -53,6 +62,16 @@ export interface Shimpan {
   avatarConfig?: AvatarIdentity;
   /** Number of mono-ii consultations participated in. */
   consultations: number;
+  /**
+   * WS-8 — Shinpan-bu personnel: ~20 regular shimpan on one-year terms are
+   * drawn from sitting oyakata under fixed ichimon quotas. Leadership is a
+   * head (ex-Y/Ō) plus two deputies; the rest are members.
+   */
+  oyakataId?: Id;
+  ichimon?: string;
+  role?: "head" | "deputy" | "member";
+  /** Year appointed to Shinpan-bu (≥5yr post-retirement eligibility). */
+  appointedYear?: number;
 }
 
 /** A shimpan panel for a single bout's mono-ii. */

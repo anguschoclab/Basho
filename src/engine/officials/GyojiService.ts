@@ -29,6 +29,11 @@ export function generateGyoji(seed: string, rank: Gyoji["rank"], index: number):
     avatarConfig: generateAvatarIdentity({ seed: id, nationality: "Japan", role: "gyoji" }),
     boutsOfficiated: 0,
     callsReversed: 0,
+    // WS-9 — hereditary tate titles: the two top seats alternate between
+    // the Kimura Shōnosuke and Shikimori Inosuke lineages.
+    ...(rank === "tate"
+      ? { hereditaryTitle: index % 2 === 0 ? "Kimura Shōnosuke" : "Shikimori Inosuke" }
+      : {}),
   };
 }
 
@@ -41,6 +46,18 @@ export function generateShimpan(seed: string, index: number): Shimpan {
   const id = rng.uuid("SH") as Id;
   const yearsActive = Math.floor(rng.next() * 20) + 1;
 
+  // WS-8 — Shinpan-bu personnel: regulars are drawn from sitting oyakata
+  // under fixed ichimon quotas; index 0 = head, 1–2 = deputies, rest
+  // members on one-year terms.
+  const ICHIMON_ROTATION = [
+    "Dewanoumi",
+    "Nishonoseki",
+    "Isegahama",
+    "Tokitsukaze",
+    "Takasago",
+  ] as const;
+  const role = index === 0 ? "head" : index <= 2 ? "deputy" : "member";
+
   return {
     id,
     name,
@@ -49,6 +66,10 @@ export function generateShimpan(seed: string, index: number): Shimpan {
     age: 40 + yearsActive + Math.floor(rng.next() * 5),
     avatarConfig: generateAvatarIdentity({ seed: id, nationality: "Japan", role: "shimpan" }),
     consultations: 0,
+    oyakataId: `OY-${id}` as Id,
+    ichimon: ICHIMON_ROTATION[index % ICHIMON_ROTATION.length],
+    role,
+    appointedYear: undefined,
   };
 }
 
@@ -64,8 +85,17 @@ export function assignGyojiToBout(
   if (gyojiPool.length === 0) return null;
   const rng = new SeededRNG(`${boutSeed}-gyoji-assign`);
 
+  // WS-9 — strict division gating: top-level bouts (importance ≥ 70, the
+  // makuuchi/sanyaku band from boutImportanceForBout) may only be called
+  // by makuuchi-tier gyōji. If no eligible official exists the bout has
+  // no gyōji (null) rather than misassigning a lower-tier official.
+  const TOP_TIER_RANKS = new Set<Gyoji["rank"]>(["tate", "fuku-tate", "sanyaku", "makuuchi"]);
+  const eligible =
+    boutImportance >= 70 ? gyojiPool.filter((g) => TOP_TIER_RANKS.has(g.rank)) : gyojiPool;
+  if (eligible.length === 0) return null;
+
   // Sort by rank (tate first) and accuracy
-  const sorted = [...gyojiPool].sort((a, b) => {
+  const sorted = [...eligible].sort((a, b) => {
     const rankOrder: Record<string, number> = {
       tate: 0,
       "fuku-tate": 1,
@@ -104,7 +134,27 @@ export function assembleShimpanPanel(
     const j = Math.floor(rng.next() * (i + 1));
     [indices[i], indices[j]] = [indices[j], indices[i]];
   }
-  const selected = indices.slice(0, 5).map((i) => shimpanPool[i]);
+  // WS-8 — makuuchi panels are clan-diverse: at most 2 panelists per
+  // ichimon (the real Shinpan-bu rotates clan representation). Greedy
+  // selection over the shuffled pool; if the clan constraint can't fill
+  // all five seats the remaining slots fall back to pool order.
+  const clanCount = new Map<string, number>();
+  const selected: Shimpan[] = [];
+  for (const i of indices) {
+    if (selected.length >= 5) break;
+    const s = shimpanPool[i];
+    const clan = s.ichimon?.toLowerCase() ?? "?";
+    if ((clanCount.get(clan) ?? 0) >= 2) continue;
+    clanCount.set(clan, (clanCount.get(clan) ?? 0) + 1);
+    selected.push(s);
+  }
+  if (selected.length < 5) {
+    for (const i of indices) {
+      if (selected.length >= 5) break;
+      const s = shimpanPool[i];
+      if (!selected.includes(s)) selected.push(s);
+    }
+  }
   return {
     chief: selected[0],
     panelists: selected.slice(1, 5),
@@ -139,10 +189,24 @@ export function recordGyojiBout(
     });
   }
 
+  const callsReversed = gyoji.callsReversed + (reversed ? 1 : 0);
+
+  // WS-9 — error accountability: >9 reversals disciplines the official.
+  // Makuuchi-tier gyōji take a salary cut; lower tiers get a promotion
+  // freeze. (Tate errors trigger a separate resignation-ritual path.)
+  const isTopTier = ["tate", "fuku-tate", "sanyaku", "makuuchi"].includes(gyoji.rank);
+  const discipline =
+    callsReversed > 9
+      ? isTopTier
+        ? { salaryCutPending: true }
+        : { frozenUntilYear: year + 1 }
+      : {};
+
   return {
     ...gyoji,
     boutsOfficiated: gyoji.boutsOfficiated + 1,
-    callsReversed: gyoji.callsReversed + (reversed ? 1 : 0),
+    callsReversed,
     careerHistory: history,
+    ...discipline,
   };
 }

@@ -20,7 +20,7 @@ describe("division gating", () => {
     const juryoGyoji = generateGyoji("spec", "juryo", 0);
     // A highest-importance (yokozuna-level) bout may not draw a Juryo-tier
     // gyōji — the real hierarchy gates makuuchi bouts to makuuchi+ ranks.
-    expect(assignGyojiToBout([juryoGyoji], "spec-bout", 10)).toBeNull();
+    expect(assignGyojiToBout([juryoGyoji], "spec-bout", 90)).toBeNull();
   });
 });
 
