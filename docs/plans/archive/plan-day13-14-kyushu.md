@@ -34,7 +34,7 @@ and is excluded.
 ## Audit of the transcripts — Day 13
 
 | Claim in transcript | Verdict | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | Wakamotoharu leads; Onosato/Atamifuji/Kinbozan one back | ✅ APPROVED | `beatLeaderboard` + `beatCoLeader` (`stakes.ts`), division-scoped since v20 E1 |
 | Arashifuji stops a five-bout losing streak | ✅ APPROVED | `beatSkidSnapped` (`postbout.ts`), `storylines.streak_snapped` |
 | Ichiyamamoto clinches kachi-koshi on day 13 | ✅ APPROVED | `beatPostBoutKachi`, `post_bout.kachi_koshi` |
@@ -75,7 +75,7 @@ and is excluded.
 ## Audit of the transcripts — Day 14
 
 | Claim in transcript | Verdict | Evidence |
-|---|---|---|
+| --- | --- | --- |
 | Co-leaders 11-2; two chasers at three losses | ✅ APPROVED | co-leader/chase-pack beats (W P P1a) |
 | "Produced his 100th career victory yesterday" (Toshonofuji) | ✅ APPROVED | `CAREER_WIN_MILESTONES` incl. 100 (`generation.ts:274`); `beatCareerWinMilestone` fires on the milestone bout (`context.ts:647`) |
 | "Daiseizan's 300th career appearance" | ⚠️ PARTIAL → GAP | `CAREER_BOUT_MILESTONES = [500,700,1000,1200]` (`generation.ts:277`) — 300 absent; sole consumer `beatCareerBoutMilestone` (`context.ts:666`) → **Z4b** |
@@ -292,7 +292,7 @@ must be a `Map`. Assertions via `r.pbpLines` filtered by tag /
 Per-item matrix — **one positive-fire test plus the listed negative guards:**
 
 | Item | Positive fire | Negative guards |
-|---|---|---|
+| --- | --- | --- |
 | Z1 | fires on `consecutiveYusho ≥1` + in-window; on `yusho === 0` contender | no fire out-of-window; no `first_title_bid` when `careerRecord.yusho > 0`; `careerRecord` undefined tolerated |
 | Z2 | fires on `rare`/`legendary` kimarite | silent on `common`/`uncommon` |
 | Z3 | `deja_vu` on same-kimarite prior win; `h2h_adaptation` on ≥2 distinct | silent when no prior meetings; silent when prior wins share today's kimarite only (adaptation); draws excluded |
