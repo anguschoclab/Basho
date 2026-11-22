@@ -21,6 +21,8 @@ export interface CommitteeSpec {
   readonly meritWeight: number;
   /** Score units a same-faction member bloc can contribute (bounded by cap). */
   readonly factionWeight: number;
+  /** WS-12 — panel composition label surfaced on deliberation records. */
+  readonly composition?: string;
 }
 
 /**
@@ -43,6 +45,7 @@ export const SANSHO_COMMITTEE: CommitteeSpec = {
   discretionCap: 1,
   meritWeight: 1,
   factionWeight: 0,
+  composition: "shimpan+press+ijiin",
 };
 
 /**

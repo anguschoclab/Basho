@@ -78,7 +78,9 @@ export function determineSpecialPrizes(
   for (const r of rikishiMap.values()) {
     if (r.division !== "makuuchi") continue;
     if (isYokozunaOrOzekiRank(r.rank)) continue;
-    if (r.id === yushoId) continue;
+    // WS-12 — yūshō winners ARE sanshō-eligible (the cup doesn't exclude
+    // the champion from merit prizes — real committees award shukun/kantō
+    // to dominant champions).
     const s = stats.get(r.id);
     if (s && s.wins >= 8) candidates.push(r);
   }

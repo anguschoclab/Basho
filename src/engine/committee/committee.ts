@@ -47,6 +47,8 @@ export interface CommitteeDecision {
   readonly votesAgainst: number;
   /** Human-readable deliberation notes for feed items/log lines. */
   readonly rationale: string[];
+  /** WS-12 — panel composition (e.g. "shimpan+press+ijiin" for sanshō). */
+  readonly composition?: string;
 }
 
 const clamp = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
@@ -103,6 +105,7 @@ export function conveneCommittee(
       votesFor: spec.size - votesAgainst,
       votesAgainst,
       rationale,
+      ...(spec.composition ? { composition: spec.composition } : {}),
     });
   }
 
