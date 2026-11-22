@@ -19,7 +19,12 @@ import {
   EXHIBITION_INJURY_BASE_CHANCE,
   EXHIBITION_INJURY_FATIGUE_PENALTY,
 } from "@/constants/engine/exhibitionBasho";
-import { jsaJungyoStipendMultiplier } from "@/constants/engine/jsaEra";
+import {
+  isPostRevision,
+  jsaJungyoStipendMultiplier,
+  JUNGYO_TOUR_DAYS,
+  JUNGYO_TOUR_DAYS_POST_REFORM,
+} from "@/constants/engine/jsaEra";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import {
   ensureRivalriesState,
@@ -49,6 +54,20 @@ interface ExhibitionBashoInfo {
   month: number;
   location: string;
   isHonbasho: false;
+  /** WS-14 — real tour length in days (~90/yr pre-2027, ~70s after). */
+  tourDays: number;
+  /** WS-14 — season the tour runs in (August summer is the dense gauntlet). */
+  season: "winter" | "spring" | "summer" | "autumn";
+  /** WS-14 — true when the 2027 JSA jungyo reduction applies. */
+  reformApplied: boolean;
+}
+
+/** Calendar month → jungyo season. */
+function jungyoSeason(month: number): "winter" | "spring" | "summer" | "autumn" {
+  if (month <= 2) return "winter";
+  if (month <= 5) return "spring";
+  if (month <= 8) return "summer";
+  return "autumn";
 }
 
 /**
@@ -100,7 +119,16 @@ export function getExhibitionBashoSchedule(_year: number): ExhibitionBashoInfo[]
       isHonbasho: false,
     },
   ];
-  return events;
+  // WS-14 — tour granularity: real day counts (~90/yr, August gauntlet),
+  // season tags, and the 2027 JSA recovery-package reduction.
+  const reform = isPostRevision(_year);
+  const daysTable = reform ? JUNGYO_TOUR_DAYS_POST_REFORM : JUNGYO_TOUR_DAYS;
+  return events.map((e) => ({
+    ...e,
+    tourDays: daysTable[e.month] ?? 0,
+    season: jungyoSeason(e.month),
+    reformApplied: reform,
+  }));
 }
 
 /**

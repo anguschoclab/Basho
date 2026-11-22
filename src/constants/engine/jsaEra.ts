@@ -16,7 +16,7 @@ import type { Division, Rank } from "@/engine/types/banzuke";
 /** First calendar year the July-2026 JSA revision applies to (Hatsu 2027). */
 export const JSA_REVISION_YEAR = 2027;
 
-const isPostRevision = (year: number) => year >= JSA_REVISION_YEAR;
+export const isPostRevision = (year: number) => year >= JSA_REVISION_YEAR;
 
 /** Sekitori monthly salary by rank: 2026 schedule → 2027+ schedule. */
 const SEKITORI_SALARY: Record<string, [number, number]> = {
@@ -126,3 +126,26 @@ export function jsaSanyakuBashoAllowance(rank: Rank | string, daysContested: num
 export function jsaJungyoStipendMultiplier(year: number): number {
   return isPostRevision(year) ? 0.39 : 0.3;
 }
+
+/**
+ * Jungyo tour-day counts by calendar month, keyed to the schedule's
+ * six tour slots. Pre-reform totals ~90/year with August the dense
+ * gauntlet (28-in-31); the 2027 recovery package cuts ~20 days, mostly
+ * out of the summer schedule.
+ */
+export const JUNGYO_TOUR_DAYS: Record<number, number> = {
+  2: 12,
+  4: 15,
+  6: 12,
+  8: 28,
+  10: 15,
+  12: 8,
+};
+export const JUNGYO_TOUR_DAYS_POST_REFORM: Record<number, number> = {
+  2: 11,
+  4: 13,
+  6: 10,
+  8: 18,
+  10: 13,
+  12: 6,
+};
