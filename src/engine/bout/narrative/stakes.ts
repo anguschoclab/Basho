@@ -16,14 +16,24 @@ import {
 import { NAKABI_DAY } from "@/engine/basho/NakabiService";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
+import { PREFECTURE_REGION } from "@/constants/engine/geography";
 import { getLeaderWins, isPlayoffScenario, isYushoContention } from "@/engine/bout/boutContention";
 import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
-import { isSanyakuRank, getRankDisplayEntry, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
+import {
+  isSanyakuRank,
+  isLowerSanyakuRank,
+  getRankDisplayEntry,
+  DIVISION_NAMES,
+} from "@/constants/engine/rankDisplay";
 import { BASHO_NAMES } from "@/constants/ui/calendar";
 import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
 import type { Division } from "@/engine/types/banzuke";
-import { kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
-import { countAlternatingRecords, countKachiKoshiDrought } from "@/engine/bout/narrative/helpers";
+import { isMakeKoshi, kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
+import {
+  countAlternatingRecords,
+  countKachiKoshiDrought,
+  findDivisionLeadingSibling,
+} from "@/engine/bout/narrative/helpers";
 import {
   ALTERNATING_RECORDS_MIN,
   COLLAPSE_MIN_TRAILING_LOSSES,
@@ -33,6 +43,8 @@ import {
   KACHI_DROUGHT_MIN_BASHO,
   LOSING_SKID_MIN,
   PROVEN_GIANT_KILLER_MAX_AGE,
+  SANYAKU_RETENTION_LOSS_MIN,
+  SANYAKU_RETENTION_MIN_DAY,
   WEEK_ONE_END_DAY,
   WEEK_TWO_EARLY_LOSSES_MIN,
   WEEK_TWO_WINS_MIN,
@@ -67,6 +79,23 @@ function beatHometown(p: PbpPipeline): void {
       );
     }
   } else if (east.origin && west.origin && east.origin === west.origin) {
+    // W Z — a shared FOREIGN origin is not a prefecture derby: route
+    // countrymen (e.g. two Filipinos) to dedicated shared-origin copy
+    // instead of "a %ORIGIN% prefecture derby".
+    if (!PREFECTURE_REGION[east.origin]) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.shared_origin", {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          ORIGIN: east.origin,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "pre_bout",
+        ["hometown", "shared_origin"]
+      );
+      return;
+    }
     const tier = hometownTier(east.origin, bashoInfo?.location);
     if (tier) {
       push(
@@ -404,29 +433,13 @@ function findKyujoSibling(
 function beatSiblingLead(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
   // W N — "his brother is sharing the lead down in Juryo": a combatant's
-  // sibling sits atop a DIFFERENT division's table. The standings map is
-  // flat across divisions, so the lead is computed per-division.
-  const standings = world.currentBasho?.standings;
-  if (!standings) return;
-  // Per-division win maxima in one pass — the standings map is flat across
-  // divisions, so "the lead" only means anything per division.
-  const divisionMax = new Map<Division, number>();
-  for (const [rid, rec] of standings) {
-    const rr = world.rikishi.get(rid);
-    if (!rr?.division) continue;
-    if (rec.wins > (divisionMax.get(rr.division) ?? 0)) {
-      divisionMax.set(rr.division, rec.wins);
-    }
-  }
+  // sibling sits atop a DIFFERENT division's table. Per-division maxima
+  // live in the shared helper (W Z — reused by the interview question).
   let emitted = false;
   for (const focal of [east, west]) {
-    const sibId = focal.siblingIds?.[0];
-    if (!sibId) continue;
-    const sib = world.rikishi.get(sibId);
-    if (!sib || sib.division === focal.division) continue;
-    const sibWins = standings.get(sibId)?.wins ?? sib.currentBashoWins ?? 0;
-    if (sibWins === 0) continue;
-    if (sibWins < (divisionMax.get(sib.division) ?? 0)) continue;
+    const lead = findDivisionLeadingSibling(world, focal);
+    if (!lead) continue;
+    const { sibling: sib, wins: sibWins } = lead;
     push(
       BardEngine.resolve(preBoutRng, "pre_bout.sibling_lead", {
         SHIKONA: focal.shikona,
@@ -1122,6 +1135,189 @@ function beatProvenGiantKiller(p: PbpPipeline): void {
   }
 }
 
+/** W Z — pre-bout title framing: defending champion, back-to-back bid, or first-title bid. */
+function beatTitlePedigree(p: PbpPipeline): void {
+  const { day, east, preBoutRng, push, west, world } = p;
+  // W Z — title-race pedigree: "one man has six yusho looking to go
+  // back-to-back, the other still looking for his first". Single-rikishi
+  // contention is measured against the division lead (isYushoContention is
+  // a both-sides predicate — not applicable here). One line per bout.
+  const basho = world.currentBasho;
+  for (const r of [east, west]) {
+    const wins = r.currentBashoWins ?? 0;
+    const inWindow =
+      basho != null && getLeaderWins(basho, world, r.division) - wins <= CONTENTION_WINDOW;
+    const yusho = r.careerRecord?.yusho ?? 0;
+    if (inWindow && (r.consecutiveYusho ?? 0) >= 1) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.title_defense", {
+          SHIKONA: r.shikona,
+          YUSHO_COUNT: yusho.toString(),
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["title_stakes", "yusho_race"]
+      );
+      return;
+    }
+    if (inWindow && yusho === 0) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.first_title_bid", {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["title_stakes", "yusho_race"]
+      );
+      return;
+    }
+    // "He has a yusho to his name — the experience is there": former
+    // champion off the pace late in the basho.
+    if (!inWindow && yusho >= 1 && day >= SANYAKU_RETENTION_MIN_DAY) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.former_champion", {
+          SHIKONA: r.shikona,
+          YUSHO_COUNT: yusho.toString(),
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["title_stakes"]
+      );
+      return;
+    }
+  }
+}
+
+/** W Z — pre-bout note when a rikishi is one win from a round-hundred career makuuchi wins milestone. */
+function beatMakuuchiWinMilestone(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W Z — top-division WIN count hitting a round hundred (Daieisho's 500th
+  // makuuchi win) — sibling of the bouts variant in beatMakuuchiBoutMilestone.
+  for (const r of [east, west]) {
+    const next = (r.divisionRecords?.makuuchi?.wins ?? 0) + 1;
+    if (next >= 100 && next % 100 === 0) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.makuuchi_win_milestone", {
+          SHIKONA: r.shikona,
+          MILESTONE: next.toString(),
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["milestone", "makuuchi_milestone"]
+      );
+    }
+  }
+}
+
+/** W Z — pre-bout note when a lower-sanyaku rikishi is trending toward demotion late in the basho. */
+function beatSanyakuRetention(p: PbpPipeline): void {
+  const { day, east, preBoutRng, push, west } = p;
+  // W Z — "desperate to cling to his sekiwake status": a komusubi/sekiwake
+  // whose hold on the named ranks is slipping — already make-koshi, or
+  // deep in losses late in the basho. Distinct from beatDemotionWatch
+  // (maegashira-floor logic) and beatSanyakuArcs (skips current sanyaku).
+  for (const r of [east, west]) {
+    if (!isLowerSanyakuRank(r.rank ?? "")) continue;
+    const wins = r.currentBashoWins ?? 0;
+    const losses = r.currentBashoLosses ?? 0;
+    const mk = isMakeKoshi(wins, losses, r.rank);
+    const trending = losses >= SANYAKU_RETENTION_LOSS_MIN && day >= SANYAKU_RETENTION_MIN_DAY;
+    if (!mk && !trending) continue;
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.sanyaku_retention", {
+        SHIKONA: r.shikona,
+        RANK: getRankDisplayEntry(r.rank ?? "")?.en ?? r.rank ?? "",
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["sanyaku_retention", "make_koshi"]
+    );
+    break;
+  }
+}
+
+/** W Z — pairing style beats: mirror grips, same debut class, feast-or-famine giant killers. */
+function beatPairingFramings(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W Z — pairing framings: opposite preferred grips ("opposite stances on
+  // the belt"), debut classmates ("turned pro together"), and feast-or-
+  // famine giant-killers on middling records.
+  const eGrip = east.combatProfile?.preferredGrip;
+  const wGrip = west.combatProfile?.preferredGrip;
+  if (eGrip && wGrip && eGrip !== "none" && wGrip !== "none" && eGrip !== wGrip) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.mirror_grips", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["mirror_grips"]
+    );
+  }
+  // Debut classmates — equal defined debutYear across different heyas;
+  // "made the top division together" variant when the first makuuchi
+  // career-history entries share basho + year. Never on dual-undefined.
+  if (
+    east.debutYear !== undefined &&
+    east.debutYear === west.debutYear &&
+    east.heyaId !== west.heyaId
+  ) {
+    const eMakuuchi = (east.careerHistory ?? []).find((s) => s.division === "makuuchi");
+    const wMakuuchi = (west.careerHistory ?? []).find((s) => s.division === "makuuchi");
+    const samePromotion =
+      eMakuuchi != null &&
+      wMakuuchi != null &&
+      eMakuuchi.bashoName === wMakuuchi.bashoName &&
+      eMakuuchi.year === wMakuuchi.year;
+    push(
+      BardEngine.resolve(
+        preBoutRng,
+        samePromotion ? "pre_bout.same_class_top_division" : "pre_bout.same_class",
+        {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          YEAR: east.debutYear.toString(),
+          BASHO: samePromotion
+            ? `${BASHO_NAMES[eMakuuchi.bashoName] ?? eMakuuchi.bashoName} ${eMakuuchi.year}`
+            : "",
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }
+      ).text,
+      "pre_bout",
+      ["same_class"]
+    );
+  }
+  // Feast-or-famine: both hold elite scalps (kin/ginboshi) yet neither
+  // carries a winning record into this bout — "capable of beating the
+  // best, and losing to rank-and-filers".
+  const eScalps =
+    (east.stats?.achievements?.kinboshiEarned ?? 0) +
+    (east.stats?.achievements?.ginboshiEarned ?? 0);
+  const wScalps =
+    (west.stats?.achievements?.kinboshiEarned ?? 0) +
+    (west.stats?.achievements?.ginboshiEarned ?? 0);
+  if (
+    eScalps >= 1 &&
+    wScalps >= 1 &&
+    (east.currentBashoWins ?? 0) <= (east.currentBashoLosses ?? 0) &&
+    (west.currentBashoWins ?? 0) <= (west.currentBashoLosses ?? 0)
+  ) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.feast_famine", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["feast_famine"]
+    );
+  }
+}
+
 export function narrateStakes(p: PbpPipeline): void {
   beatHometown(p);
   beatSignatureGrip(p);
@@ -1129,17 +1325,21 @@ export function narrateStakes(p: PbpPipeline): void {
   beatMeetingMilestone(p);
   beatFirstTopDivisionMeeting(p);
   beatSanyakuArcs(p);
+  beatSanyakuRetention(p);
   beatIronMan(p);
   beatOldestDivision(p);
   beatMakuuchiBoutMilestone(p);
+  beatMakuuchiWinMilestone(p);
   beatOriginFirst(p);
   beatGripPreview(p);
   beatOneKimariteStreak(p);
   beatBonds(p);
+  beatPairingFramings(p);
   beatBirthday(p);
   beatWinlessFirstWin(p);
   beatTournamentDay(p);
   beatTitleStakes(p);
+  beatTitlePedigree(p);
   beatLeaderboard(p);
   beatCoLeader(p);
   beatOzekiShowdown(p);

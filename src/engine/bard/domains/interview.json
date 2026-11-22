@@ -182,6 +182,11 @@
       "With the tournament entering its final days, what will you focus on?",
       "Just days remain in this basho. How do you want to finish?"
     ],
+    "sibling_lead": [
+      "Your brother %SIBLING% is at the top of the %SIBLING_DIVISION% leaderboard too — does the family success drive you?",
+      "It's not just you — your brother is also leading his division. Is there a quiet race between you two?",
+      "The family is having quite a basho — your brother tops %SIBLING_DIVISION% as well. How proud are you?"
+    ],
     "win_streak": [
       "You've won several consecutive bouts in this stretch — how would you evaluate your performance?",
       "You're riding a winning streak right now. What's clicking for you?",

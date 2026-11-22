@@ -6,6 +6,7 @@ import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
 import type { PbpPhase, PbpTag } from "@/engine/bout/narrative/pbpTypes";
 import {
   NARRATIVE_DEPTH_CHANGE_CHANCE,
+  NARRATIVE_MUTUAL_CONSENT_CHANCE,
   NARRATIVE_TECHNIQUE_CHANCE,
   NARRATIVE_LOW_RECOVERY_THRESHOLD,
   NARRATIVE_STAMINA_CHANCE,
@@ -202,11 +203,30 @@ function handleTachiaiFrame(s: FrameState, entry: BoutLogEntry, rng: SeededRNG):
         defenderId: defender.id,
       });
       push(tacRes.text, "tactical", ["henka"]);
+    } else if (entry.data?.event === "matta") {
+      // W Z — the false start was logged by physics but narrated as an
+      // ordinary tachiai; give the reset its own line.
+      push(
+        BardEngine.resolve(rng, "combat.phases.tachiai.matta", {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "tachiai"
+      );
     } else {
       const margin = (entry.data?.margin as number) ?? 0;
       const winnerSide = entry.data?.tachiaiWinner === "west" ? west : east;
       const loserSide = entry.data?.tachiaiWinner === "west" ? east : west;
-      const res = BardEngine.resolve(rng, "combat.phases.tachiai", {
+      // W Z — "they go on mutual consent": rare broadcast flavor replacing
+      // the ordinary tachiai line on a seeded roll.
+      const tachiaiPath =
+        rng.next() < NARRATIVE_MUTUAL_CONSENT_CHANCE &&
+        BardEngine.has("combat.phases.tachiai.mutual_consent")
+          ? "combat.phases.tachiai.mutual_consent"
+          : "combat.phases.tachiai";
+      const res = BardEngine.resolve(rng, tachiaiPath, {
         east: east.shikona,
         west: west.shikona,
         winner: winnerSide.shikona,

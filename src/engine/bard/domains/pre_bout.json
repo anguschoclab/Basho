@@ -641,6 +641,56 @@
     "Both men carry the pride of %ORIGIN%: %EAST% and %WEST% renew a hometown showdown far from home.",
     "%EAST% versus %WEST% — two proud %ORIGIN% natives meeting head-to-head on the big stage."
   ],
+  "shared_origin": [
+    "The %ORIGIN% connection — both %EAST% and %WEST% fly the same flag far from home.",
+    "%EAST% versus %WEST% — a special day for %ORIGIN% supporters as two countrymen collide.",
+    "Two men of %ORIGIN% meet on the dohyo: %EAST% and %WEST% each carry their homeland's pride."
+  ],
+  "title_defense": [
+    "%SHIKONA% is chasing back-to-back titles — a %YUSHO_COUNT%-time champion still very much in the hunt.",
+    "The defending champion %SHIKONA% eyes a repeat — the lead is within reach today.",
+    "Back-to-back championships are on the mind of %SHIKONA% — a %YUSHO_COUNT%-time yusho winner still in the race."
+  ],
+  "first_title_bid": [
+    "%SHIKONA% is still chasing his first career yusho — and the door is open this tournament.",
+    "Still seeking a first title — no yusho on the resume yet for %SHIKONA%, but the leaderboard says this could be the basho.",
+    "A first championship bid for %SHIKONA% — he is right there in the hunt."
+  ],
+  "former_champion": [
+    "%SHIKONA% has a yusho to his name — the experience is there even if the race is not his this time.",
+    "A former champion, %SHIKONA% knows what it takes to lift the Emperor's Cup.",
+    "%SHIKONA% may be off the pace, but a %YUSHO_COUNT%-time champion is never to be taken lightly."
+  ],
+  "makuuchi_win_milestone": [
+    "A landmark looms for %SHIKONA% — this would be career win number %MILESTONE% in the top division.",
+    "%MILESTONE% top-division wins, one away for %SHIKONA%. A piece of history on the line today.",
+    "One win from a milestone %MILESTONE% victories in makuuchi for the veteran %SHIKONA%."
+  ],
+  "sanyaku_retention": [
+    "%SHIKONA% is desperate to cling to his sanyaku status — there is no room for further setbacks.",
+    "The sanyaku seat is slipping for %SHIKONA% — he needs wins now to stay among the named ranks.",
+    "No room for error for %SHIKONA% — a few more losses and sanyaku membership is gone."
+  ],
+  "mirror_grips": [
+    "%EAST% prefers the right-inside, %WEST% the left — opposite stances on the belt today.",
+    "A mirror match-up on the mawashi: %EAST% and %WEST% favor opposite inside grips.",
+    "They prefer opposite stances on the belt — grip position will be contested from the tachi-ai."
+  ],
+  "same_class": [
+    "Same graduating class: %EAST% and %WEST% turned pro together in %YEAR%.",
+    "%EAST% and %WEST% debuted side by side in %YEAR% — old rivals from the same intake.",
+    "These two go way back — %EAST% and %WEST% joined the sport together in %YEAR%."
+  ],
+  "same_class_top_division": [
+    "%EAST% and %WEST% came up through the ranks together — both reached the top division in %BASHO%.",
+    "From the same debut class to the same makuuchi promotion in %BASHO% — %EAST% and %WEST% know each other well.",
+    "%EAST% and %WEST% made the top division together in %BASHO% — careers intertwined from the start."
+  ],
+  "feast_famine": [
+    "Both %EAST% and %WEST% have beaten the best — and both can lose to anyone on a given day.",
+    "Giant-killers collide: %EAST% and %WEST% hold elite scalps but sit on middling records.",
+    "%EAST% and %WEST% — capable of stunning the greats, capable of stumbling against the rank-and-file."
+  ],
   "proven_giant_killer": [
     "At just %AGE%, %SHIKONA% has already proven he can take down a Yokozuna, and there is still plenty of untapped potential.",
     "Don't let the youth fool you — %AGE%-year-old %SHIKONA% owns a kinboshi and carries real upside into every matchup.",

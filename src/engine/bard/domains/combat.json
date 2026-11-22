@@ -52,6 +52,16 @@
         "HENKA! %ATTACKER% sidesteps the charge and the crowd erupts!",
         "A sudden evasion! %ATTACKER% redirects the momentum, leaving %DEFENDER% to tumble past.",
         "Technical surprise — %ATTACKER% slips the hit and the hall gasps."
+      ],
+      "matta": [
+        "MATTA — a false start. They reset and go again.",
+        "A false start — one man jumped early. The gyoji calls them back to reset.",
+        "Matta! They didn't sync up — the gyoji sends them back to their marks."
+      ],
+      "mutual_consent": [
+        "They go on mutual consent — no waiting for the gyoji's fan, both men explode forward.",
+        "Mutual consent from both men — they didn't wait for the gunbai, and the crowd loves it.",
+        "No formal start needed — mutual consent, and they're off!"
       ]
     },
     "clinch": {
@@ -180,7 +190,8 @@
       "minor": [
         "%NAME% winces — that landing looked awkward. He's favoring his %AREA%.",
         "A grimace from %NAME% as he lands hard. The %AREA% took the brunt of it.",
-        "%NAME% clutches his %AREA% — the crowd murmurs with concern."
+        "%NAME% clutches his %AREA% — the crowd murmurs with concern.",
+        "%NAME% is bleeding above the eye — a cut from that collision, but he seems unfazed."
       ],
       "moderate": [
         "%NAME% is hurt! He's clutching his %AREA% after that brutal exchange.",

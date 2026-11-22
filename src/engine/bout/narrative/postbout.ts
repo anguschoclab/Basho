@@ -18,10 +18,12 @@ import {
   BEST_START_MIN_HISTORY,
   EDGE_LETDOWN_MIN_FAILED,
   FOLLOWUP_MIN_LETDOWNS,
+  GRIP_CONCEDED_MIN_BOUTS,
   H2H_HOODOO_MIN_LOSSES,
   KACHI_DROUGHT_MIN_BASHO,
   LOSING_SKID_MIN,
   NARRATIVE_GYOJI_CONFUSED_CHANCE,
+  VERSATILE_KIMARITE_MIN,
   OLDEST_KACHI_KOSHI_MIN_AGE,
   PHASE_TWO_MIN,
   PULL_CHARM_MIN_ABSORB,
@@ -33,6 +35,7 @@ import {
 import { CONTENTION_WINDOW, LEAPING_HENKA_SPEED } from "@/constants/engine/physics";
 import { HAIR_DOWN_LOSS_CHANCE, HAIR_DOWN_UPRIGHT_KIMARITE } from "@/constants/engine/bout";
 import { getLeaderWins } from "@/engine/bout/boutContention";
+import { getKimarite } from "@/engine/bout/kimarite/kimariteRegistry";
 import { isPullStyleKimarite } from "@/engine/bout/ReplayMetadata";
 import { isLowerBodyArea } from "@/engine/health/BodyDefinitions";
 import { isKachiKoshi, isMakeKoshi, kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
@@ -41,6 +44,7 @@ import { KINJITE_FOUL_LABELS } from "@/engine/bout/kinjite";
 import { rngFromSeed } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
+import { BASHO_NAMES } from "@/constants/ui/calendar";
 import { getRankDisplayEntry, isSanyakuRank } from "@/constants/engine/rankDisplay";
 import type { BoutTactic } from "@/engine/types/combat";
 
@@ -466,13 +470,36 @@ function beatSpoilerStrike(p: PbpPipeline): void {
   if (loserLeader - loserWins > CONTENTION_WINDOW) return;
   const winnerLeader = getLeaderWins(basho, world, winnerRikishi.division);
   if (winnerLeader - (winnerWins + 1) <= CONTENTION_WINDOW) return;
+  // W Z — "could be the spoiler in back-to-back days": the winner's
+  // immediately previous-day victim was also a contender in his division.
+  const bashoId = basho.id ?? `${basho.bashoName}-${world.year}`;
+  const history = winnerRikishi.history ?? [];
+  const lastEntry = history[history.length - 1];
+  const prevOpp = lastEntry ? world.rikishi.get(lastEntry.opponentId) : undefined;
+  const prevOppWins = prevOpp
+    ? (basho.standings.get(prevOpp.id)?.wins ?? prevOpp.currentBashoWins ?? 0)
+    : 0;
+  const repeatSpoiler =
+    lastEntry != null &&
+    lastEntry.bashoId === bashoId &&
+    lastEntry.day === day - 1 &&
+    lastEntry.win &&
+    !lastEntry.draw &&
+    prevOpp != null &&
+    getLeaderWins(basho, world, prevOpp.division) - prevOppWins <= CONTENTION_WINDOW;
   push(
-    BardEngine.resolve(postBoutRng, "post_bout.storylines.spoiler_strike", {
-      WINNER: winnerRikishi.shikona,
-      LOSER: loserRikishi.shikona,
-      winnerId: winnerRikishi.id,
-      loserId: loserRikishi.id,
-    }).text,
+    BardEngine.resolve(
+      postBoutRng,
+      repeatSpoiler
+        ? "post_bout.storylines.spoiler_strike_again"
+        : "post_bout.storylines.spoiler_strike",
+      {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }
+    ).text,
     "post_bout",
     ["spoiler", "yusho_race"]
   );
@@ -1686,6 +1713,221 @@ function beatRankPride(p: PbpPipeline): void {
   );
 }
 
+/** W Z — callout for rare/legendary kimarite finishes; silent for common/uncommon. */
+function beatRareTechnique(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
+  // W Z — "a relatively rare technique": call out uncommon finishes via
+  // the registry's real-world share label (rare / legendary tiers).
+  const rarity = getKimarite(result.kimarite ?? "")?.rarity;
+  if (rarity !== "rare" && rarity !== "legendary") return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.rare_technique", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      KIMARITE: result.kimariteName ?? result.kimarite,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["rare_technique"]
+  );
+}
+
+/** W Z — recalls prior H2H finishes: deja-vu repeat technique or 'done the research' adaptation. */
+function beatH2HFinishRecall(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
+  // W Z — finish recall vs this opponent: deja-vu when today's kimarite
+  // already beat this man before (playoff-recall variant when a career
+  // highlight names him), or "a bit of research done" when prior wins
+  // over him span distinct techniques. Draws don't count as wins.
+  const priorWins = (winnerRikishi.history ?? []).filter(
+    (h) => h.opponentId === loserRikishi.id && h.win && !h.draw
+  );
+  if (priorWins.length === 0) return;
+  if (priorWins.some((h) => h.kimarite === result.kimarite)) {
+    const playoffRecall = (winnerRikishi.careerHighlights ?? []).some(
+      (c) => c.type === "playoff_win" && c.opponent === loserRikishi.id
+    );
+    push(
+      BardEngine.resolve(
+        postBoutRng,
+        playoffRecall ? "post_bout.deja_vu_playoff" : "post_bout.deja_vu",
+        {
+          WINNER: winnerRikishi.shikona,
+          LOSER: loserRikishi.shikona,
+          KIMARITE: result.kimariteName ?? result.kimarite,
+          winnerId: winnerRikishi.id,
+          loserId: loserRikishi.id,
+        }
+      ).text,
+      "post_bout",
+      ["deja_vu", "rivalry"]
+    );
+    return;
+  }
+  const distinct = new Set(priorWins.map((h) => h.kimarite));
+  if (distinct.size >= 2) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.h2h_adaptation", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "post_bout",
+      ["h2h_adaptation", "rivalry"]
+    );
+  }
+}
+
+/** W Z — post-bout note when the winner reaches double-digit wins ('first since' variant after a drought). */
+function beatDoubleDigit(p: PbpPipeline): void {
+  const { postBoutRng, push, winnerRikishi, winnerWins } = p;
+  // W Z — "secure a double-digit report card": the 10th win of the basho.
+  // "First since %BASHO%" only when the immediately previous tournament
+  // fell short of ten — consecutive double-figure bashos stay on the
+  // plain line.
+  if (winnerWins + 1 !== 10) return;
+  const history = winnerRikishi.careerHistory ?? [];
+  const prev = history[history.length - 1];
+  const lastDoubleDigit = [...history].reverse().find((s) => s.wins >= 10);
+  const sinceVariant = prev != null && prev.wins < 10 && lastDoubleDigit != null;
+  push(
+    BardEngine.resolve(
+      postBoutRng,
+      sinceVariant ? "post_bout.double_digit_since" : "post_bout.double_digit",
+      {
+        WINNER: winnerRikishi.shikona,
+        WINS: (winnerWins + 1).toString(),
+        BASHO: sinceVariant
+          ? `${BASHO_NAMES[lastDoubleDigit.bashoName] ?? lastDoubleDigit.bashoName} ${lastDoubleDigit.year}`
+          : "",
+        winnerId: winnerRikishi.id,
+      }
+    ).text,
+    "post_bout",
+    ["double_digit", "milestone"]
+  );
+}
+
+/** W Z — post-bout note when an ozeki stays kadoban despite the win (demotion decided next basho). */
+function beatKadobanPending(p: PbpPipeline): void {
+  const { loserLosses, loserRikishi, loserWins, postBoutRng, push } = p;
+  // W Z — "suffers make-koshi — will be kadoban next tournament": an ozeki
+  // whose eighth loss today guarantees kadoban status going forward.
+  if (loserRikishi.rank !== "ozeki") return;
+  if (!isMakeKoshi(loserWins, loserLosses + 1, "ozeki")) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.kadoban_pending", {
+      LOSER: loserRikishi.shikona,
+      LOSSES: (loserLosses + 1).toString(),
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["kadoban", "kadoban_pending", "make_koshi"]
+  );
+}
+
+/** W Z — loser's declared grip never materialized; 'did his homework' variant when winner previously lost this H2H. */
+function beatGripConceded(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi, world } = p;
+  // W Z — "got his favorite grip — no opposition in denying those grips":
+  // the loser declared a preferred grip but never secured it. "Did his
+  // homework" variant when the winner lost the previous meeting; habitual
+  // variant when the metrics show a tournament-long denial.
+  const loserSide = result.winner === "east" ? "west" : "east";
+  const pref = loserRikishi.combatProfile?.preferredGrip;
+  if (pref !== "migi" && pref !== "hidari") return;
+  if (result.gripSecured?.[loserSide] !== false) return;
+  const mutual = (winnerRikishi.history ?? []).filter(
+    (h) => h.opponentId === loserRikishi.id
+  );
+  const lastMeeting = mutual[mutual.length - 1];
+  let path = "post_bout.grip_conceded";
+  if (lastMeeting && !lastMeeting.win && !lastMeeting.draw) {
+    path = "post_bout.grip_conceded_homework";
+  } else {
+    const m = world?.currentBasho?.boutMetrics?.[loserRikishi.id];
+    if (
+      (m?.preferredGripBouts ?? 0) >= GRIP_CONCEDED_MIN_BOUTS &&
+      (m?.preferredGripSecured ?? 0) === 0
+    ) {
+      path = "post_bout.grip_conceded_habitual";
+    }
+  }
+  push(
+    BardEngine.resolve(postBoutRng, path, {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["grip_conceded", "grip_denied"]
+  );
+}
+
+/** W Z — winner has won with >= VERSATILE_KIMARITE_MIN distinct techniques this basho. */
+function beatVersatileKimarite(p: PbpPipeline): void {
+  const { postBoutRng, push, result, winnerRikishi, world } = p;
+  // W Z — "the versatile Hoshoryu": a different technique every night.
+  // boutMetrics is pre-bout, so today's finish joins the tally here.
+  const used = world?.currentBasho?.boutMetrics?.[winnerRikishi.id]?.kimariteUsed;
+  const distinct = new Set(Object.keys(used ?? {}));
+  if (result.kimarite) distinct.add(result.kimarite);
+  if (distinct.size < VERSATILE_KIMARITE_MIN) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.versatile_kimarite", {
+      WINNER: winnerRikishi.shikona,
+      winnerId: winnerRikishi.id,
+    }).text,
+    "post_bout",
+    ["versatile_kimarite"]
+  );
+}
+
+/** W Z — gyoji's call stood with hair down and no mono-ii; emits the dormant `close_call` tag. */
+function beatCleanCall(p: PbpPipeline): void {
+  const { loserRikishi, postBoutRng, push, result, winnerRikishi } = p;
+  // W Z — "the judges saw no need to confer": a down-type finish (hair
+  // counted as down) decided cleanly with no mono-ii. Finally emits the
+  // dormant `close_call` tag. Must run after beatHairDown — that beat is
+  // what sets `result.hairDown` on this bout.
+  if (result.monoii || result.hairDown !== true) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.clean_call", {
+      WINNER: winnerRikishi.shikona,
+      LOSER: loserRikishi.shikona,
+      winnerId: winnerRikishi.id,
+      loserId: loserRikishi.id,
+    }).text,
+    "post_bout",
+    ["close_call"]
+  );
+}
+
+/** W Z — winner fought on bloodied: fires only when a winner-side minor bout_injury log entry exists. */
+function beatBloodiedUnfazed(p: PbpPipeline): void {
+  const { postBoutRng, push, result, winnerRikishi } = p;
+  // W Z — "bleeding just above the right eye, seems unfazed": a minor
+  // in-bout injury on the WINNER's side that never slowed him down.
+  const bled = (result.log ?? []).some(
+    (e) =>
+      e.phase === "bout_injury" &&
+      e.data?.rikishiId === winnerRikishi.id &&
+      (e.data?.severity ?? "minor") === "minor"
+  );
+  if (!bled) return;
+  push(
+    BardEngine.resolve(postBoutRng, "post_bout.bloodied_unfazed", {
+      WINNER: winnerRikishi.shikona,
+      winnerId: winnerRikishi.id,
+    }).text,
+    "post_bout",
+    ["injury"]
+  );
+}
+
 export function narrateAftermath(p: PbpPipeline): void {
   if (p.result.isDraw) {
     beatPostBoutInjury(p);
@@ -1693,6 +1935,12 @@ export function narrateAftermath(p: PbpPipeline): void {
     return;
   }
   beatPostBoutYushoRace(p);
+  beatRareTechnique(p);
+  beatH2HFinishRecall(p);
+  beatDoubleDigit(p);
+  beatKadobanPending(p);
+  beatGripConceded(p);
+  beatVersatileKimarite(p);
   beatSignatureGripAftermath(p);
   beatSanyakuWinStreak(p);
   beatHenkaDignity(p);
@@ -1705,6 +1953,7 @@ export function narrateAftermath(p: PbpPipeline): void {
   beatBestStart(p);
   beatEliteScalpStreak(p);
   beatHairDown(p);
+  beatCleanCall(p);
   beatFollowupDelivered(p);
   beatEdgeLetdown(p);
   beatPostBoutLeaderboard(p);
@@ -1717,6 +1966,7 @@ export function narrateAftermath(p: PbpPipeline): void {
   beatRankPride(p);
   beatPostBoutUpset(p);
   beatComebackWin(p);
+  beatBloodiedUnfazed(p);
   beatPostBoutRivalry(p);
   beatKenshoEconomic(p);
   beatAgeDecline(p);

@@ -265,3 +265,21 @@ export const COLLAPSE_REBOUND_MIN_WINS = 5;
 
 /** W Q — earliest day two unbeatens get the dream-showdown framing. */
 export const DREAM_SHOWDOWN_MIN_DAY = 12;
+
+// ─── W Z — Days-13/14 Kyushu transcript beats ───────────────────────────────
+
+/** W Z — seeded chance of the "mutual consent" tachiai flavor line. */
+export const NARRATIVE_MUTUAL_CONSENT_CHANCE = 0.04;
+
+/** W Z — distinct techniques (including today's finish) that earn the
+ *  "versatile finisher" post-bout beat. */
+export const VERSATILE_KIMARITE_MIN = 4;
+
+/** W Z — losses (from SANYAKU_RETENTION_MIN_DAY onward) that put a
+ *  komusubi/sekiwake's named-rank seat in jeopardy. */
+export const SANYAKU_RETENTION_LOSS_MIN = 6;
+export const SANYAKU_RETENTION_MIN_DAY = 10;
+
+/** W Z — preferred-grip bouts with zero secured that mark a habitual
+ *  grip denial for the grip_conceded beat. */
+export const GRIP_CONCEDED_MIN_BOUTS = 3;

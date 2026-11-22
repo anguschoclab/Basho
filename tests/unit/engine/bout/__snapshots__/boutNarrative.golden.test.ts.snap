@@ -141,7 +141,7 @@ exports[`generateBoutNarrative — golden master > 7-7 pressure both sides 1`] =
     "id": "gm-bout-tachiai-16",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "dramatic",
   },
   {
@@ -312,7 +312,7 @@ exports[`generateBoutNarrative — golden master > different seeds produce diffe
     "id": "gm-bout-tachiai-9",
     "phase": "tachiai",
     "tags": [],
-    "text": "The fan drops. A commanding tachi from both men.",
+    "text": "Bang! [[rikishi:r-east:Wrestler-r-east]] wins the tachi — a technical hit!",
     "voice": "understated",
   },
   {
@@ -454,7 +454,7 @@ exports[`generateBoutNarrative — golden master > different seeds produce diffe
     "id": "gm-bout-tachiai-11",
     "phase": "tachiai",
     "tags": [],
-    "text": "A commanding charge at the tachi. Straight into the grind.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "understated",
   },
   {
@@ -615,7 +615,7 @@ exports[`generateBoutNarrative — golden master > final day senshuraku 1`] = `
     "id": "gm-bout-tachiai-13",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "dramatic",
   },
   {
@@ -687,6 +687,16 @@ exports[`generateBoutNarrative — golden master > final day senshuraku 1`] = `
   },
   {
     "id": "gm-bout-post_bout-23",
+    "phase": "post_bout",
+    "tags": [
+      "double_digit",
+      "milestone",
+    ],
+    "text": "Double figures for [[rikishi:r-east:Wrestler-r-east]] — a 10-win report card secured today.",
+    "voice": "dramatic",
+  },
+  {
+    "id": "gm-bout-post_bout-24",
     "phase": "post_bout",
     "tags": [
       "title_stakes",
@@ -784,7 +794,7 @@ exports[`generateBoutNarrative — golden master > in-bout injury narrative 1`] 
     "id": "gm-bout-tachiai-10",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "understated",
   },
   {
@@ -963,7 +973,7 @@ exports[`generateBoutNarrative — golden master > mid-basho day 8 with records 
     "id": "gm-bout-tachiai-12",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "formal",
   },
   {
@@ -1094,7 +1104,7 @@ exports[`generateBoutNarrative — golden master > minimal bout, day 1 1`] = `
     "id": "gm-bout-tachiai-9",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "understated",
   },
   {
@@ -1236,7 +1246,7 @@ exports[`generateBoutNarrative — golden master > multi-frame log coverage 1`] 
     "id": "gm-bout-tachiai-11",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-west:Wrestler-r-west]] drives the charge methodically.",
+    "text": "[[rikishi:r-west:Wrestler-r-west]] just wins into the opponent at the tachi!",
     "voice": "formal",
   },
   {
@@ -1413,7 +1423,7 @@ exports[`generateBoutNarrative — golden master > timeout bout 1`] = `
     "id": "gm-bout-tachiai-11",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "formal",
   },
   {
@@ -1564,7 +1574,7 @@ exports[`generateBoutNarrative — golden master > upset + kinboshi + kensho 1`]
     "id": "gm-bout-tachiai-12",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "dramatic",
   },
   {
@@ -1761,7 +1771,7 @@ exports[`generateBoutNarrative — golden master > winning streak callout 1`] = 
     "id": "gm-bout-tachiai-13",
     "phase": "tachiai",
     "tags": [],
-    "text": "They meet head-on. [[rikishi:r-east:Wrestler-r-east]] dictates the charge authoritatively.",
+    "text": "[[rikishi:r-east:Wrestler-r-east]] just neutralizes into the opponent at the tachi!",
     "voice": "dramatic",
   },
   {

@@ -4,8 +4,9 @@
  */
 import { rngFromSeed } from "@/engine/core/rng";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { Rank } from "@/engine/types/banzuke";
+import type { Division, Rank } from "@/engine/types/banzuke";
 import type { BoutResult } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { type VoiceStyle } from "@/engine/bard/narrativeContext";
 import {
@@ -57,6 +58,40 @@ export function countAlternatingRecords(
   return streak;
 }
 
+/**
+ * W Z — find a sibling who tops (or co-leads) a DIFFERENT division's
+ * standings. Shared by the pre-bout `sibling_lead` beat and the
+ * sibling-lead interview question; previously the per-division maxima
+ * loop lived inside `beatSiblingLead` alone.
+ *
+ * The standings map is flat across divisions, so "the lead" only means
+ * anything per division — computed here in a single pass.
+ */
+export function findDivisionLeadingSibling(
+  world: Pick<WorldState, "currentBasho" | "rikishi">,
+  focal: Rikishi
+): { sibling: Rikishi; wins: number } | undefined {
+  const standings = world.currentBasho?.standings;
+  if (!standings) return undefined;
+  const divisionMax = new Map<Division, number>();
+  for (const [rid, rec] of standings) {
+    const rr = world.rikishi.get(rid);
+    if (!rr?.division) continue;
+    if (rec.wins > (divisionMax.get(rr.division) ?? 0)) {
+      divisionMax.set(rr.division, rec.wins);
+    }
+  }
+  for (const sibId of focal.siblingIds ?? []) {
+    const sib = world.rikishi.get(sibId);
+    if (!sib || sib.division === focal.division) continue;
+    const sibWins = standings.get(sibId)?.wins ?? sib.currentBashoWins ?? 0;
+    if (sibWins === 0) continue;
+    if (sibWins < (divisionMax.get(sib.division) ?? 0)) continue;
+    return { sibling: sib, wins: sibWins };
+  }
+  return undefined;
+}
+
 const SUB_JURYO_DIVISIONS = new Set(["makushita", "sandanme", "jonidan", "jonokuchi"]);
 
 /** W P — career history shows a sanyaku stint followed by a sub-juryo trough. */
@@ -86,6 +121,7 @@ export function focusBiasToStyleKey(focusBias: string): string | undefined {
   return FOCUS_BIAS_TO_STYLE[focusBias];
 }
 
+/** Lower-sanyaku ranks that sit just below ozeki (sekiwake/komusubi). */
 export const SANYAKU_RANKS: readonly Rank[] = ["sekiwake", "komusubi"];
 
 export function isSanyakuPromotionByRank(currentRank: Rank, prevRank: Rank): boolean {

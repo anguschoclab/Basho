@@ -148,6 +148,18 @@ export type PbpTag =
   | "dream_showdown"
   | "stars_align"
   | "mizu_iri"
+  | "rare_technique"
+  | "mirror_grips"
+  | "same_class"
+  | "feast_famine"
+  | "grip_conceded"
+  | "versatile_kimarite"
+  | "shared_origin"
+  | "sanyaku_retention"
+  | "deja_vu"
+  | "h2h_adaptation"
+  | "double_digit"
+  | "kadoban_pending"
   | "draw";
 
 export type PbpLine = {

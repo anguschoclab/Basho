@@ -216,7 +216,7 @@ describe("Z3 — deja_vu / h2h_adaptation finish recall", () => {
 describe("Z7 — grip_conceded post-bout", () => {
   function pref(g: "migi" | "hidari" | "none") {
     return {
-      archetype: "all_rounder" as const,
+      archetype: "hybrid" as const,
       familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 },
       preferredGrip: g,
       preferredGripDepth: "standard" as const,

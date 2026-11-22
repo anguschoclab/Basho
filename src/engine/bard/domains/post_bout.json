@@ -158,12 +158,82 @@
       "The spoiler strikes again: %WINNER% trips up %LOSER% in the run-in.",
       "%WINNER% may be out of the race, but he just dented %LOSER%'s campaign."
     ],
+    "spoiler_strike_again": [
+      "%WINNER% could be the spoiler in back-to-back days — another contender cut down.",
+      "Back-to-back days, back-to-back contenders tripped up — %WINNER% is embracing the spoiler's role.",
+      "Two days, two contenders denied — %WINNER% has done it to %LOSER% today just like yesterday."
+    ],
     "best_start": [
       "%WINNER% is off to his best start in years — %WINS% wins already.",
       "This is the best start %WINNER% has had in a long time — %WINS% wins by day %DAY%.",
       "%WINS% wins and counting — %WINNER% hasn't opened a basho this well in years."
     ]
   },
+  "rare_technique": [
+    "A relatively rare technique — %KIMARITE%, you do not see that every day.",
+    "%KIMARITE% — a rare sight on the dohyo, and %WINNER% executed it beautifully.",
+    "That %KIMARITE% finish from %WINNER% is a collector's item — one of the rarest techniques in the book."
+  ],
+  "deja_vu": [
+    "Deja vu — the very same %KIMARITE% that has beaten %LOSER% before puts him away again.",
+    "%WINNER% reaches for the tried and true: %KIMARITE%, the move that downed %LOSER% last time too.",
+    "Same result, same technique — %WINNER% finishes %LOSER% with %KIMARITE% once more."
+  ],
+  "deja_vu_playoff": [
+    "The same %KIMARITE% he used in their playoff bout — %WINNER% goes back to what works against %LOSER%.",
+    "Playoff memories: %WINNER% finishes %LOSER% with the same %KIMARITE% that settled it last time.",
+    "%WINNER% used this exact %KIMARITE% against %LOSER% in a playoff — and it works again today."
+  ],
+  "h2h_adaptation": [
+    "A bit of research done — %WINNER% keeps finding new ways to beat %LOSER%.",
+    "%WINNER% has clearly worked out how to beat %LOSER% — a different finish every meeting.",
+    "The scouting report is paying off for %WINNER% — yet another way to put %LOSER% away."
+  ],
+  "double_digit": [
+    "Double figures for %WINNER% — a %WINS%-win report card secured today.",
+    "%WINNER% reaches double digits — a fine return for this tournament.",
+    "Win number %WINS% for %WINNER% — the double-digit mark is his."
+  ],
+  "double_digit_since": [
+    "%WINNER% reaches double figures for the first time since %BASHO% — a real return to form.",
+    "Back in double-digit territory: %WINNER%'s first ten-win basho since %BASHO%.",
+    "%WINNER% is back where he belongs — double digits for the first time since %BASHO%."
+  ],
+  "kadoban_pending": [
+    "Make-koshi for %LOSER% — the ozeki will be kadoban next tournament.",
+    "Loss number %LOSSES% for %LOSER% — kadoban status is now guaranteed.",
+    "The ozeki's worst fear confirmed: %LOSER% is make-koshi and heads into kadoban."
+  ],
+  "grip_conceded": [
+    "%LOSER% offered no resistance to the grip — his preferred hold was never close.",
+    "The grip went uncontested — %LOSER% never got anywhere near his favorite hold.",
+    "%WINNER% denied the grip with ease — %LOSER% never made it a contest."
+  ],
+  "grip_conceded_habitual": [
+    "Once again %LOSER% cannot secure his grip — it is becoming a real problem this tournament.",
+    "Same story all basho for %LOSER%: the grip he wants simply is not there.",
+    "%LOSER% has spent this tournament reaching for a grip that never arrives."
+  ],
+  "grip_conceded_homework": [
+    "%WINNER% did his homework — lessons learned from their last meeting, and %LOSER%'s grip was never allowed to develop.",
+    "%WINNER% figured him out — %LOSER% never got the grip he wanted this time around.",
+    "Research pays off: %WINNER% studied the last loss and shut %LOSER%'s grip down completely."
+  ],
+  "versatile_kimarite": [
+    "The versatile %WINNER% — a different technique every night this tournament.",
+    "What a toolbox %WINNER% is showing — yet another different way to finish.",
+    "%WINNER% pulls a new technique out of the bag again — the variety is remarkable."
+  ],
+  "clean_call": [
+    "The gyoji saw it clearly — down goes %LOSER%, no need for the judges to confer.",
+    "A clean call from the gyoji — %LOSER% was down, and there was nothing to discuss.",
+    "No mono-ii needed here — the gyoji's call on %LOSER% is beyond dispute."
+  ],
+  "bloodied_unfazed": [
+    "Bloodied but unfazed — %WINNER% fights on and takes the win.",
+    "A cut for %WINNER%, but it never troubled him — on to victory.",
+    "%WINNER% is bleeding, yet seems completely unfazed — he closes it out anyway."
+  ],
   "rivalry": {
     "domination": [
       "%WINNER% extends the dominance — now %WINNER_WINS%-%LOSER_WINS% in the series.",

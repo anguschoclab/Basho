@@ -6,6 +6,7 @@
 import type { PbpPipeline } from "@/engine/bout/narrative/pipeline";
 import {
   countMakuuchiTournaments,
+  findDivisionLeadingSibling,
   hasSanyakuToSubJuryoFall,
 } from "@/engine/bout/narrative/helpers";
 import { getLeaderWins } from "@/engine/bout/boutContention";
@@ -29,7 +30,7 @@ import {
 } from "@/constants/engine/narrative";
 import { CONTENTION_WINDOW } from "@/constants/engine/physics";
 import { isKachiKoshi, isMakeKoshi, kachiKoshiThreshold } from "@/engine/banzuke/banzukeHelpers";
-import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { isSanyakuRank, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed, type SeededRNG } from "@/engine/core/rng";
 
@@ -81,6 +82,17 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
       (isSanyakuRank(loserRikishi.rank ?? "") ? 1 : 0);
     if (sanyakuStreak >= 2 && BardEngine.has("interview.questions.sanyaku_streak")) {
       questionType = "sanyaku_streak";
+    } else if (
+      // W Z — "your little brother is at the top of the leaderboard in
+      // Juryo too": the specific sibling-lead question outranks the
+      // generic closing-days one.
+      world.currentBasho &&
+      getLeaderWins(world.currentBasho, world, winnerRikishi.division) - (winnerWins + 1) <=
+        CONTENTION_WINDOW &&
+      findDivisionLeadingSibling(world, winnerRikishi) &&
+      BardEngine.has("interview.questions.sibling_lead")
+    ) {
+      questionType = "sibling_lead";
     } else if (
       // W P — "only N days left": the leader/chaser question late in the basho.
       day >= CLOSING_DAYS_MIN &&
@@ -194,13 +206,18 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
 }
 
 function runInterviewLoop(p: PbpPipeline, setup: InterviewSetup): void {
-  const { day, loserRikishi, push, result, seed, winnerRikishi, winnerWins } = p;
+  const { day, loserRikishi, push, result, seed, winnerRikishi, winnerWins, world } = p;
   const { questionType, numQuestions } = setup;
   const persona = winnerRikishi.pressPersona ?? "neutral";
   const personaPath = `interview.${persona}`;
   const interviewPath = BardEngine.has(personaPath) ? personaPath : "interview.neutral";
   const questionPath = `interview.questions.${questionType}`;
   const hasQuestionTemplate = BardEngine.has(questionPath);
+  // W Z — sibling-lead questions carry the brother's name/division tokens.
+  const leadSibling =
+    questionType === "sibling_lead"
+      ? findDivisionLeadingSibling(world, winnerRikishi)
+      : undefined;
 
   for (let q = 0; q < numQuestions; q++) {
     const qRng = rngFromSeed(seed, "pbp", `interview-q${q}`);
@@ -216,6 +233,12 @@ function runInterviewLoop(p: PbpPipeline, setup: InterviewSetup): void {
           WINS: (winnerWins + 1).toString(),
           DAY: day.toString(),
           AGE: (result.winner === "east" ? p.eastAge : p.westAge).toString(),
+          SIBLING: leadSibling?.sibling.shikona ?? "",
+          SIBLING_DIVISION:
+            (leadSibling ? DIVISION_NAMES[leadSibling.sibling.division] : undefined) ??
+            leadSibling?.sibling.division ??
+            "",
+          SIBLING_WINS: (leadSibling?.wins ?? 0).toString(),
           rikishiId: winnerRikishi.id,
         }).text,
         "interview",

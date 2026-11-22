@@ -40,7 +40,7 @@ const allText = (r: BoutResult) => (r.pbpLines ?? []).map((l) => l.text).join("\
 
 function pref(g: "migi" | "hidari" | "none") {
   return {
-    archetype: "all_rounder" as const,
+    archetype: "hybrid" as const,
     familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 },
     preferredGrip: g,
     preferredGripDepth: "standard" as const,
@@ -288,12 +288,12 @@ describe("Z6 — mirror_grips / same_class / feast_famine", () => {
       specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
     };
     const east = mockRikishi("r-east", {
-      stats: { achievements },
+      stats: { ...mockRikishi("s").stats, achievements },
       currentBashoWins: 5,
       currentBashoLosses: 7,
     });
     const west = mockRikishi("r-west", {
-      stats: { achievements },
+      stats: { ...mockRikishi("s").stats, achievements },
       currentBashoWins: 6,
       currentBashoLosses: 7,
     });
@@ -312,14 +312,12 @@ describe("Z6 — mirror_grips / same_class / feast_famine", () => {
       specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
     };
     const east = mockRikishi("r-east", {
-      stats: { achievements: noScalp },
+      stats: { ...mockRikishi("s").stats, achievements: noScalp },
       currentBashoWins: 5,
       currentBashoLosses: 7,
     });
     const west = mockRikishi("r-west", {
-      stats: {
-        achievements: { ...noScalp, kinboshiEarned: 1 },
-      },
+      stats: { ...mockRikishi("s").stats, achievements: { ...noScalp, kinboshiEarned: 1 } },
       currentBashoWins: 6,
       currentBashoLosses: 7,
     });
@@ -328,14 +326,12 @@ describe("Z6 — mirror_grips / same_class / feast_famine", () => {
     expect(tagged(r1, "feast_famine")).toHaveLength(0);
 
     const winning = mockRikishi("r-west", {
-      stats: {
-        achievements: { ...noScalp, kinboshiEarned: 1 },
-      },
+      stats: { ...mockRikishi("s").stats, achievements: { ...noScalp, kinboshiEarned: 1 } },
       currentBashoWins: 9,
       currentBashoLosses: 4,
     });
     const east2 = mockRikishi("r-east", {
-      stats: { achievements: { ...noScalp, kinboshiEarned: 1 } },
+      stats: { ...mockRikishi("s").stats, achievements: { ...noScalp, kinboshiEarned: 1 } },
       currentBashoWins: 6,
       currentBashoLosses: 7,
     });
@@ -359,6 +355,8 @@ describe("Z8 — versatile_kimarite", () => {
       boutMetrics: {
         "r-east": {
           kimariteUsed: { oshidashi: 2, uwatenage: 1, hatakikomi: 1 },
+          upsetCount: 0, boutDurations: [], edgeCrisisSurvived: 0,
+          comebackWins: 0, opponentTiers: [],
         },
       },
     }) as BashoState;
@@ -375,7 +373,7 @@ describe("Z8 — versatile_kimarite", () => {
       bashoName: "kyushu",
       day: 14,
       standings: new Map(),
-      boutMetrics: { "r-east": { kimariteUsed: { oshidashi: 3 } } },
+      boutMetrics: { "r-east": { kimariteUsed: { oshidashi: 3 }, upsetCount: 0, boutDurations: [], edgeCrisisSurvived: 0, comebackWins: 0, opponentTiers: [] } },
     }) as BashoState;
     const world = makeBoutWorld(east, west, { currentBasho: basho }) as FullWorld;
     const result = narrate(east, west, world, makeBoutResult({ kimarite: "yorikiri" }));
@@ -443,6 +441,7 @@ describe("Z12 — spoiler_strike 'again' variant", () => {
     });
     // west is a contender (within window of the 12-2 leader)
     const west = mockRikishi("r-west", { currentBashoWins: 10, currentBashoLosses: 3 });
+    const leader = mockRikishi("leader", { division: "makuuchi" });
     const basho = MockFactory.createBasho({
       id: "kyushu-2026",
       bashoName: "kyushu",
@@ -456,6 +455,7 @@ describe("Z12 — spoiler_strike 'again' variant", () => {
     }) as BashoState;
     const world = makeBoutWorld(east, west, { currentBasho: basho }) as FullWorld;
     world.rikishi.set(prevOpp.id, prevOpp);
+    world.rikishi.set(leader.id, leader);
     const result = narrate(east, west, world);
     expect(allText(result)).toMatch(/back-to-back|again|another/i);
     expect(tagged(result, "spoiler").length).toBeGreaterThan(0);
