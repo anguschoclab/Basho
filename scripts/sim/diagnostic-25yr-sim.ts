@@ -17,6 +17,7 @@ import { writeFileSync } from "fs";
 import { join } from "path";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
+import { getExhibitionBashoSchedule } from "@/engine/basho/ExhibitionBashoService";
 
 const SEED = "sim-25yr-diagnostic-v1";
 const DEFAULT_YEARS = 25;
@@ -48,6 +49,24 @@ interface YearSnapshot {
   historicalTotal: number;
   /** WS6 — heyas holding more than one foreign-slot rikishi (canon §5.1). */
   foreignSlotViolations: string[];
+  // ── Realism-calibration metrics (JSA plan WS-1→14) ──────────────────────
+  /** WS-1 — share of active heyas holding ≥1 foreign-slot rikishi (~0.69 real). */
+  foreignOccupancy: number;
+  /** WS-1 — foreign rikishi total / sekitori / lower-division counts. */
+  foreignTotal: number;
+  foreignSekitori: number;
+  foreignLower: number;
+  /** WS-1 — Mongolian share of foreign rikishi (~0.74 real). */
+  mongolianShare: number;
+  /** WS-4c — mandated-absorption grandfathered foreign slots (Isegahama rule). */
+  grandfatheredForeignSlots: number;
+  /** WS-5 — heyas currently under disciplinary custody (azukari). */
+  heyaInCustody: number;
+  /** WS-5/6 — closures vs foundings this snapshot (equilibrium watch). */
+  closedHeyaCount: number;
+  branchedHeyaCount: number;
+  /** WS-14 — annual jungyō tour days (~90 pre-2027, ~70s post). */
+  jungyoTourDays: number;
   errors: string[];
 }
 
@@ -101,11 +120,43 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     }
   }
   const foreignSlotViolations: string[] = [];
+  const heyaById = new Map(heyas.map((h) => [h.id, h]));
   for (const [heyaId, n] of foreignByHeya) {
-    if (n > FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
-      foreignSlotViolations.push(`${heyaId}:${n}`);
+    const grandfathered =
+      (heyaById.get(heyaId) as { grandfatheredForeignCount?: number } | undefined)
+        ?.grandfatheredForeignCount ?? 0;
+    if (n > FOREIGN_RIKISHI_LIMIT_PER_HEYA + grandfathered) {
+      foreignSlotViolations.push(`${heyaId}:${n}(+${grandfathered})`);
     }
   }
+
+  // ── Realism-calibration metrics ──────────────────────────────────────────
+  const foreignHeyas = new Set(foreignByHeya.keys());
+  let foreignTotal = 0;
+  let foreignSekitori = 0;
+  let foreignLower = 0;
+  let mongolian = 0;
+  for (const r of active) {
+    if (!countsAsForeign(r, world.year)) continue;
+    foreignTotal++;
+    if (r.nationality === "Mongolia") mongolian++;
+    if (r.division === "makuuchi" || r.division === "juryo") foreignSekitori++;
+    else foreignLower++;
+  }
+  const grandfatheredForeignSlots = heyas.reduce(
+    (a, h) => a + ((h as { grandfatheredForeignCount?: number }).grandfatheredForeignCount ?? 0),
+    0
+  );
+  const heyaInCustody = heyas.filter(
+    (h) => (h as { custodyStatus?: unknown }).custodyStatus != null
+  ).length;
+  const closedHeyaCount = world.closedHeyas?.size ?? 0;
+  const branchedHeyaCount = heyas.filter((h) => h.branchedFromHeyaId != null).length;
+  // WS-14 — tourDays lands on schedule entries post-reform; absent ⇒ 0.
+  const jungyoTourDays = getExhibitionBashoSchedule(world.year).reduce(
+    (a, t) => a + ((t as { tourDays?: number }).tourDays ?? 0),
+    0
+  );
 
   return {
     year: world.year,
@@ -131,6 +182,16 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
         : 0) + allRikishi.filter((r) => r.isRetired).length,
     historicalTotal: world.historicalRikishi?.size ?? 0,
     foreignSlotViolations,
+    foreignOccupancy: heyas.length ? foreignHeyas.size / heyas.length : 0,
+    foreignTotal,
+    foreignSekitori,
+    foreignLower,
+    mongolianShare: foreignTotal ? mongolian / foreignTotal : 0,
+    grandfatheredForeignSlots,
+    heyaInCustody,
+    closedHeyaCount,
+    branchedHeyaCount,
+    jungyoTourDays,
     errors: [...errors],
   };
 }
@@ -153,6 +214,11 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
     issues.push(`WARN: ${snap.negativeHeyas} heyas insolvent: ${snap.insolventHeyas.join(", ")}`);
   if (snap.foreignSlotViolations.length > 0)
     issues.push(`ERROR: foreign-slot limit violated: ${snap.foreignSlotViolations.join(", ")}`);
+  // WS-1 — real occupancy ~69%; wide band flags both dead and saturated pipelines.
+  if (snap.foreignOccupancy < 0.4)
+    issues.push(`WARN: foreign occupancy ${(snap.foreignOccupancy * 100).toFixed(0)}% (target ~69%)`);
+  if (snap.foreignOccupancy > 0.9)
+    issues.push(`WARN: foreign occupancy ${(snap.foreignOccupancy * 100).toFixed(0)}% — pipeline saturated`);
   if (snap.heyaCount < 3) issues.push(`ERROR: Heya count collapsed to ${snap.heyaCount}`);
   if (snap.avgAge > 35) issues.push(`WARN: Avg rikishi age ${snap.avgAge} — roster aging out`);
   if (snap.avgAge < 18) issues.push(`WARN: Avg age ${snap.avgAge} — suspiciously young`);
@@ -258,6 +324,14 @@ for (let yr = 0; yr < YEARS; yr++) {
       `mak=${snap.makuuchiCount} injured=${snap.injuredCount} ` +
       `funds=¥${(snap.avgFunds / 1_000_000).toFixed(1)}M avg [min=${(snap.minFunds / 1_000_000).toFixed(1)}M] ` +
       `HoF=${snap.hofInductees} cup=${snap.globalCupChampion ?? "—"}`
+  );
+  // Realism-calibration line (JSA plan): foreign occupancy/mix + closures + jungyo.
+  console.log(
+    `    calib | F-occ=${(snap.foreignOccupancy * 100).toFixed(0)}% ` +
+      `F=${snap.foreignTotal}(sek=${snap.foreignSekitori}/low=${snap.foreignLower}) ` +
+      `MN=${(snap.mongolianShare * 100).toFixed(0)}% gf+${snap.grandfatheredForeignSlots} ` +
+      `custody=${snap.heyaInCustody} closed=${snap.closedHeyaCount} ` +
+      `founded=${snap.branchedHeyaCount} jungyo=${snap.jungyoTourDays}d`
   );
 
   for (const a of anomalies) console.log(`    ${a}`);
