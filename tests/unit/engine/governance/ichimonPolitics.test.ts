@@ -48,10 +48,13 @@ describe("share-proportional board seats", () => {
     world.myosekiMarket = { stocks, history: [] };
 
     const impact = runElections(world);
-    const events = (impact.events ?? []) as Array<{ data?: Record<string, unknown> }>;
+    const events = (impact.events ?? []) as Array<{
+      data?: Record<string, unknown>;
+      heyaId?: string;
+    }>;
     const winners = events
       .filter((e) => e.data?.incident === "election_victory")
-      .map((e) => String(e.data?.heyaId ?? ""));
+      .map((e) => String(e.heyaId ?? ""));
     const clanAWins = winners.filter((id) => id.startsWith("a")).length;
     expect(winners.length).toBeGreaterThanOrEqual(Math.min(BOARD_COMMITTEE.size, 10));
     expect(clanAWins).toBeGreaterThanOrEqual(Math.ceil(winners.length / 2));

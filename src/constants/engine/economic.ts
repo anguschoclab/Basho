@@ -187,6 +187,23 @@ export const MERGER_THRESHOLD = -15_000_000;
 /** Seed funds for a newly founded stable (¥). */
 export const FOUNDING_SEED_FUNDS = 30_000_000;
 
+/**
+ * WS-6 — JSA three-tier elder eligibility ladder (post-2006 rules).
+ * Inheriting an active heya has the LOWEST ring bar; standard coach sits
+ * in the middle; branching out to FOUND a new stable is the elite tier.
+ */
+export const INHERIT_MAKUUCHI_BASHO = 12; // or 20 sekitori basho
+export const INHERIT_SEKITORI_BASHO = 20;
+export const COACH_SANYAKU_BASHO = 1; // or 20 makuuchi / 30 sekitori
+export const COACH_MAKUUCHI_BASHO = 20;
+export const COACH_SEKITORI_BASHO = 30;
+export const BRANCH_FOUNDING_SANYAKU_BASHO = 25; // or Y/O peak / 60 makuuchi
+export const BRANCH_FOUNDING_MAKUUCHI_BASHO = 60;
+
+/** WS-7 — each held kabu (elder stock) share is worth this many influence
+ *  points in board elections; kabu power must outweigh reputation noise. */
+export const KABU_SEAT_WEIGHT = 40;
+
 /** Maximum number of stables allowed in the world — hard backstop only.
  *  The binding constraint on foundings is HEYA_SOFT_TARGET below: the real
  *  JSA's ~105-share ceiling far exceeds the practical ~42–46 equilibrium

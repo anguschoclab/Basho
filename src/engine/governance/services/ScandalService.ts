@@ -13,6 +13,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya } from "@/engine/core/queries";
 import { findMergerTarget } from "@/engine/economy/mergers";
 import { ELECTION_INCUMBENCY_BONUS } from "@/constants/engine/succession";
+import { KABU_SEAT_WEIGHT } from "@/constants/engine/economic";
 import { BOARD_COMMITTEE } from "@/constants/engine/committee";
 import { conveneCommittee } from "@/engine/committee/committee";
 import {
@@ -130,8 +131,23 @@ export function runElections(world: WorldState): StateImpact {
   const builder = createImpactBuilder("elections");
   const candidates: Array<{ heyaId: string; score: number; name: string }> = [];
 
+  // WS-7 — electors are weighted by kabu holdings: a heya's elder stock is
+  // what buys board votes. Count stock held (status "held") by the heya's
+  // sitting oyakata; holders of borrowed/vacant stock get nothing.
+  const kabuByHeya = new Map<string, number>();
+  const stocks = Object.values(world.myosekiMarket?.stocks ?? {});
+  for (const stock of stocks) {
+    if (stock.status !== "held" || !stock.holderId) continue;
+    const holder = world.oyakata?.get(stock.holderId);
+    const heyaId = holder?.heyaId;
+    if (heyaId) kabuByHeya.set(heyaId, (kabuByHeya.get(heyaId) ?? 0) + 1);
+  }
+
   for (const heya of world.heyas.values()) {
-    const influence = (heya.politicalCapital ?? 50) + (heya.reputation ?? 50) / 2;
+    const influence =
+      (heya.politicalCapital ?? 50) +
+      (heya.reputation ?? 50) / 2 +
+      (kabuByHeya.get(heya.id) ?? 0) * KABU_SEAT_WEIGHT;
     candidates.push({
       heyaId: heya.id,
       score: influence,

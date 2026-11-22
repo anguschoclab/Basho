@@ -28,11 +28,12 @@ import {
   MYOSEKI_TOTAL_COUNT,
   JUN_TOSHIYORI_YEARS_YOKOZUNA,
   JUN_TOSHIYORI_YEARS_OTHER,
-  ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD,
+  BRANCH_FOUNDING_SANYAKU_BASHO,
+  BRANCH_FOUNDING_MAKUUCHI_BASHO,
 } from "@/constants/engine/economic";
 import { getHeya } from "@/engine/core/queries";
 import { getCitizenshipStatus } from "@/engine/utils/citizenshipUtils";
-import { isYokozunaOrOzekiRank, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
+import { isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
 
 /**
  * If `retiree` is accomplished and of eligible age, converts them to an oyakata,
@@ -205,15 +206,14 @@ function resolveElderShare(
         }
       : null);
 
-  const yushoCount = (retiree.careerHistory ?? []).reduce((a, h) => a + (h.isYusho ? 1 : 0), 0);
   const elderStatus: ElderStatus | null =
     availableStock != null
       ? "toshiyori"
-      : retiree.rank === "yokozuna" && yushoCount >= ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD
-        ? "ichidai_toshiyori"
-        : isYokozunaOrOzekiRank(retiree.rank) || isLowerSanyakuRank(retiree.rank)
-          ? "jun_toshiyori"
-          : null;
+      // Post-2006 rules: jun-toshiyori grace is Yokozuna/Ōzeki only —
+      // Komusubi/Sekiwake get nothing — and ichidai-toshiyori is abolished.
+      : isYokozunaOrOzekiRank(retiree.rank)
+        ? "jun_toshiyori"
+        : null;
   const elderExpiryYear =
     elderStatus === "jun_toshiyori"
       ? world.year +
@@ -297,6 +297,24 @@ export function evaluateFoundingEligibility(
 
   const headroomToTarget = HEYA_SOFT_TARGET - world.heyas.size;
   if (headroomToTarget <= 0) return none;
+
+  // WS-6 — branch-out (bunke) is the ELITE tier of the eligibility ladder:
+  // Yokozuna/Ōzeki peak, 25 sanyaku basho, or 60 makuuchi basho. A career
+  // sekiwake cannot found a stable no matter his bank balance.
+  const SANYAKU = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
+  const history = retiree.careerHistory ?? [];
+  const sanyakuBasho = history.filter((h) => SANYAKU.has(h.rank)).length;
+  const makuuchiBasho = history.filter((h) => h.division === "makuuchi").length;
+  const peakElite =
+    isYokozunaOrOzekiRank(retiree.rank) ||
+    history.some((h) => isYokozunaOrOzekiRank(h.rank));
+  if (
+    !peakElite &&
+    sanyakuBasho < BRANCH_FOUNDING_SANYAKU_BASHO &&
+    makuuchiBasho < BRANCH_FOUNDING_MAKUUCHI_BASHO
+  ) {
+    return none;
+  }
 
   const effectiveChance = FOUNDING_CHANCE * Math.min(1, headroomToTarget / HEYA_FOUNDING_RAMP);
   return {

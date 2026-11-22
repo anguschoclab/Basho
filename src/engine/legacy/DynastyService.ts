@@ -33,7 +33,12 @@ import { getHeya, getRikishi, getHeyaRoster } from "@/engine/core/queries";
 import { adjustBrandForOyakata } from "@/engine/keshoMawashi/HeyaBrandGenerator";
 import type { Id } from "@/engine/types/common";
 import { executeMerger, findMergerTarget } from "@/engine/economy/mergers";
-import { HEYA_FLOOR, PRESTIGE_COLLAPSE_BAND } from "@/constants/engine/economic";
+import {
+  HEYA_FLOOR,
+  PRESTIGE_COLLAPSE_BAND,
+  INHERIT_MAKUUCHI_BASHO,
+  INHERIT_SEKITORI_BASHO,
+} from "@/constants/engine/economic";
 
 import type { RetiredRikishiSummary } from "@/engine/types/history";
 import {
@@ -277,14 +282,23 @@ function findEligibleSuccessors(world: WorldState, heyaId: string): string[] {
     const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
     const isSekitori = isSekitoriDivision(rikishi.division);
-    // Elite candidates: Current sekitori or high-performing alumni
-    if (rikishi.heyaId === heyaId && isSekitori) {
+    // WS-6 — inherit is the LOWEST ladder tier: 12 makuuchi or 20 sekitori
+    // basho (career juryo-lifers like Kanechika qualify; fresh J13s don't).
+    const history = rikishi.careerHistory ?? [];
+    const sekitoriBasho = history.filter(
+      (h) => h.division === "makuuchi" || h.division === "juryo"
+    ).length;
+    const makuuchiBasho = history.filter((h) => h.division === "makuuchi").length;
+    const meetsInheritBar =
+      makuuchiBasho >= INHERIT_MAKUUCHI_BASHO || sekitoriBasho >= INHERIT_SEKITORI_BASHO;
+    // Elite candidates: seasoned current sekitori or qualifying alumni.
+    if (rikishi.heyaId === heyaId && isSekitori && meetsInheritBar) {
       eligible.push(rikishi.id);
       continue;
     }
 
     const wasAlumnus = rikishi.heyaHistory?.some((h) => h.heyaId === heyaId);
-    if (wasAlumnus && isSekitori && (rikishi.makuuchiWins > 0 || rikishi.rank === "yokozuna")) {
+    if (wasAlumnus && meetsInheritBar) {
       eligible.push(rikishi.id);
     }
   }
