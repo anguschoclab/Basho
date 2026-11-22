@@ -1,18 +1,33 @@
 # Mega-plan — Days 13–14 Kyushu transcripts (workstream Z)
 
 Transcript source: Grand Sumo Highlights, Kyushu days 13 & 14.
-**Status: IMPLEMENTED — all Z1–Z13 items landed; verification battery in
-progress.** Every claim below carries a verdict
-(APPROVED / PARTIAL / DISPROVED / GAP) with the file evidence that produced
-it. Produced via the `sumo-transcript` skill; the day-12 transcript in the
-same paste is already shipped as W P (`223622ed`) and is excluded.
+**Status: EXECUTED — all Z1–Z13 shipped and verified.** Every claim below
+carries a verdict (APPROVED / PARTIAL / DISPROVED / GAP) with the file
+evidence that produced it. Produced via the `sumo-transcript` skill; the
+day-12 transcript in the same paste is already shipped as W P (`223622ed`)
+and is excluded.
 
-**Progress log**
-- RED tests committed `88d2f8fd` — 39 tests, 23 clean feature failures.
-- Implementation: beats + tags + constants + bard templates + golden snap
-  regen; focused suite 39/39 green; `bout/` suite 1066 green.
-- type-check ✓, lint:commit ✓. Remaining: build, full suite, timings,
-  determinism double-run, megaplan row, archive.
+**Execution log**
+- RED tests `88d2f8fd` — 39 tests, 23 clean feature-only failures.
+- Implementation `b590b051` — all Z1–Z13 beats, tags, constants, bard
+  templates, JSDoc, golden snapshot regenerated + reviewed (no MISSING).
+- Verification: type-check ✓ · lint:commit ✓ · build ✓ · full suite
+  1118 files / 10 624 tests ✓ · bard/token-integrity 1180 ✓ · timings
+  baseline regenerated ✓ · determinism double-run byte-identical at both
+  horizons (basho 23.6 MB, year 43.0 MB) ✓.
+- Meta-gate fix on the way out: `selectInterviewType` exceeded the
+  function-length ratchet — kachi-koshi sub-cascade extracted to
+  `selectKachiKoshiType` (pure move, no behavior change).
+
+**Residuals / deviations**
+- Z12 repeat-spoiler: gated on the winner NOT being a contender (existing
+  spoiler rule) — a contender's repeat scalp stays silent by design.
+- Z9: `prefecture_showdown_win` post-bout copy still says "prefecture" for
+  foreign pairs — same residual class as the pre-bout fix; flagged in the
+  audit as accepted debt (post-bout twin is a separate template family).
+- Z1 template variant that fired in golden ("No title on the resume yet")
+  was reworded so every variant carries the explicit "first title/yusho"
+  wording the transcript calls for.
 
 ## Audit of the transcripts — Day 13
 

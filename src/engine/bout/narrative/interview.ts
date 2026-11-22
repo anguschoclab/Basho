@@ -111,41 +111,7 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
     } else if (
       isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)
     ) {
-      const winnerAge = result.winner === "east" ? p.eastAge : p.westAge;
-      const prevOldest = world?.records?.allTime?.oldestMakuuchiKachiKoshi?.[0];
-      const kkThreshold = kachiKoshiThreshold(winnerRikishi.rank);
-      const earliestMaxDay =
-        kkThreshold >= 8 ? EARLIEST_KACHI_SEKITORI_MAX_DAY : EARLIEST_KACHI_LOWER_MAX_DAY;
-      if (
-        winnerRikishi.division === "makuuchi" &&
-        winnerWins + 1 === kkThreshold &&
-        winnerAge >= OLDEST_KACHI_KOSHI_MIN_AGE &&
-        (!prevOldest || winnerAge > prevOldest.value) &&
-        BardEngine.has("interview.questions.oldest_kachi")
-      ) {
-        questionType = "oldest_kachi";
-      } else if (
-        // W P — "once in sanyaku, dropped all the way down, now back with a
-        // winning record": the road-back question outranks generic KK asks.
-        hasSanyakuToSubJuryoFall(winnerRikishi.careerHistory) &&
-        BardEngine.has("interview.questions.road_back")
-      ) {
-        questionType = "road_back";
-      } else if (
-        makuuchiTournaments <= 1 &&
-        day <= DEBUT_KACHI_MAX_DAY &&
-        BardEngine.has("interview.questions.debut_kachikoshi")
-      ) {
-        questionType = "debut_kachikoshi";
-      } else if (
-        winnerWins + 1 === kkThreshold &&
-        day <= earliestMaxDay &&
-        makuuchiTournaments >= 2
-      ) {
-        questionType = "earliest_kachi";
-      } else {
-        questionType = "kachi_koshi";
-      }
+      questionType = selectKachiKoshiType(p, makuuchiTournaments);
     } else if (hitMilestone) {
       questionType = "milestone";
     } else if (isMakeKoshi(loserWinsAfter, loserLossesAfter, loserRikishi.rank)) {
@@ -203,6 +169,53 @@ function selectInterviewType(p: PbpPipeline): InterviewSetup {
   const numQuestions = ctx.voiceStyle === "dramatic" ? 4 : 3;
 
   return { questionType, numQuestions };
+}
+
+/**
+ * Pick the specific kachi-koshi interview variant — oldest-ever, road-back,
+ * debut, earliest — falling back to the generic kachi_koshi question.
+ * Extracted from `selectInterviewType` to keep that cascade under the
+ * function-length budget.
+ */
+function selectKachiKoshiType(p: PbpPipeline, makuuchiTournaments: number): string {
+  const { day, result, winnerRikishi, winnerWins, world } = p;
+  const winnerAge = result.winner === "east" ? p.eastAge : p.westAge;
+  const prevOldest = world?.records?.allTime?.oldestMakuuchiKachiKoshi?.[0];
+  const kkThreshold = kachiKoshiThreshold(winnerRikishi.rank);
+  const earliestMaxDay =
+    kkThreshold >= 8 ? EARLIEST_KACHI_SEKITORI_MAX_DAY : EARLIEST_KACHI_LOWER_MAX_DAY;
+  if (
+    winnerRikishi.division === "makuuchi" &&
+    winnerWins + 1 === kkThreshold &&
+    winnerAge >= OLDEST_KACHI_KOSHI_MIN_AGE &&
+    (!prevOldest || winnerAge > prevOldest.value) &&
+    BardEngine.has("interview.questions.oldest_kachi")
+  ) {
+    return "oldest_kachi";
+  }
+  if (
+    // W P — "once in sanyaku, dropped all the way down, now back with a
+    // winning record": the road-back question outranks generic KK asks.
+    hasSanyakuToSubJuryoFall(winnerRikishi.careerHistory) &&
+    BardEngine.has("interview.questions.road_back")
+  ) {
+    return "road_back";
+  }
+  if (
+    makuuchiTournaments <= 1 &&
+    day <= DEBUT_KACHI_MAX_DAY &&
+    BardEngine.has("interview.questions.debut_kachikoshi")
+  ) {
+    return "debut_kachikoshi";
+  }
+  if (
+    winnerWins + 1 === kkThreshold &&
+    day <= earliestMaxDay &&
+    makuuchiTournaments >= 2
+  ) {
+    return "earliest_kachi";
+  }
+  return "kachi_koshi";
 }
 
 function runInterviewLoop(p: PbpPipeline, setup: InterviewSetup): void {
