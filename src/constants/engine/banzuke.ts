@@ -73,3 +73,4 @@ export const MAEGASHIRA_TOP_RANK_THRESHOLD = 4;
 
 export const JONOKUCHI_YUSHO_TIER = 8;
 export const JONOKUCHI_KACHI_TIER = 9;
+export const MAKUSHITA_PROMOTION_ZONE = 15;

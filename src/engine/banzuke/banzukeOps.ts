@@ -39,6 +39,7 @@ import {
 import type { WorldState } from "@/engine/types/world";
 import { getOzekiStatus, type OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
 import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
+import { MAKUSHITA_PROMOTION_ZONE } from "@/constants/engine/banzuke";
 import { deliberateBanzukeMovement } from "@/engine/banzuke/banzukeCommittee";
 import type { CommitteeDecision } from "@/engine/committee/committee";
 import { rngForWorld } from "@/engine/core/rng";
@@ -67,6 +68,10 @@ interface BanzukeUpdateResult {
   /** §3 banzuke-gai — rikishi dropped off the printed banzuke (full jonokuchi kyujo or slot overflow). */
   banzukeGai?: string[];
   banzukeGaiReasons?: Record<string, "kyujo" | "overflow">;
+  /** WS-13 — pre-publication announcements: Y/Ō and Ms→Juryo only. */
+  earlyAnnouncements: Array<{ rikishiId: string; kind: string }>;
+  /** WS-13 — Juryo→Makuuchi moves stay embargoed until the banzuke reveal. */
+  embargoedMovements: Array<{ rikishiId: string }>;
 }
 
 /**
@@ -277,7 +282,32 @@ export function updateBanzuke(
     }
   }
 
-  const assigned = assignBanzukeSlots(scored, fullTemplate, demotedOzeki);
+  let assigned = assignBanzukeSlots(scored, fullTemplate, demotedOzeki);
+
+  // Demand-driven tail: the sheet never drops an active rikishi for lack
+  // of a slot. Entries left unassigned — whether from boundary gates or
+  // template overflow — extend the unprinted jonokuchi tail; they must
+  // NOT be absorbed by vacuum-promoting anyone across the sekitori
+  // boundaries (WS-11 fallback gates).
+  if (assigned.length < scored.length) {
+    const template = [...fullTemplate];
+    let jkNum = 0;
+    for (const s of fullTemplate) {
+      if (s.position.rank === "jonokuchi") {
+        jkNum = Math.max(jkNum, s.position.rankNumber ?? 0);
+      }
+    }
+    let side: "east" | "west" = "east";
+    while (template.length < fullTemplate.length + (scored.length - assigned.length)) {
+      jkNum++;
+      template.push({
+        division: "jonokuchi",
+        position: { rank: "jonokuchi", rankNumber: jkNum, side },
+      });
+      side = side === "east" ? "west" : "east";
+    }
+    assigned = assignBanzukeSlots(scored, template, demotedOzeki);
+  }
   if (assigned.length < scored.length) {
     const assignedIds = new Set(assigned.map((a) => a.rikishiId));
     for (const s of scored) {
@@ -305,12 +335,38 @@ export function updateBanzuke(
     ),
     ...banzukeGaiEvents,
   ];
+
+  // WS-13 — early-announcement classes: only Y/Ō promotions and Ms→Juryo
+  // promotions are announced before the banzuke reveal; Juryo→Makuuchi
+  // stays embargoed until publication.
+  const prevById = new Map(eligibleBanzuke.map((e) => [e.rikishiId, e]));
+  const earlyAnnouncements: Array<{ rikishiId: string; kind: string }> = [];
+  const embargoedMovements: Array<{ rikishiId: string }> = [];
+  for (const a of assigned) {
+    const prev = prevById.get(a.rikishiId);
+    if (!prev) continue;
+    const newRank = a.position.rank;
+    const oldRank = prev.position.rank;
+    if (
+      (newRank === "yokozuna" && oldRank !== "yokozuna") ||
+      (newRank === "ozeki" && oldRank !== "ozeki")
+    ) {
+      earlyAnnouncements.push({ rikishiId: a.rikishiId, kind: "sanyaku_promotion" });
+    } else if (prev.division === "makushita" && a.division === "juryo") {
+      earlyAnnouncements.push({ rikishiId: a.rikishiId, kind: "juryo_promotion" });
+    } else if (prev.division === "juryo" && a.division === "makuuchi") {
+      embargoedMovements.push({ rikishiId: a.rikishiId });
+    }
+  }
+
   return {
     newBanzuke: assigned,
     events,
     updatedOzekiKadoban,
     sanyakuCounts,
     deliberations: new Map(scored.map((s) => [s.entry.rikishiId, s.decision])),
+    earlyAnnouncements,
+    embargoedMovements,
     ...(banzukeGai.length > 0 ? { banzukeGai, banzukeGaiReasons } : {}),
   };
 }
@@ -399,6 +455,19 @@ function computeDivisionTemplate(
   });
 }
 
+/**
+ * WS-13 — kyūjō landing floors on the positionKey scale (tier*1000 +
+ * num*2 + side). An absence-dominated record lands at the top of the next
+ * band down: makuuchi → ~J5; juryo → ~Ms15; lower → ~one division.
+ */
+const KYUJO_LANDING_FLOOR: Record<string, number> = {
+  makuuchi: 5010,
+  juryo: 7030,
+  makushita: 8100,
+  sandanme: 9100,
+  jonidan: 10080,
+};
+
 type ScoredCandidate = {
   entry: BanzukeEntry;
   oldKey: number;
@@ -447,8 +516,37 @@ function scoreBanzukeCandidates(
         heya?.ichimon ?? "none"
       );
 
+      // WS-13 — jōi cushion: junior sanyaku + top maegashira (K–M4) take a
+      // bounded demotion on a bad basho, falling less than a deep
+      // maegashira on the identical record.
+      const joi =
+        e.position.rank === "komusubi" ||
+        e.position.rank === "sekiwake" ||
+        (e.position.rank === "maegashira" && (e.position.rankNumber ?? 99) <= 4);
+      const cushionedMove = move < 0 && joi ? move + 1 : move;
+
       const oldKey = positionKey(e);
-      const desiredKey = oldKey - move * 1_000;
+      let desiredKey = oldKey - cushionedMove * 1_000;
+
+      // WS-13 — kyūjō landing floor: an absence-dominated record lands in
+      // the next band down, not off the printed sheet. Makuuchi 0-0-15 →
+      // mid-juryo; juryo → makushita; lower divisions ≈ one division.
+      if (p && (p.absences ?? 0) >= 7 && (p.absences ?? 0) >= p.wins + p.losses) {
+        const floor = KYUJO_LANDING_FLOOR[e.division];
+        if (floor !== undefined) desiredKey = Math.min(desiredKey, floor);
+      }
+
+      // WS-11 — promotion claims outrank incumbency: an in-zone makushita
+      // promotable's desire scales toward the top of the zone, so Ms1 KK
+      // is an effective lock (he beats marginal juryo incumbents) while
+      // deep-zone promotables still need a real vacancy.
+      if (
+        e.position.rank === "makushita" &&
+        (e.position.rankNumber ?? 99) <= MAKUSHITA_PROMOTION_ZONE &&
+        bestTierAllowed(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki, reclaimableOzeki) <= 6
+      ) {
+        desiredKey -= (MAKUSHITA_PROMOTION_ZONE + 1 - (e.position.rankNumber ?? 99)) * 400;
+      }
       return {
         entry: e,
         oldKey,
@@ -527,6 +625,10 @@ function assignBanzukeSlots(
 
     // 2. FALLBACK: no eligible candidate — take best available from inactive buckets.
     // Guard: a demoted ozeki must never be re-seated in an ozeki slot via fallback.
+    // WS-11 — the two sekitori boundaries are the only hard gates on the
+    // slot vacuum: a juryo rikishi who didn't clear J1 never vacuum-
+    // promotes into makuuchi, and Ms16+ never promotes into juryo —
+    // even into a vacancy. All other slots fill normally.
     if (winnerIdx === -1) {
       const isOzekiSlot = slot.position.rank === "ozeki";
       for (let t = activatedTier + 1; t <= MAX_TIER; t++) {
@@ -538,6 +640,12 @@ function assignBanzukeSlots(
           const cand = scored[candIdx];
           if (usedRikishiIds.has(cand.entry.rikishiId)) continue;
           if (isOzekiSlot && demotedOzeki.has(cand.entry.rikishiId)) continue;
+          // WS-11 — the sekitori boundaries are hard gates: the slot
+          // vacuum may never lift a rikishi above his eligibleBestTier
+          // into makuuchi or juryo (Ms16+ can NEVER promote; J must
+          // clear J1 to rise). Overflow beyond the printed sheet is
+          // absorbed by demand-driven tail slots, not promotion.
+          if (slotTier <= 6 && cand.eligibleBestTier > slotTier) continue;
           if (winnerIdx === -1 || candIdx < winnerIdx) winnerIdx = candIdx;
           break; // first passing candidate in this bucket = best in bucket
         }

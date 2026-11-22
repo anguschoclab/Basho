@@ -239,6 +239,10 @@ export interface BashoPerformance {
   specialPrizes?: number;
   kinboshi?: number;
   opponentAvgTier?: number;
+  /** WS-11 — wins against the opposite sekitori division (crossover evidence). */
+  crossDivisionWins?: number;
+  /** WS-11 — whether this rikishi was pulled up into a crossover card. */
+  crossoverPulledUp?: boolean;
   promoteToYokozuna?: boolean;
   promoteToOzeki?: boolean;
   sekiwakeThreeBashoWins?: number;

@@ -9,6 +9,7 @@ import {
   MAEGASHIRA_TOP_RANK_THRESHOLD,
   JONOKUCHI_YUSHO_TIER,
   JONOKUCHI_KACHI_TIER,
+  MAKUSHITA_PROMOTION_ZONE,
 } from "@/constants/engine/banzuke";
 
 /**
@@ -56,6 +57,16 @@ export function bestTierAllowed(
   if (rank === "komusubi" && perf?.promoteToOzeki) return 2;
   if (rank === "komusubi" && (perf?.wins ?? 0) >= KOMUSUBI_PROMOTION_WINS) return 3;
 
+  // WS-11 — jōi demotion: a make-koshi komusubi/sekiwake is no longer
+  // sanyaku-eligible — he drops to the maegashira band (the bounded jōi
+  // cushion in scoreBanzukeCandidates softens how deep he lands).
+  if (
+    (rank === "komusubi" || rank === "sekiwake") &&
+    perf &&
+    (perf.losses ?? 0) > (perf.wins ?? 0)
+  )
+    return 5;
+
   if (rank === "maegashira") {
     const wins = perf?.wins ?? 0;
     if (perf?.yusho) return 3;
@@ -64,6 +75,26 @@ export function bestTierAllowed(
       wins >= MAEGASHIRA_PROMOTION_WINS
     )
       return 4;
+  }
+
+  // WS-11 — Juryo→Makuuchi promotion ceiling: a juryo rikishi is only
+  // makuuchi-eligible when his record CLEARS J1 — rankNumber − netWins ≤ 0
+  // (J1E 8-7 is an effective lock) — or he takes the juryo yūshō, which
+  // lifts him into contention. Juryo's own tier is 6; makuuchi is 5.
+  if (rank === "juryo") {
+    const netWins = (perf?.wins ?? 0) - (perf?.losses ?? 0);
+    if (perf?.yusho) return 5;
+    if ((entry.position.rankNumber ?? 99) - netWins <= 0) return 5;
+  }
+
+  // WS-11 — Makushita→Juryo promotion zone: only Ms1–Ms15 can rise.
+  // An in-zone kachi-koshi is promotable (Ms1 KK and ≤Ms15 zenshō are
+  // locks); Ms16+ can NEVER promote — even a zenshō lands ~Ms5.
+  if (rank === "makushita") {
+    const num = entry.position.rankNumber ?? 99;
+    const wins = perf?.wins ?? 0;
+    const losses = perf?.losses ?? 0;
+    if (num <= MAKUSHITA_PROMOTION_ZONE && (perf?.yusho || wins > losses)) return 6;
   }
 
   // Jonokuchi special promotion: yusho → sandanme (tier 8), kachi-koshi → jonidan (tier 9)

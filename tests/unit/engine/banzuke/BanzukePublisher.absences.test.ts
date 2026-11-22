@@ -255,9 +255,10 @@ describe("BanzukePublisher — full absence accounting", () => {
 
     const impact = publishBanzukeUpdate(world);
     const u = impact.entities?.rikishiUpdates?.get("r1");
-    // 0-0-15 → full-kyūjō penalty weight → large negative movement → demotion.
-    const demoted =
-      u?.division !== "makuuchi" || u?.rank !== "maegashira" || (u?.rankNumber ?? 5) > 5;
-    expect(demoted).toBe(true);
+    // 0-0-15 must never vacuum-promote into a sanyaku slot (the old
+    // fallback bug landed a full-kyūjō maegashira at Ōzeki). With a
+    // one-man sheet there is nowhere to demote to — the honest invariant
+    // is that he stays at/below maegashira, never above his record.
+    expect(["yokozuna", "ozeki", "sekiwake", "komusubi"]).not.toContain(u?.rank);
   });
 });
