@@ -26,14 +26,14 @@ const withIchimon = (heya: Heya, ichimon: string): Heya =>
 describe("findMergerTarget — ichimon coordination", () => {
   it("prefers a viable same-ichimon heya over a richer out-of-clan one", () => {
     const world = makeMockWorld({ year: 2026 });
-    const source = withIchimon(makeMockHeya("heya-src", { funds: 100 }), "dewanoumi");
+    const source = withIchimon(makeMockHeya("heya-src", { funds: 100 }), "Dewanoumi");
     const inClan = withIchimon(
-      makeMockHeya("heya-clan", { prestige: 40, funds: 8_000_000 }),
-      "dewanoumi"
+      makeMockHeya("heya-clan", { prestige: 40, funds: 8_000_000, prestigeBand: "modest" }),
+      "Dewanoumi"
     );
     const outClan = withIchimon(
-      makeMockHeya("heya-out", { prestige: 95, funds: 50_000_000 }),
-      "isegahama"
+      makeMockHeya("heya-out", { prestige: 95, funds: 50_000_000, prestigeBand: "elite" }),
+      "Isegahama"
     );
     world.heyas.set("heya-src", source);
     world.heyas.set("heya-clan", inClan);
@@ -62,8 +62,10 @@ describe("transferRosterAcrossMerger — attrition", () => {
     const next = resolveImpacts(world, [
       executeMerger(world, "heya-src", "heya-tgt", "insolvency"),
     ]);
-    // The 36-year-old sandanme retires; the 22-year-old transfers.
-    expect(next.rikishi.get("old")?.isRetired).toBe(true);
+    // The 36-year-old sandanme retires (moved to historical); the
+    // 22-year-old transfers.
+    const old = next.rikishi.get("old") ?? next.historicalRikishi?.get("old");
+    expect(old?.isRetired).toBe(true);
     expect(next.rikishi.get("young")?.heyaId).toBe("heya-tgt");
   });
 });

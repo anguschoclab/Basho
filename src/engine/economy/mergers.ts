@@ -15,6 +15,12 @@ import {
   TRANSFER_RATIO_SCANDAL,
   FACILITY_MERGER_RATIO,
 } from "@/constants/engine/roster";
+import {
+  MERGER_TRANSFER_RETIRE_AGE,
+  MERGER_RETIRE_DIVISIONS,
+} from "@/constants/engine/recruitment";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 
 /**
  * Execute a stable merger.
@@ -54,7 +60,13 @@ export function executeMerger(
   }
 
   // 1. Transfer rikishi (foreign-slot-aware — §5.1 holds "at any time").
-  const transferredRikishiIds = transferRosterAcrossMerger(world, source, target, builder);
+  const transferredRikishiIds = transferRosterAcrossMerger(
+    world,
+    source,
+    target,
+    builder,
+    reason === "mandated"
+  );
 
   // 2. Combine funds (partially, penalties apply for scandal)
   // If source had debt, it might not transfer fully, but positive funds transfer partially
@@ -155,20 +167,32 @@ function transferRosterAcrossMerger(
   world: WorldState,
   source: NonNullable<ReturnType<typeof getHeya>>,
   target: NonNullable<ReturnType<typeof getHeya>>,
-  builder: ReturnType<typeof createImpactBuilder>
+  builder: ReturnType<typeof createImpactBuilder>,
+  mandated = false
 ): Id[] {
   // updateRikishi(heyaId) does not resync heya.rikishiIds — accumulate
   // incoming ids and write them back explicitly, or roster reads
   // (getHeyaRoster) would miss the transferred rikishi forever.
   const addedIds: Id[] = [];
   let transferredRikishiIds: Id[] = [];
+  let incomingForeign = 0;
   for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
     const rikishi = getRikishi(world, rId);
     if (!rikishi) continue;
 
+    // Merger attrition — a lower-division veteran near the end of his
+    // shelf life often chooses intai over relocation (real JSA pattern:
+    // absorbed rosters shed their oldest unsalaried members).
+    const age = world.year - rikishi.birthYear;
+    if (age >= MERGER_TRANSFER_RETIRE_AGE && MERGER_RETIRE_DIVISIONS.has(rikishi.division)) {
+      builder.retireRikishi(rId, world.year, "Merger Relocation Retirement");
+      continue;
+    }
+
     builder.updateRikishi(rId, { heyaId: target.id });
     addedIds.push(rId);
     transferredRikishiIds = pushUniqueId(transferredRikishiIds, rId);
+    if (countsAsForeign(rikishi, world.year)) incomingForeign++;
 
     builder.logEvent(
       "LIFECYCLE_EVENT",
@@ -184,9 +208,22 @@ function transferRosterAcrossMerger(
     );
   }
 
-  builder.updateHeya(target.id, {
+  // Mandated absorptions may stack foreign-slot rikishi past the cap —
+  // stamp the excess so the exception is tracked (and decays on
+  // retirement/transfer) instead of silently persisting.
+  const update: Record<string, unknown> = {
     rikishiIds: [...new Set([...(target.rikishiIds ?? []), ...addedIds])],
-  });
+  };
+  if (mandated && incomingForeign > 0) {
+    const targetForeign = getHeyaRoster(world, target.id).filter((r) =>
+      countsAsForeign(r, world.year)
+    ).length;
+    const excess = targetForeign + incomingForeign - FOREIGN_RIKISHI_LIMIT_PER_HEYA;
+    if (excess > 0) {
+      update.grandfatheredForeignCount = (target.grandfatheredForeignCount ?? 0) + excess;
+    }
+  }
+  builder.updateHeya(target.id, update as never);
   return transferredRikishiIds;
 }
 
@@ -223,7 +260,15 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
     return fallback[rng.int(0, fallback.length - 1)].id;
   }
 
+  // Ichimon coordination comes first (real JSA practice): a closing
+  // stable's roster is placed within the clan when a viable same-ichimon
+  // heya exists; prestige/funds only break ties inside the clan.
+  const inClan = source.ichimon
+    ? candidates.filter((h) => h.ichimon === source.ichimon)
+    : [];
+  const pool = inClan.length > 0 ? inClan : candidates;
+
   // Weight by prestige and funds
-  candidates.sort((a, b) => b.funds - a.funds || stableTieBreak(a.id, b.id));
-  return candidates[rng.int(0, Math.min(candidates.length - 1, 3))].id;
+  pool.sort((a, b) => b.funds - a.funds || stableTieBreak(a.id, b.id));
+  return pool[rng.int(0, Math.min(pool.length - 1, 3))].id;
 }

@@ -100,6 +100,13 @@ export interface Heya {
 
   descriptor?: string;
   ichimon?: IchimonName;
+  /**
+   * WS-4 — JSA-mandated absorptions may leave a heya holding more than one
+   * foreign-slot rikishi (Miyagino→Isegahama: Toshinofuji + Asahifuji).
+   * The excess is stamped here so foreign recruitment stays frozen and the
+   * exception decays as the grandfathered rikishi retire or transfer out.
+   */
+  grandfatheredForeignCount?: number;
   politicalCapital?: number;
   location?: string;
 

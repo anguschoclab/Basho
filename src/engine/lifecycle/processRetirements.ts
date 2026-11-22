@@ -30,6 +30,7 @@ import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyaka
 import { LegacyService } from "@/engine/legacy/LegacyService";
 import { onRikishiRetired } from "@/engine/history/records";
 import { getRikishi } from "@/engine/core/queries";
+import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { opfsArchiveService } from "@/engine/persistence/storage/opfsArchive";
 import { electronArchiveService } from "@/engine/persistence/storage/electronArchive";
 import { warn } from "@/engine/utils/Logger";
@@ -94,6 +95,17 @@ export function retireRikishiFully(
   );
 
   builder.retireRikishi(id, world.year, reason);
+
+  // WS-4 — a grandfathered foreign-slot exception decays when the
+  // slot-consuming rikishi it covers leaves the roster.
+  if (countsAsForeign(rikishi, world.year)) {
+    const heya = rikishi.heyaId ? world.heyas?.get(rikishi.heyaId) : undefined;
+    if (heya && (heya.grandfatheredForeignCount ?? 0) > 0) {
+      builder.updateHeya(heya.id, {
+        grandfatheredForeignCount: (heya.grandfatheredForeignCount ?? 0) - 1,
+      });
+    }
+  }
 
   // Intai-kin (引退金): the JSA's lump-sum retirement payment, keyed by the
   // rank held at retirement. Credited to the retiree's own economics.

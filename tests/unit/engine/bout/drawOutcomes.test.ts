@@ -246,10 +246,10 @@ describe("azukari / itamiwake / mizu-iri draw outcomes", () => {
   it("can rule azukari when a torinaoshi rematch draws a contentious mono-ii", () => {
     const world = generateInitialWorld("monoii-probe");
     const makuuchi = [...world.rikishi.values()].filter((r) => r.division === "makuuchi");
-    const east = makuuchi[12];
-    const west = makuuchi[13];
+    const east = makuuchi[0];
+    const west = makuuchi[7];
     const basho = makeMockBasho({ id: "probe-8" });
-    const ctx = { id: "b-12-8", day: 8, rikishiEastId: east.id, rikishiWestId: west.id };
+    const ctx = { id: "b-0-7-d8-87", day: 8, rikishiEastId: east.id, rikishiWestId: west.id };
     const { result } = applyMonoiiVerdict({
       bout: ctx,
       ctxFinal: ctx,

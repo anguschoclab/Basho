@@ -147,3 +147,13 @@ export const FOREIGN_STALL_DIVISIONS: ReadonlySet<string> = new Set([
   "jonokuchi",
 ]);
 export const FOREIGN_STALL_BASHO = 6;
+
+/** WS-4 — veterans in the unsalaried divisions often intai rather than
+ *  relocate when their stable is absorbed (merger-attrition rule). */
+export const MERGER_TRANSFER_RETIRE_AGE = 30;
+export const MERGER_RETIRE_DIVISIONS: ReadonlySet<string> = new Set([
+  "makushita",
+  "sandanme",
+  "jonidan",
+  "jonokuchi",
+]);
