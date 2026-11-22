@@ -42,7 +42,6 @@ import {
   SIDE_EAST_OFFSET,
   SIDE_WEST_OFFSET,
   PROXIMITY_OFFSET_START,
-  UNPAIRED_INCREMENT,
   FINALE_INDEX,
 } from "@/constants/engine/matchmaking";
 
@@ -176,13 +175,15 @@ function phase1(
       for (let j = i + 1; j < remaining.length; j++) {
         const b = remaining[j];
         if (paired.has(b.id)) continue;
+        // Hard rules apply even at the last resort: no rematches outside
+        // ketteisen, and stablemates never meet — a rikishi left without
+        // a legal partner stays unpaired rather than forcing a violation.
         const forced = scorePairing({
           basho,
           a,
           b,
           day,
           facedPairs: facedSet,
-          allowRepeatOverride: true,
         });
         if (forced) {
           pairings.push({ ...forced, reasons: [...forced.reasons, "forced"] });
@@ -394,20 +395,30 @@ function phase2(
   for (const r of pool) {
     if (!paired.has(r.id)) unpaired.push(r);
   }
-  for (let i = 0; i < unpaired.length - 1; i += UNPAIRED_INCREMENT) {
+  // Last-resort sweep under the same hard rules: a leftover rikishi is
+  // paired with the first remaining partner who passes scorePairing —
+  // stablemate and rematch bars are never overridden, so some rikishi
+  // may legitimately receive no bout (odd pools, same-heya blocks).
+  const claimed = new Set<string>();
+  for (let i = 0; i < unpaired.length; i++) {
     const a = unpaired[i];
-    const b = unpaired[i + 1];
-    const forced = scorePairing({
-      basho,
-      a,
-      b,
-      day,
-      facedPairs: facedSet,
-      allowRepeatOverride: true,
-      rules: { avoidSameHeya: false },
-    });
-    if (forced) {
-      pairings.push({ ...forced, reasons: [...forced.reasons, "forced"] });
+    if (claimed.has(a.id)) continue;
+    for (let j = i + 1; j < unpaired.length; j++) {
+      const b = unpaired[j];
+      if (claimed.has(b.id)) continue;
+      const forced = scorePairing({
+        basho,
+        a,
+        b,
+        day,
+        facedPairs: facedSet,
+      });
+      if (forced) {
+        claimed.add(a.id);
+        claimed.add(b.id);
+        pairings.push({ ...forced, reasons: [...forced.reasons, "forced"] });
+        break;
+      }
     }
   }
 

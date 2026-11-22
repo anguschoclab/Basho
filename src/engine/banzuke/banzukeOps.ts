@@ -258,28 +258,13 @@ export function updateBanzuke(
 
   let scored = scoredAll;
   if (options?.maxJonokuchiSlots !== undefined) {
-    const jkTier = RANK_HIERARCHY.jonokuchi.tier;
-    let jkCount = 0;
-    scored = [];
-    for (const s of scoredAll) {
-      if (s.eligibleBestTier >= jkTier) {
-        jkCount++;
-        if (jkCount > options.maxJonokuchiSlots) {
-          banzukeGai.push(s.entry.rikishiId);
-          banzukeGaiReasons[s.entry.rikishiId] = "overflow";
-          const from = `${s.entry.division}:${formatRank(s.entry.position)}`;
-          banzukeGaiEvents.push({
-            rikishiId: s.entry.rikishiId,
-            from,
-            to: "banzuke-gai",
-            kind: "demotion",
-            description: `Demoted: ${from} → Banzuke-gai (division overflow)`,
-          });
-          continue;
-        }
-      }
-      scored.push(s);
-    }
+    scored = trimJonokuchiOverCap(
+      scoredAll,
+      options.maxJonokuchiSlots,
+      banzukeGai,
+      banzukeGaiReasons,
+      banzukeGaiEvents
+    );
   }
 
   let assigned = assignBanzukeSlots(scored, fullTemplate, demotedOzeki);
@@ -290,40 +275,13 @@ export function updateBanzuke(
   // NOT be absorbed by vacuum-promoting anyone across the sekitori
   // boundaries (WS-11 fallback gates).
   if (assigned.length < scored.length) {
-    const template = [...fullTemplate];
-    let jkNum = 0;
-    for (const s of fullTemplate) {
-      if (s.position.rank === "jonokuchi") {
-        jkNum = Math.max(jkNum, s.position.rankNumber ?? 0);
-      }
-    }
-    let side: "east" | "west" = "east";
-    while (template.length < fullTemplate.length + (scored.length - assigned.length)) {
-      jkNum++;
-      template.push({
-        division: "jonokuchi",
-        position: { rank: "jonokuchi", rankNumber: jkNum, side },
-      });
-      side = side === "east" ? "west" : "east";
-    }
+    const template = extendJonokuchiTail(
+      fullTemplate,
+      scored.length - assigned.length
+    );
     assigned = assignBanzukeSlots(scored, template, demotedOzeki);
   }
-  if (assigned.length < scored.length) {
-    const assignedIds = new Set(assigned.map((a) => a.rikishiId));
-    for (const s of scored) {
-      if (assignedIds.has(s.entry.rikishiId)) continue;
-      banzukeGai.push(s.entry.rikishiId);
-      banzukeGaiReasons[s.entry.rikishiId] = "overflow";
-      const from = `${s.entry.division}:${formatRank(s.entry.position)}`;
-      banzukeGaiEvents.push({
-        rikishiId: s.entry.rikishiId,
-        from,
-        to: "banzuke-gai",
-        kind: "demotion",
-        description: `Demoted: ${from} → Banzuke-gai (division overflow)`,
-      });
-    }
-  }
+  markOverflowBanzukeGai(assigned, scored, banzukeGai, banzukeGaiReasons, banzukeGaiEvents);
 
   const events: MovementEvent[] = [
     ...banzukeMovementEvents(
@@ -467,6 +425,97 @@ const KYUJO_LANDING_FLOOR: Record<string, number> = {
   sandanme: 9100,
   jonidan: 10080,
 };
+
+/**
+ * Appends `count` extra jonokuchi tail slots to a slot template —
+ * numbering continues from the last printed jonokuchi rank. Jonokuchi
+ * is unprinted in real banzuke, so the tail is the only division that
+ * can absorb demand without falsifying the sheet.
+ */
+function extendJonokuchiTail(
+  fullTemplate: ReturnType<typeof buildFullSlotTemplate>,
+  count: number
+): ReturnType<typeof buildFullSlotTemplate> {
+  const template = [...fullTemplate];
+  let jkNum = 0;
+  for (const s of fullTemplate) {
+    if (s.position.rank === "jonokuchi") {
+      jkNum = Math.max(jkNum, s.position.rankNumber ?? 0);
+    }
+  }
+  let side: "east" | "west" = "east";
+  for (let i = 0; i < count; i++) {
+    jkNum++;
+    template.push({
+      division: "jonokuchi",
+      position: { rank: "jonokuchi", rankNumber: jkNum, side },
+    });
+    side = side === "east" ? "west" : "east";
+  }
+  return template;
+}
+
+/**
+ * Applies the jonokuchi slot cap: scored candidates past the cap are
+ * ejected to banzuke-gai as division overflow rather than occupying
+ * tail slots (used by intake-controlled publishing paths).
+ */
+function trimJonokuchiOverCap(
+  scoredAll: ScoredCandidate[],
+  maxJonokuchiSlots: number,
+  banzukeGai: string[],
+  banzukeGaiReasons: Record<string, "kyujo" | "overflow">,
+  banzukeGaiEvents: MovementEvent[]
+): ScoredCandidate[] {
+  const jkTier = RANK_HIERARCHY.jonokuchi.tier;
+  const scored: ScoredCandidate[] = [];
+  let jkCount = 0;
+  for (const s of scoredAll) {
+    if (s.eligibleBestTier >= jkTier) {
+      jkCount++;
+      if (jkCount > maxJonokuchiSlots) {
+        banzukeGai.push(s.entry.rikishiId);
+        banzukeGaiReasons[s.entry.rikishiId] = "overflow";
+        const from = `${s.entry.division}:${formatRank(s.entry.position)}`;
+        banzukeGaiEvents.push({
+          rikishiId: s.entry.rikishiId,
+          from,
+          to: "banzuke-gai",
+          kind: "demotion",
+          description: `Demoted: ${from} → Banzuke-gai (division overflow)`,
+        });
+        continue;
+      }
+    }
+    scored.push(s);
+  }
+  return scored;
+}
+
+/** Marks scored candidates who received no slot as banzuke-gai overflow. */
+function markOverflowBanzukeGai(
+  assigned: BanzukeEntry[],
+  scored: ScoredCandidate[],
+  banzukeGai: string[],
+  banzukeGaiReasons: Record<string, "kyujo" | "overflow">,
+  banzukeGaiEvents: MovementEvent[]
+): void {
+  if (assigned.length >= scored.length) return;
+  const assignedIds = new Set(assigned.map((a) => a.rikishiId));
+  for (const s of scored) {
+    if (assignedIds.has(s.entry.rikishiId)) continue;
+    banzukeGai.push(s.entry.rikishiId);
+    banzukeGaiReasons[s.entry.rikishiId] = "overflow";
+    const from = `${s.entry.division}:${formatRank(s.entry.position)}`;
+    banzukeGaiEvents.push({
+      rikishiId: s.entry.rikishiId,
+      from,
+      to: "banzuke-gai",
+      kind: "demotion",
+      description: `Demoted: ${from} → Banzuke-gai (division overflow)`,
+    });
+  }
+}
 
 type ScoredCandidate = {
   entry: BanzukeEntry;

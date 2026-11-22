@@ -39,6 +39,8 @@ import { SeededRNG } from "@/engine/core/rng";
 import type { DramaContext, DramaLabel } from "@/engine/matchmaking/DramaMatchmaker";
 import { toKeyedMap } from "@/engine/utils/index";
 import { isEphemeralMaezumoEntrant, scheduleMaezumoDay } from "@/engine/basho/maezumoPrelims";
+import { scorePairing } from "@/engine/matchmaking/MatchmakingPhases";
+import { buildFacedSet, pairKey } from "@/engine/matchmaking/swissShared";
 
 // === DRAMA CONTEXT EXTRACTION ===
 
@@ -603,6 +605,14 @@ export function scheduleAllDivisionsDay(args: {
     out.push(...scheduled);
     builder.merge(impact);
   }
+
+  // W L — cross-division leftover pass: the hard bars (no stablemates,
+  // no rematches) can leave a rikishi without a legal in-division
+  // partner. The JSA absorbs such leftovers across divisions — a real
+  // torikumi never forces a violation and never declares a bye while a
+  // legal pairing exists anywhere on the sheet.
+  out.push(...pairCrossDivisionLeftovers(args, divisions, plan, out, builder));
+
   // §3 maezumo — shin-deshi preliminaries ride on the jonokuchi card days.
   if (divisions.includes("jonokuchi")) {
     const busy = new Set(out.flatMap((m) => [m.eastRikishiId, m.westRikishiId]));
@@ -613,6 +623,76 @@ export function scheduleAllDivisionsDay(args: {
     }
   }
   return { scheduled: out, impact: builder.build() };
+}
+
+/**
+ * Pairs rikishi left unpaired by the hard-rule sweeps across divisions.
+ * Greedy scan over leftovers from every scheduled division: each rikishi
+ * takes the first remaining partner who passes `scorePairing` under the
+ * standard rules — stablemates and rematches are still never allowed.
+ * Cross-division pairs tag the lower-division participant as the callup
+ * for downstream stat accounting.
+ */
+function pairCrossDivisionLeftovers(
+  args: { world: WorldState; basho: BashoState; day: number; seed: string },
+  divisions: Division[],
+  plan: ReturnType<typeof planDivisionCallups>,
+  scheduled: MatchSchedule[],
+  builder: ReturnType<typeof createImpactBuilder>
+): MatchSchedule[] {
+  const busy = new Set(scheduled.flatMap((m) => [m.eastRikishiId, m.westRikishiId]));
+  const leftovers: Rikishi[] = [];
+  for (const div of divisions) {
+    for (const r of activeDivisionRoster(args.world, div)) {
+      if (!busy.has(r.id) && !plan.excludeIds.get(div)?.has(r.id)) leftovers.push(r);
+    }
+  }
+  if (leftovers.length < 2) return [];
+
+  const bashoForDay: BashoState =
+    args.basho.day === args.day
+      ? args.basho
+      : { ...args.basho, day: args.day, currentDay: args.day };
+  const faced = buildFacedSet(bashoForDay);
+  for (const m of scheduled) faced.add(pairKey(m.eastRikishiId, m.westRikishiId));
+
+  const claimed = new Set<string>();
+  const extras: MatchSchedule[] = [];
+  for (let i = 0; i < leftovers.length; i++) {
+    const a = leftovers[i];
+    if (claimed.has(a.id)) continue;
+    for (let j = i + 1; j < leftovers.length; j++) {
+      const b = leftovers[j];
+      if (claimed.has(b.id)) continue;
+      const p = scorePairing({
+        basho: bashoForDay,
+        a,
+        b,
+        day: args.day,
+        facedPairs: faced,
+      });
+      if (!p) continue;
+      claimed.add(a.id);
+      claimed.add(b.id);
+      faced.add(pairKey(a.id, b.id));
+      extras.push({
+        boutId: `b-${args.world.year}-${args.basho.bashoName}-d${args.day}-${p.eastId}-${p.westId}`,
+        day: args.day,
+        eastRikishiId: p.eastId,
+        westRikishiId: p.westId,
+        dramaticContext: extractDramaContext(p),
+        ...(a.division !== b.division
+          ? {
+              crossDivisionCallupId:
+                divisions.indexOf(a.division) < divisions.indexOf(b.division) ? a.id : b.id,
+            }
+          : {}),
+      });
+      break;
+    }
+  }
+  if (extras.length > 0) builder.appendToWorldArray("basho.matches", extras);
+  return extras;
 }
 
 /**
@@ -830,10 +910,10 @@ export function ensureRollingTorikumi(world: WorldState, throughDay?: number): S
 
 /**
  * §3 rolling torikumi withdrawal reconciliation:
- * When a rikishi withdraws (kyūjō), his bout on the current day (`m.day <= basho.day`)
- * stays on the card so his opponent receives a canonical fusenshō (walkover),
- * while any already-posted future day (`m.day > basho.day`) containing him is
- * re-paired without him so he does not produce a second fusenshō.
+ * When a rikishi withdraws (kyūjō), every already-posted card is LOCKED —
+ * his matches stay on the sheet and each resolves as a fusenshō
+ * (walkover win for the opponent, 不戦敗 for the withdrawn rikishi) when
+ * that day arrives. Published torikumi are never re-paired.
  */
 export function reconcileFutureScheduleForWithdrawals(
   world: WorldState,
@@ -843,58 +923,12 @@ export function reconcileFutureScheduleForWithdrawals(
   const basho = world.currentBasho;
   if (!basho || !Array.isArray(basho.matches)) return builder.build();
 
-  const currentDay = basho.day ?? 1;
-  const affectedFutureDays = new Set<number>();
-  for (const m of basho.matches) {
-    if (
-      m.day > currentDay &&
-      !m.result &&
-      (m.eastRikishiId === withdrawnRikishiId || m.westRikishiId === withdrawnRikishiId)
-    ) {
-      affectedFutureDays.add(m.day);
-    }
-  }
-  if (affectedFutureDays.size === 0) return builder.build();
-
-  const sortedDays = [...affectedFutureDays].sort((a, b) => a - b);
-  let retainedMatches = basho.matches.filter((m) => !(affectedFutureDays.has(m.day) && !m.result));
-
-  const nextRikishi = new Map(world.rikishi);
-  const target = nextRikishi.get(withdrawnRikishiId);
+  const target = world.rikishi.get(withdrawnRikishiId);
   if (target) {
-    nextRikishi.set(withdrawnRikishiId, { ...target, isKyujo: true });
+    builder.updateRikishi(withdrawnRikishiId, { isKyujo: true });
   }
-
-  let runningWorld: WorldState = {
-    ...world,
-    rikishi: nextRikishi,
-    currentBasho: { ...basho, matches: retainedMatches },
-  };
-
-  for (const d of sortedDays) {
-    const { scheduled, impact } = scheduleAllDivisionsDay({
-      world: runningWorld,
-      basho: runningWorld.currentBasho ?? basho,
-      day: d,
-      seed: world.seed,
-    });
-    for (const added of impact.collections?.rikishiToAdd ?? []) {
-      builder.addRikishi(added);
-    }
-    retainedMatches = [...retainedMatches, ...scheduled];
-    runningWorld = {
-      ...resolveImpacts(runningWorld, [impact]),
-      currentBasho: {
-        ...(runningWorld.currentBasho ?? basho),
-        matches: retainedMatches,
-      },
-    };
-  }
-
-  builder.updateWorldField("currentBasho", {
-    ...basho,
-    matches: retainedMatches,
-  });
+  // Posted matches are retained verbatim — day resolution turns each
+  // unresolved bout involving the kyūjō rikishi into a fusenshō.
 
   return builder.build();
 }

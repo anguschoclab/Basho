@@ -83,12 +83,13 @@ function phase1(
       for (let j = i + 1; j < sorted.length; j++) {
         const b = sorted[j];
         if (paired.has(b.id)) continue;
+        // Hard rules apply even at the last resort: no rematches outside
+        // ketteisen, and stablemates never meet.
         const forced = scorePairing({
           basho,
           a,
           b,
           facedPairs: facedSet,
-          allowRepeatOverride: true,
         });
         if (forced) {
           pairings.push({ ...forced, reasons: [...forced.reasons, "forced"] });
@@ -203,26 +204,29 @@ function phase2(
   for (const r of pool) {
     if (!paired.has(r.id)) unpaired.push(r);
   }
-  for (let i = 0; i < unpaired.length - 1; i += 2) {
+  // Last-resort sweep under the same hard rules: a leftover rikishi is
+  // paired with the first remaining partner who passes scorePairing —
+  // stablemate and rematch bars are never overridden, so some rikishi
+  // may legitimately receive no bout (odd pools, same-heya blocks).
+  const claimed = new Set<string>();
+  for (let i = 0; i < unpaired.length; i++) {
     const a = unpaired[i];
-    const b = unpaired[i + 1];
-    const forced = scorePairing({
-      basho,
-      a,
-      b,
-      facedPairs: facedSet,
-      allowRepeatOverride: true,
-      rules: { avoidSameHeya: false },
-    });
-    if (forced) {
-      // Same-heya is a hard rule everywhere else — when the last-resort
-      // disables it, mark the violation explicitly so downstream consumers
-      // (and audits) can distinguish it from a repeat-override "forced".
-      const sameHeya = a.heyaId !== undefined && a.heyaId === b.heyaId;
-      pairings.push({
-        ...forced,
-        reasons: [...forced.reasons, "forced", ...(sameHeya ? ["same_heya_forced"] : [])],
+    if (claimed.has(a.id)) continue;
+    for (let j = i + 1; j < unpaired.length; j++) {
+      const b = unpaired[j];
+      if (claimed.has(b.id)) continue;
+      const forced = scorePairing({
+        basho,
+        a,
+        b,
+        facedPairs: facedSet,
       });
+      if (forced) {
+        claimed.add(a.id);
+        claimed.add(b.id);
+        pairings.push({ ...forced, reasons: [...forced.reasons, "forced"] });
+        break;
+      }
     }
   }
 

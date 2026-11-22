@@ -30,6 +30,7 @@ import {
   JUN_TOSHIYORI_YEARS_OTHER,
   BRANCH_FOUNDING_SANYAKU_BASHO,
   BRANCH_FOUNDING_MAKUUCHI_BASHO,
+  ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD,
 } from "@/constants/engine/economic";
 import { getHeya } from "@/engine/core/queries";
 import { getCitizenshipStatus } from "@/engine/utils/citizenshipUtils";
@@ -206,14 +207,20 @@ function resolveElderShare(
         }
       : null);
 
+  const yushoCount = (retiree.careerHistory ?? []).reduce(
+    (a, h) => a + (h.isYusho ? 1 : 0),
+    0
+  );
   const elderStatus: ElderStatus | null =
     availableStock != null
       ? "toshiyori"
-      // Post-2006 rules: jun-toshiyori grace is Yokozuna/Ōzeki only —
-      // Komusubi/Sekiwake get nothing — and ichidai-toshiyori is abolished.
-      : isYokozunaOrOzekiRank(retiree.rank)
-        ? "jun_toshiyori"
-        : null;
+      : retiree.rank === "yokozuna" && yushoCount >= ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD
+        ? "ichidai_toshiyori"
+        // Post-2006 rules: jun-toshiyori grace is Yokozuna/Ōzeki only —
+        // Komusubi/Sekiwake without stock get no elder status.
+        : isYokozunaOrOzekiRank(retiree.rank)
+          ? "jun_toshiyori"
+          : null;
   const elderExpiryYear =
     elderStatus === "jun_toshiyori"
       ? world.year +

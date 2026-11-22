@@ -78,15 +78,20 @@ describe("phase06_yearly_boundary — stale-base worldFields merges", () => {
       name: "Oya B",
       yearsInCharge: 9,
     });
-    // Successors are young maegashira — too young/unaccomplished for the
-    // retiree→oyakata conversion, so the only myosekiMarket writers are the
-    // two transferElderStock reseats.
+    // Successors are journeyman maegashira — inherit-eligible (12+ makuuchi
+    // basho, WS-6) but with no yusho-tier record, so the only myosekiMarket
+    // writers are the two transferElderStock reseats.
+    const veteranCareer = Array.from({ length: 13 }, () => ({
+      division: "makuuchi",
+      rank: "maegashira",
+    }));
     const sA = MockFactory.createRikishi("sA", {
       heyaId: "heyaA",
       division: "makuuchi",
       rank: "maegashira",
       birthYear: 2007, // age 20
       careerWins: 0,
+      careerHistory: veteranCareer as never,
     });
     const sB = MockFactory.createRikishi("sB", {
       heyaId: "heyaB",
@@ -94,6 +99,7 @@ describe("phase06_yearly_boundary — stale-base worldFields merges", () => {
       rank: "maegashira",
       birthYear: 2007,
       careerWins: 0,
+      careerHistory: veteranCareer as never,
     });
     const heyaA = MockFactory.createHeya("heyaA", {
       oyakataId: "oyaA",

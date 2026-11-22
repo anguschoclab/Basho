@@ -87,8 +87,19 @@ describe("DynastyService — golden master", () => {
   }
 
   it("age 65 with eligible sekitori successor", () => {
+    // WS-6 — the inherit bar is 12 makuuchi or 20 sekitori basho of career
+    // history: the fixture supplies a 13-basho makuuchi veteran.
+    const careerHistory = Array.from({ length: 13 }, () => ({
+      division: "makuuchi",
+      rank: "maegashira",
+    }));
     const world = worldWithOyakata(65, [
-      mockRikishi("r-sec", { heyaId: "heya-1", division: "makuuchi", rank: "maegashira" }),
+      mockRikishi("r-sec", {
+        heyaId: "heya-1",
+        division: "makuuchi",
+        rank: "maegashira",
+        careerHistory: careerHistory as never,
+      }),
     ]);
     expect(impactDigest(DynastyService.tickSuccessionCheck(world))).toMatchSnapshot();
   });
@@ -101,8 +112,19 @@ describe("DynastyService — golden master", () => {
   });
 
   it("findEligibleSuccessors across roster shapes", () => {
+    // WS-6 — inherit bar: 12 makuuchi or 20 sekitori basho. r-sec is a
+    // 21-basho juryo veteran (Kanechika case); r-mak is drought fallback;
+    // r-other is a short-career makuuchi outsider.
+    const longJuryoCareer = Array.from({ length: 21 }, () => ({
+      division: "juryo",
+      rank: "juryo",
+    }));
     const world = worldWithOyakata(60, [
-      mockRikishi("r-sec", { heyaId: "heya-1", division: "juryo" }),
+      mockRikishi("r-sec", {
+        heyaId: "heya-1",
+        division: "juryo",
+        careerHistory: longJuryoCareer as never,
+      }),
       mockRikishi("r-mak", { heyaId: "heya-1", division: "makushita", rankNumber: 3 }),
       mockRikishi("r-other", { heyaId: "heya-2", division: "makuuchi" }),
     ]);

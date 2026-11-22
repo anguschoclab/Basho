@@ -106,7 +106,7 @@ describe("§3 Torikumi posting cadence (rolling lookahead)", () => {
     expect(world.currentBasho?.matches.some((m) => m.day === 15)).toBe(true);
   });
 
-  it("keeps today's bout for a fusenshō on withdrawal while re-pairing already-posted future days without the withdrawn rikishi", () => {
+  it("keeps every posted bout on withdrawal — published cards are locked and resolve as fusenshō", () => {
     const base = buildMakuuchiRosterWorld();
     let world = resolveImpacts(base, [buildStartBashoImpact(base, "hatsu")]);
 
@@ -120,11 +120,12 @@ describe("§3 Torikumi posting cadence (rolling lookahead)", () => {
     const day2WithM1 = (world.currentBasho?.matches ?? []).filter(
       (m) => m.day === 2 && (m.eastRikishiId === "m-1" || m.westRikishiId === "m-1")
     );
-    // Still on Day 1's card (fusenshō), removed from Day 2's card.
+    // Real JSA rule: once a day's card is published it is LOCKED — both
+    // posted bouts stay; each resolves as a fusenshō when the day runs.
     expect(day1WithM1).toHaveLength(1);
-    expect(day2WithM1).toHaveLength(0);
+    expect(day2WithM1).toHaveLength(1);
 
-    // Re-running reconciliation when m-1 is already off future cards is a no-op.
+    // Reconciliation never rewrites the card — only the kyūjō flag moves.
     const noop = reconcileFutureScheduleForWithdrawals(world, "m-1");
     expect(noop.worldFields?.currentBasho).toBeUndefined();
   });

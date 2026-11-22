@@ -281,7 +281,7 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
             "section": "ceremony"
           },
           {
-            "text": "A career spanning 0 basho comes to an end — [[rikishi:r-sec:Wrestler-r-sec]] finishes with 20 wins and 0 kinboshi.",
+            "text": "A career spanning 13 basho comes to an end — [[rikishi:r-sec:Wrestler-r-sec]] finishes with 20 wins and 0 kinboshi.",
             "section": "career_summary"
           },
           {
@@ -308,7 +308,7 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
         "careerWins": 20,
         "careerLosses": 10,
         "careerBouts": 30,
-        "bashoCount": 0,
+        "bashoCount": 13,
         "division": "makuuchi",
         "age": 31,
         "retirementReason": "Promoted to Oyakata",
@@ -323,7 +323,7 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
             "section": "ceremony"
           },
           {
-            "text": "A career spanning 0 basho comes to an end — [[rikishi:r-sec:Wrestler-r-sec]] finishes with 20 wins and 0 kinboshi.",
+            "text": "A career spanning 13 basho comes to an end — [[rikishi:r-sec:Wrestler-r-sec]] finishes with 20 wins and 0 kinboshi.",
             "section": "career_summary"
           },
           {

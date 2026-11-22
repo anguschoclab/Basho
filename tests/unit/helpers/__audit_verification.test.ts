@@ -215,7 +215,7 @@ describe("audit verification: recapProjections bugfix scenarios", () => {
 // ── 3. specialPrizes bugfix scenarios (from specialPrizes.bugfix.test.ts) ────
 
 describe("audit verification: specialPrizes bugfix scenarios", () => {
-  it("Test 7.3: does not award prizes to the yusho winner", () => {
+  it("Test 7.3: yusho winners are sansho-eligible (post-WS-12 rule)", () => {
     const sekiwake = makeRikishi("s1", { rank: "sekiwake" });
     const result = makeResult("b1", "s1", "opp1");
     const matches = [makeMatchWithResult("b1", 1, "s1", "opp1", result)];
@@ -227,10 +227,10 @@ describe("audit verification: specialPrizes bugfix scenarios", () => {
     for (let i = 1; i <= 10; i++)
       rikishiMap.set(`opp${i}`, makeRikishi(`opp${i}`, { rank: "maegashira" }));
     const prizes = determineSpecialPrizes(matches, rikishiMap, "s1");
-    // s1 is the champion — sansho exclude the yusho winner regardless of rank.
-    expect(prizes.shukunsho).not.toContain("s1");
-    expect(prizes.kantosho).not.toContain("s1");
-    expect(prizes.ginoSho).not.toContain("s1");
+    // WS-12: the blanket yusho-winner exclusion was removed — a dominant
+    // champion can take a special prize (e.g. Shukun-sho for the run).
+    const all = [...prizes.shukunsho, ...prizes.kantosho, ...prizes.ginoSho];
+    expect(all).toContain("s1");
   });
 
   it("Test 7.5: awards at most 3 sansho prizes (one of each type)", () => {

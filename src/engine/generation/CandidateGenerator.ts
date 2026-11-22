@@ -114,6 +114,54 @@ function rollDevelopmentProfile(rng: SeededRNG): DevelopmentProfile {
  * console.log(candidate.name, candidate.archetype);
  * ```
  */
+const PA_STAT_KEYS = [
+  "power",
+  "speed",
+  "technique",
+  "stamina",
+  "mental",
+  "adaptability",
+  "balance",
+] as const;
+
+/** Emergent-prodigy bonus: stat bump, full-PA ceiling, faster growth. */
+function applyProdigyBonus(paPkg: {
+  stats: RikishiStats;
+  ceilingFraction: number;
+  developmentSpeed: number;
+}): void {
+  const keys: Array<keyof Omit<RikishiStats, "specialPrizes" | "achievements">> = [
+    "power",
+    "speed",
+    "technique",
+    "stamina",
+    "mental",
+    "adaptability",
+    "balance",
+  ];
+  for (const key of keys) {
+    paPkg.stats[key] = clampInt(
+      (paPkg.stats[key] || 0) + PRODIGY_STAT_BONUS,
+      STAT_MIN,
+      STAT_MAX
+    );
+  }
+  paPkg.ceilingFraction = PRODIGY_PA_CEILING_FRACTION; // Prodigies always reach their full PA
+  paPkg.developmentSpeed *= PRODIGY_DEVELOPMENT_SPEED_MULTIPLIER; // Faster growth
+}
+
+/** Applies a combat-PA floor (and optional devSpeed multiplier) in place. */
+function applyPaFloor(
+  paPkg: { stats: Record<(typeof PA_STAT_KEYS)[number], number>; developmentSpeed: number },
+  floor: number,
+  devSpeedMult?: number
+): void {
+  for (const key of PA_STAT_KEYS) {
+    paPkg.stats[key] = Math.max(paPkg.stats[key], floor);
+  }
+  if (devSpeedMult !== undefined) paPkg.developmentSpeed *= devSpeedMult;
+}
+
 export function generateCandidate(args: {
   id: string;
   rng: SeededRNG;
@@ -147,23 +195,7 @@ export function generateCandidate(args: {
   });
 
   // Apply Prodigy bonus to stat ceilings
-  if (isEmergentProdigy) {
-    const stats = paPkg.stats;
-    const keys: Array<keyof Omit<RikishiStats, "specialPrizes" | "achievements">> = [
-      "power",
-      "speed",
-      "technique",
-      "stamina",
-      "mental",
-      "adaptability",
-      "balance",
-    ];
-    for (const key of keys) {
-      stats[key] = clampInt((stats[key] || 0) + PRODIGY_STAT_BONUS, STAT_MIN, STAT_MAX);
-    }
-    paPkg.ceilingFraction = PRODIGY_PA_CEILING_FRACTION; // Prodigies always reach their full PA
-    paPkg.developmentSpeed *= PRODIGY_DEVELOPMENT_SPEED_MULTIPLIER; // Faster growth
-  }
+  if (isEmergentProdigy) applyProdigyBonus(paPkg);
 
   // Phase 5 Depth: Genetic Lineage
   const legacyTrait = world
@@ -187,37 +219,14 @@ export function generateCandidate(args: {
   // WS-1c — foreign recruits arrive older with proven ability: the
   // selection funnel is harsher, so survivors carry a PA floor and a
   // faster development track than domestic teens.
-  if (poolType === "foreign") {
-    for (const key of [
-      "power",
-      "speed",
-      "technique",
-      "stamina",
-      "mental",
-      "adaptability",
-      "balance",
-    ] as const) {
-      paPkg.stats[key] = Math.max(paPkg.stats[key], FOREIGN_PA_FLOOR);
-    }
-    paPkg.developmentSpeed *= FOREIGN_DEVSPEED_MULT;
-  }
+  if (poolType === "foreign") applyPaFloor(paPkg, FOREIGN_PA_FLOOR, FOREIGN_DEVSPEED_MULT);
 
   // WS-2 — a tsukedashi credential is earned quality, not a label:
   // national champions carry a combat-PA floor and a faster development
   // track, and the credential expires after TSUKEDASHI_EXPIRY_YEARS.
   let tsukedashiExpiryYear: number | undefined;
   if (tsukedashi) {
-    for (const key of [
-      "power",
-      "speed",
-      "technique",
-      "stamina",
-      "mental",
-      "adaptability",
-      "balance",
-    ] as const) {
-      paPkg.stats[key] = Math.max(paPkg.stats[key], TSUKEDASHI_PA_FLOOR);
-    }
+    applyPaFloor(paPkg, TSUKEDASHI_PA_FLOOR);
     paPkg.developmentSpeed = Math.max(paPkg.developmentSpeed, TSUKEDASHI_DEVSPEED_MIN);
     tsukedashiExpiryYear = currentYear + TSUKEDASHI_EXPIRY_YEARS;
   }
