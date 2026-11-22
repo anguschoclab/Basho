@@ -44,6 +44,7 @@ import { KINJITE_FOUL_LABELS } from "@/engine/bout/kinjite";
 import { rngFromSeed } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { hometownTier, bashoRegionLabel } from "@/engine/basho/geography";
+import { PREFECTURE_REGION } from "@/constants/engine/geography";
 import { BASHO_NAMES } from "@/constants/ui/calendar";
 import { getRankDisplayEntry, isSanyakuRank } from "@/constants/engine/rankDisplay";
 import type { BoutTactic } from "@/engine/types/combat";
@@ -1085,16 +1086,23 @@ function beatJuryoCallup(p: PbpPipeline): void {
 function beatHometownWin(p: PbpPipeline): void {
   const { bashoInfo, east, loserRikishi, postBoutRng, push, west, winnerRikishi } = p;
   if (east.origin && west.origin && east.origin === west.origin) {
+    // W Z — same split as the pre-bout beat: a shared FOREIGN origin is not
+    // a prefecture showdown, so countrymen get dedicated shared-origin copy.
+    const foreign = !PREFECTURE_REGION[east.origin];
     push(
-      BardEngine.resolve(postBoutRng, "post_bout.prefecture_showdown_win", {
-        WINNER: winnerRikishi.shikona,
-        LOSER: loserRikishi.shikona,
-        ORIGIN: east.origin,
-        winnerId: winnerRikishi.id,
-        loserId: loserRikishi.id,
-      }).text,
+      BardEngine.resolve(
+        postBoutRng,
+        foreign ? "post_bout.shared_origin_win" : "post_bout.prefecture_showdown_win",
+        {
+          WINNER: winnerRikishi.shikona,
+          LOSER: loserRikishi.shikona,
+          ORIGIN: east.origin,
+          winnerId: winnerRikishi.id,
+          loserId: loserRikishi.id,
+        }
+      ).text,
       "post_bout",
-      ["hometown", "prefecture_showdown"]
+      foreign ? ["hometown", "shared_origin"] : ["hometown", "prefecture_showdown"]
     );
     return;
   }

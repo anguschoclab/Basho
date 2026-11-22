@@ -806,6 +806,11 @@
     "Bragging rights back to %ORIGIN% go with %WINNER%, who comes out on top against %LOSER%.",
     "In the battle of %ORIGIN% countrymen, %WINNER% edges past %LOSER% to claim the victory."
   ],
+  "shared_origin_win": [
+    "%WINNER% keeps the %ORIGIN% connection pointing his way — a win over %LOSER% for the folks back home.",
+    "Honors to %WINNER% in the %ORIGIN% derby — %LOSER% beaten in the countrymen's clash.",
+    "Back-home bragging rights go to %WINNER% — he outlasts %LOSER% in the %ORIGIN% showdown."
+  ],
   "mid_basho_return_win": [
     "Fresh back from injury, %WINNER% wastes no time — picking up a victory right on his return to the dohyo.",
     "What a comeback! Returning mid-tournament, %WINNER% digs in and wins immediately.",

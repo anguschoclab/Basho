@@ -40,6 +40,7 @@ import {
   COLLAPSE_REBOUND_MIN_WINS,
   DEMOTION_WATCH_BOTTOM_SLOTS,
   DREAM_SHOWDOWN_MIN_DAY,
+  FAN_FAVORITE_MIN,
   KACHI_DROUGHT_MIN_BASHO,
   LOSING_SKID_MIN,
   PROVEN_GIANT_KILLER_MAX_AGE,
@@ -1318,6 +1319,26 @@ function beatPairingFramings(p: PbpPipeline): void {
   }
 }
 
+/** W Z — stretch: pre-bout note when one combatant is a genuine crowd darling. */
+function beatFanFavorite(p: PbpPipeline): void {
+  const { east, preBoutRng, push, west } = p;
+  // W Z — optional stretch from the Day-13/14 audit: "fans out in number"
+  // flavor driven by real popularity rather than hometown proximity. One
+  // line per bout, for the more popular man only.
+  const score = (r: typeof east) =>
+    Math.max(r.marketability ?? 50, r.economics?.popularity ?? 50);
+  const favorite = score(east) >= score(west) ? east : west;
+  if (score(favorite) < FAN_FAVORITE_MIN) return;
+  push(
+    BardEngine.resolve(preBoutRng, "pre_bout.fan_favorite", {
+      SHIKONA: favorite.shikona,
+      rikishiId: favorite.id,
+    }).text,
+    "pre_bout",
+    ["fan_favorite"]
+  );
+}
+
 export function narrateStakes(p: PbpPipeline): void {
   beatHometown(p);
   beatSignatureGrip(p);
@@ -1359,4 +1380,5 @@ export function narrateStakes(p: PbpPipeline): void {
   beatDreamShowdown(p);
   beatStarsAlign(p);
   beatProvenGiantKiller(p);
+  beatFanFavorite(p);
 }

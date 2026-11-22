@@ -296,6 +296,25 @@ describe("Z9 — shared_origin for shared foreign origins", () => {
     expect(home.length).toBeGreaterThan(0);
     expect(home).not.toMatch(/prefecture derby/i);
   });
+
+  it("uses shared-origin post-bout copy for a foreign pair (post-bout twin fix)", () => {
+    const east = mockRikishi("r-east", { origin: "Philippines" });
+    const west = mockRikishi("r-west", { origin: "Philippines" });
+    const world = makeBoutWorld(east, west) as FullWorld;
+    const result = narrate(east, west, world);
+    // pre-bout shared_origin + post-bout shared_origin_win
+    expect(tagged(result, "shared_origin").length).toBeGreaterThanOrEqual(2);
+    expect(tagged(result, "prefecture_showdown")).toHaveLength(0);
+  });
+
+  it("keeps prefecture_showdown copy for same-prefecture Japanese pairs", () => {
+    const east = mockRikishi("r-east", { origin: "Kagoshima" });
+    const west = mockRikishi("r-west", { origin: "Kagoshima" });
+    const world = makeBoutWorld(east, west) as FullWorld;
+    const result = narrate(east, west, world);
+    expect(tagged(result, "prefecture_showdown").length).toBeGreaterThan(0);
+    expect(tagged(result, "shared_origin")).toHaveLength(0);
+  });
 });
 
 // ─── Z11: Tachiai ritual + clean call ───────────────────────────────────────
@@ -371,5 +390,47 @@ describe("Z11 — matta narration, mutual consent flavor, clean_call", () => {
       { ...makeBoutResult({ kimarite: "yorikiri" }), pbpLines: [] } as BoutResult
     );
     expect(tagged(cleanResult, "close_call")).toHaveLength(0);
+  });
+});
+
+// ─── W Z stretch: marketability fan-favorite line ───────────────────────────
+
+describe("W Z stretch — fan_favorite marketability line", () => {
+  it("fires for the more popular man when his score clears the bar", () => {
+    const east = mockRikishi("r-east", { marketability: 90 });
+    const west = mockRikishi("r-west", { marketability: 55 });
+    const world = makeBoutWorld(east, west) as FullWorld;
+    const result = narrate(east, west, world);
+    const lines = tagged(result, "fan_favorite");
+    expect(lines).toHaveLength(1);
+    expect(lines[0]).toContain("Wrestler-r-east");
+  });
+
+  it("also fires on economics.popularity alone", () => {
+    const east = mockRikishi("r-east");
+    const west = mockRikishi("r-west", {
+      economics: {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 88,
+      },
+    });
+    const world = makeBoutWorld(east, west) as FullWorld;
+    const result = narrate(east, west, world);
+    const lines = tagged(result, "fan_favorite");
+    expect(lines).toHaveLength(1);
+    expect(lines[0]).toContain("Wrestler-r-west");
+  });
+
+  it("stays silent at default popularity", () => {
+    const east = mockRikishi("r-east");
+    const west = mockRikishi("r-west");
+    const world = makeBoutWorld(east, west) as FullWorld;
+    const result = narrate(east, west, world);
+    expect(tagged(result, "fan_favorite")).toHaveLength(0);
   });
 });

@@ -283,3 +283,7 @@ export const SANYAKU_RETENTION_MIN_DAY = 10;
 /** W Z — preferred-grip bouts with zero secured that mark a habitual
  *  grip denial for the grip_conceded beat. */
 export const GRIP_CONCEDED_MIN_BOUTS = 3;
+
+/** W Z — popularity/marketability score (0-100 scale) that earns the
+ *  fan-favorite callout. Stretch item from the Day-13/14 audit. */
+export const FAN_FAVORITE_MIN = 75;

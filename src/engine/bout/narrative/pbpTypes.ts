@@ -160,6 +160,7 @@ export type PbpTag =
   | "h2h_adaptation"
   | "double_digit"
   | "kadoban_pending"
+  | "fan_favorite"
   | "draw";
 
 export type PbpLine = {

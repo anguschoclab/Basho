@@ -24,9 +24,13 @@ and is excluded.
 
 - Z12 repeat-spoiler: gated on the winner NOT being a contender (existing
   spoiler rule) — a contender's repeat scalp stays silent by design.
-- Z9: `prefecture_showdown_win` post-bout copy still says "prefecture" for
-  foreign pairs — same residual class as the pre-bout fix; flagged in the
-  audit as accepted debt (post-bout twin is a separate template family).
+- ~~Z9: `prefecture_showdown_win` post-bout copy still says "prefecture"
+  for foreign pairs~~ — CLOSED post-audit: `beatHometownWin` now routes
+  shared foreign origins to `post_bout.shared_origin_win` (tagged
+  `shared_origin`), mirroring the pre-bout `PREFECTURE_REGION` split.
+- ~~marketability-driven fan-favorite line (optional stretch)~~ — CLOSED
+  post-audit: `pre_bout.fan_favorite` fires for the more popular man when
+  `max(marketability, economics.popularity) >= FAN_FAVORITE_MIN` (75).
 - Z1 template variant that fired in golden ("No title on the resume yet")
   was reworded so every variant carries the explicit "first title/yusho"
   wording the transcript calls for.
@@ -354,5 +358,4 @@ residuals.
 - Deliberately skipped after validation: "sloppy but effective" tone
   variant (covered by comeback_win + phase_two); "new breed of rikishi"
   generational framing (no objective signal); "ring sense" replay variant
-  (edge_drama adequate); prior-day valiant-loss recall (low value);
-  `marketability`-driven fan-favorite line (listed as optional stretch).
+  (edge_drama adequate); prior-day valiant-loss recall (low value).
