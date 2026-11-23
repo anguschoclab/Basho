@@ -151,12 +151,14 @@ export function executeMerger(
 }
 
 /**
- * Transfer the entire source roster into the merger target — the real JSA
- * merger rule: when a heya closes, its wrestlers are absorbed wholesale by
- * the receiving stable. There is no roster cap, and the foreign quota is
- * waived for the transfer itself (a receiving heya may legally hold 2+
- * slot-bound foreigners; its foreign recruitment then stays frozen until
- * they retire — enforced by the canonical foreign-count reads).
+ * Transfer the source roster into the merger target — the real JSA merger
+ * rule: when a heya closes, its wrestlers are absorbed by the receiving
+ * stable. There is no roster cap, and the foreign quota is waived for the
+ * transfer itself (a receiving heya may legally hold 2+ slot-bound
+ * foreigners; its foreign recruitment then stays frozen until they retire
+ * — enforced by the canonical foreign-count reads). The one exception:
+ * aging lower-division veterans near retirement typically choose intai
+ * over relocation and never move (see MERGER_TRANSFER_RETIRE_AGE).
  */
 function transferRosterAcrossMerger(
   world: WorldState,
