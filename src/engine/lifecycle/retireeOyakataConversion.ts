@@ -21,6 +21,7 @@ import { recordOyakataHandover } from "@/engine/legacy/lineage";
 import { rngForWorld } from "@/engine/core/rng";
 import {
   FOUNDING_CHANCE,
+  FOUNDING_FOLLOWER_MAX,
   FOUNDING_SEED_FUNDS,
   HEYA_SOFT_TARGET,
   HEYA_FOUNDING_RAMP,
@@ -34,7 +35,8 @@ import {
 } from "@/constants/engine/economic";
 import { getHeya } from "@/engine/core/queries";
 import { getCitizenshipStatus } from "@/engine/utils/citizenshipUtils";
-import { isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
+import { isSekitoriDivision, isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
+import { stableSort } from "@/engine/utils/sort";
 
 /**
  * If `retiree` is accomplished and of eligible age, converts them to an oyakata,
@@ -353,13 +355,37 @@ function maybeFoundStable(
   );
   if (!result) return false;
 
+  const parent = getHeya(world, eligibility.parentHeyaId);
+
+  // WS-6 — roster-follow: a founder brings a handful of his deshi from the
+  // parent's unsalaried divisions (real dokuritsu convention — sekitori
+  // never follow; their rank belongs to the parent heya's sheet slot).
+  const followerPool = stableSort(
+    (parent?.rikishiIds ?? [])
+      .map((id) => world.rikishi.get(id))
+      .filter((r): r is Rikishi => !!r && r.id !== retiree.id && !isSekitoriDivision(r.division)),
+    (r) => r.id
+  );
+  const followerIds: string[] = [];
+  while (followerIds.length < FOUNDING_FOLLOWER_MAX && followerPool.length > 0) {
+    followerIds.push(followerPool.splice(Math.floor(rng.next() * followerPool.length), 1)[0].id);
+  }
+  if (followerIds.length > 0) {
+    result.heya.rikishiIds = followerIds;
+    for (const id of followerIds) builder.updateRikishi(id, { heyaId: result.heya.id });
+  }
+
   // Parent-sponsored founding: the seed is real wealth, transferred from the
-  // sponsoring stable — not conjured money.
+  // sponsoring stable — not conjured money. Followers leave the parent sheet.
+  const parentPatch: { funds?: number; rikishiIds?: string[] } = {};
   if (eligibility.parentSponsors) {
-    const parent = getHeya(world, eligibility.parentHeyaId);
-    builder.updateHeya(eligibility.parentHeyaId, {
-      funds: (parent?.funds ?? 0) - FOUNDING_SEED_FUNDS,
-    });
+    parentPatch.funds = (parent?.funds ?? 0) - FOUNDING_SEED_FUNDS;
+  }
+  if (followerIds.length > 0) {
+    parentPatch.rikishiIds = (parent?.rikishiIds ?? []).filter((id) => !followerIds.includes(id));
+  }
+  if (Object.keys(parentPatch).length > 0) {
+    builder.updateHeya(eligibility.parentHeyaId, parentPatch);
   }
 
   builder.addHeya(result.heya);

@@ -81,6 +81,66 @@ describe("runRetirements — stable founding", () => {
     expect(newHeya!.rikishiIds).toEqual([]);
   });
 
+  it("lower-division deshi follow the founder to the branched stable", () => {
+    // Parent roster: founder + three unsalaried deshi + a sekitori who stays.
+    const heya = makeMockHeya("heya-1", {
+      rikishiIds: ["r-ret", "r-jk", "r-sd", "r-ms", "r-juryo"],
+    });
+    world.heyas.set("heya-1", heya);
+
+    const retiree = mockRikishi("r-ret", {
+      heyaId: "heya-1",
+      rank: "ozeki",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 300,
+      shikona: "TestOzeki",
+      nationality: "Japan",
+      economics: { retirementFund: 200_000_000 } as any,
+    });
+    world.rikishi.set("r-ret", retiree);
+    world.rikishi.set("r-jk", mockRikishi("r-jk", { heyaId: "heya-1", division: "jonokuchi" }));
+    world.rikishi.set("r-sd", mockRikishi("r-sd", { heyaId: "heya-1", division: "sandanme" }));
+    world.rikishi.set("r-ms", mockRikishi("r-ms", { heyaId: "heya-1", division: "makushita" }));
+    world.rikishi.set("r-juryo", mockRikishi("r-juryo", { heyaId: "heya-1", division: "juryo" }));
+
+    let foundSeed: string | null = null;
+    for (let i = 0; i < 100; i++) {
+      const testSeed = `founding-followers-${i}`;
+      const testWorld = { ...world, seed: testSeed };
+      const rng = rngForWorld(testWorld, "governance", "retirement_r-ret");
+      if (rng.bool(FOUNDING_CHANCE)) {
+        foundSeed = testSeed;
+        break;
+      }
+    }
+    expect(foundSeed).not.toBeNull();
+    world.seed = foundSeed!;
+
+    const { impact } = processAllRetirements(world);
+    const newWorld = resolveImpacts(world, [impact]);
+
+    const newHeya = Array.from(newWorld.heyas.values()).find(
+      (h) => h.id !== "heya-1" && h.statureBand === "new"
+    );
+    expect(newHeya).toBeDefined();
+    // Deshi follow — capped at FOUNDING_FOLLOWER_MAX, sekitori never follow.
+    const followerIds = newHeya!.rikishiIds ?? [];
+    expect(followerIds.length).toBeGreaterThan(0);
+    expect(followerIds.length).toBeLessThanOrEqual(3);
+    expect(followerIds).not.toContain("r-juryo");
+    expect(followerIds).not.toContain("r-ret");
+    for (const id of followerIds) {
+      expect(newWorld.rikishi.get(id)?.heyaId).toBe(newHeya!.id);
+    }
+    // Parent keeps only the sekitori (retiree was already removed).
+    const parentIds = newWorld.heyas.get("heya-1")!.rikishiIds ?? [];
+    expect(parentIds).toContain("r-juryo");
+    for (const id of followerIds) {
+      expect(parentIds).not.toContain(id);
+    }
+  });
+
   it("does NOT found a stable when heya count is at cap", () => {
     // Fill world to cap
     for (let i = 0; i < HEYA_COUNT_CAP; i++) {

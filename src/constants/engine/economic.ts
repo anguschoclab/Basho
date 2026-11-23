@@ -194,6 +194,14 @@ export const MERGER_THRESHOLD = -15_000_000;
 export const FOUNDING_SEED_FUNDS = 200_000_000;
 
 /**
+ * WS-6 — maximum deshi who follow a founder to his branched stable. Real
+ * dokuritsu/bunke conventions bring a handful of the founder's unsalaried
+ * recruits; sekitori never follow (their rank belongs to the parent heya's
+ * sheet slot). Applied via seeded pick from the parent's lower divisions.
+ */
+export const FOUNDING_FOLLOWER_MAX = 3;
+
+/**
  * WS-6 — JSA three-tier elder eligibility ladder (post-2006 rules).
  * Inheriting an active heya has the LOWEST ring bar; standard coach sits
  * in the middle; branching out to FOUND a new stable is the elite tier.
