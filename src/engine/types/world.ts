@@ -163,6 +163,8 @@ export interface ClosedHeyaRecord extends Heya {
   closedAtYear: number;
   closedAtBasho?: BashoName;
   mergedInto?: Id;
+  /** Merger reason passed to executeMerger (succession_no_heir, insolvency, mandated, …). */
+  closureReason?: string;
 }
 
 export interface BookmarkEntry {

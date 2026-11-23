@@ -5,7 +5,16 @@
 /** Non-age NPC succession triggers. */
 export const SUCCESSION_INSOLVENCY_EVENTS = 3;
 export const SUCCESSION_MAJOR_SCANDALS = 2;
-export const SUCCESSION_UNDERPERFORMANCE_BASHO = 8;
+/** ~4 years of zero sekitori-kk before the board removes the master for
+ *  results alone — real JSA tolerance for weak stables is measured in years,
+ *  and a shorter leash chained trustee-churn: the heya-level streak counter
+ *  persisted across masters, so every yearly check forced another succession
+ *  until the stable slid to "struggling" and folded. */
+export const SUCCESSION_UNDERPERFORMANCE_BASHO = 24;
+/** A prestige-collapsed stable only counts as "dying" when its roster is also
+ *  too thin to sustain keiko — a functioning roster always attracts a caretaker
+ *  elder in real JSA practice (folds happen at ~8–15 rikishi, not 25). */
+export const SUCCESSION_COLLAPSE_MAX_ROSTER = 15;
 
 /** A heya underperforms a basho when no sekitori entrant reaches kachi-koshi. */
 export const SEKITORI_KACHI_KOSHI_WINS = 8;

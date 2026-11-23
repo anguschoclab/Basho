@@ -24,6 +24,7 @@ function worldWithHeya(opts: {
   age?: number;
   tenure?: Partial<NonNullable<Oyakata["tenure"]>>;
   underperformanceBasho?: number;
+  funds?: number;
 }): { world: WorldState; oya: Oyakata } {
   const world = MockFactory.createWorld({ week: 10, year: 5 });
   const oya = {
@@ -49,6 +50,7 @@ function worldWithHeya(opts: {
   world.oyakata.set(oya.id, oya);
   const heya = MockFactory.createHeya(opts.heyaId, { oyakataId: oya.id });
   heya.consecutiveUnderperformanceBasho = opts.underperformanceBasho ?? 0;
+  if (opts.funds !== undefined) heya.funds = opts.funds;
   world.heyas.set(opts.heyaId, heya);
   if (opts.isPlayer) world.playerHeyaId = opts.heyaId;
   return { world, oya };
@@ -64,6 +66,7 @@ describe("careerMode: ironman", () => {
       heyaId: "h-player",
       isPlayer: true,
       tenure: { insolvencyEvents: 5 },
+      funds: -6_000_000,
     });
     world.settings.careerMode = "ironman";
 
@@ -91,6 +94,7 @@ describe("careerMode: ironman", () => {
     const { world, oya } = worldWithHeya({
       heyaId: "h-npc",
       tenure: { insolvencyEvents: 5 },
+      funds: -6_000_000,
     });
     world.playerHeyaId = "h-other";
     world.settings.careerMode = "ironman";
@@ -106,6 +110,7 @@ describe("careerMode: ironman", () => {
       heyaId: "h-player",
       isPlayer: true,
       tenure: { insolvencyEvents: 5 },
+      funds: -6_000_000,
     });
     world.settings.careerMode = "ironman";
 

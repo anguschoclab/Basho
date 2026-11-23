@@ -198,6 +198,23 @@ describe("applyOfficiating — confirmed foul", () => {
     expect(heyaUpdate).toBeDefined();
     expect((heyaUpdate?.scandalScore ?? 0) > 0).toBe(true);
   });
+
+  it("a routine hansoku never counts as a major scandal against the master", () => {
+    // Hansoku is a sporting foul — a loss by disqualification — not stable
+    // misconduct. Reporting it "major" bumped tenure.majorScandals on every
+    // NPC disqualification, mass-firing masters via the §16.1 scandal trigger
+    // and churning trustees until stables folded sanctioned-and-heirless.
+    const found = findOutcome(true);
+    expect(found).not.toBeNull();
+    const { impact } = found!;
+    const scandalEvents = (impact.events ?? []).filter(
+      (e) => (e.data as { incident?: string }).incident === "scandal_reported"
+    );
+    expect(scandalEvents.length).toBeGreaterThan(0);
+    for (const e of scandalEvents) {
+      expect((e.data as { status?: string }).status).not.toBe("major");
+    }
+  });
 });
 
 describe("applyOfficiating — cleared foul", () => {

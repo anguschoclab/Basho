@@ -140,6 +140,7 @@ export function executeMerger(
     closedAtYear: world.year,
     closedAtBasho: world.currentBashoName,
     mergedInto: target.id,
+    closureReason: reason,
     rikishiIds: transferredRikishiIds,
   };
   closedHeyas.set(source.id, record);

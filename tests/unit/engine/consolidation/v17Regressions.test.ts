@@ -9,6 +9,7 @@ import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { SUCCESSION_UNDERPERFORMANCE_BASHO } from "@/constants/engine/succession";
 import type { WorldState } from "@/engine/types/world";
 
 // ── V17-F01 — isPlayerOwned must derive from world.playerHeyaId ─────────────
@@ -415,7 +416,7 @@ describe("V17-F11 succession successor viability", () => {
     const { DynastyService } = await import("@/engine/legacy/DynastyService");
     const heya = makeMockHeya("h-succ", {
       oyakataId: "oya-old",
-      consecutiveUnderperformanceBasho: 8,
+      consecutiveUnderperformanceBasho: SUCCESSION_UNDERPERFORMANCE_BASHO,
     });
     const oyakata = {
       id: "oya-old",
@@ -461,7 +462,7 @@ describe("V17-F11 succession successor viability", () => {
     const { DynastyService } = await import("@/engine/legacy/DynastyService");
     const heya = makeMockHeya("h-succ", {
       oyakataId: "oya-old",
-      consecutiveUnderperformanceBasho: 8,
+      consecutiveUnderperformanceBasho: SUCCESSION_UNDERPERFORMANCE_BASHO,
     });
     const oyakata = {
       id: "oya-old",

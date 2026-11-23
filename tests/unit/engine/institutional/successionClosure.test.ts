@@ -157,10 +157,12 @@ describe("succession closure — dying stable folds instead of trustee", () => {
     expect(next.heyas.get("h-temp")?.oyakataId).toContain("oyakata_trustee_");
   });
 
-  it("closes a prestige-collapsed stable", () => {
+  it("closes a prestige-collapsed stable whose roster is too thin to sustain", () => {
+    // Roster 10: above the auto-fold bound (≤8) but below the collapse bound —
+    // folds only because prestige collapse + thin roster compound.
     const { world } = buildWorld({
       dyingId: "h-collapsed",
-      rosterSize: 20,
+      rosterSize: 10,
       prestigeBand: "struggling",
     });
 
@@ -176,6 +178,47 @@ describe("succession closure — dying stable folds instead of trustee", () => {
 
     expect(next.heyas.has("h-healthy")).toBe(true);
     expect(next.heyas.get("h-healthy")?.oyakataId).toContain("oyakata_trustee_");
+  });
+
+  it("resets the underperformance clock on succession — the firing offense was the predecessor's", () => {
+    // A board-mandated succession replaces the master BECAUSE of the streak;
+    // the incoming trustee must not inherit the counter that fired the old
+    // master, or the heya churns a trustee every check until it folds.
+    const { world } = buildWorld({ dyingId: "h-churn", rosterSize: 20 });
+    world.heyas.get("h-churn")!.consecutiveUnderperformanceBasho = 30;
+
+    const next = resolveImpacts(world, [DynastyService.tickSuccessionCheck(world)]);
+
+    expect(next.heyas.get("h-churn")?.oyakataId).toContain("oyakata_trustee_");
+    expect(next.heyas.get("h-churn")!.consecutiveUnderperformanceBasho).toBe(0);
+  });
+
+  it("a struggling-but-viable stable takes a trustee — prestige collapse alone is not death", () => {
+    // Real JSA: a functioning 20-man roster always attracts a caretaker elder;
+    // only a thin roster actually folds for heirlessness (Takanohana→Chiganoura).
+    const { world } = buildWorld({
+      dyingId: "h-struggling",
+      rosterSize: 20,
+      prestigeBand: "struggling",
+    });
+
+    const next = resolveImpacts(world, [DynastyService.tickSuccessionCheck(world)]);
+
+    expect(next.heyas.has("h-struggling")).toBe(true);
+    expect(next.heyas.get("h-struggling")?.oyakataId).toContain("oyakata_trustee_");
+  });
+
+  it("a struggling stable with a thin roster still folds", () => {
+    const { world } = buildWorld({
+      dyingId: "h-thin",
+      rosterSize: 12,
+      prestigeBand: "struggling",
+    });
+
+    const next = resolveImpacts(world, [DynastyService.tickSuccessionCheck(world)]);
+
+    expect(next.heyas.has("h-thin")).toBe(false);
+    expect(next.closedHeyas?.get("h-thin")).toBeDefined();
   });
 
   it("never closes the player heya (dynasty frame)", () => {

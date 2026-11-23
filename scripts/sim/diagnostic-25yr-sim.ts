@@ -64,6 +64,7 @@ interface YearSnapshot {
   heyaInCustody: number;
   /** WS-5/6 — closures vs foundings this snapshot (equilibrium watch). */
   closedHeyaCount: number;
+  closureReasons: Record<string, number>;
   branchedHeyaCount: number;
   /** WS-14 — annual jungyō tour days (~90 pre-2027, ~70s post). */
   jungyoTourDays: number;
@@ -151,6 +152,11 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     (h) => (h as { custodyStatus?: unknown }).custodyStatus != null
   ).length;
   const closedHeyaCount = world.closedHeyas?.size ?? 0;
+  const closureReasons: Record<string, number> = {};
+  for (const rec of world.closedHeyas?.values() ?? []) {
+    const r = (rec as { closureReason?: string }).closureReason ?? "unknown";
+    closureReasons[r] = (closureReasons[r] ?? 0) + 1;
+  }
   const branchedHeyaCount = heyas.filter((h) => h.branchedFromHeyaId != null).length;
   // WS-14 — tourDays lands on schedule entries post-reform; absent ⇒ 0.
   const jungyoTourDays = getExhibitionBashoSchedule(world.year).reduce(
@@ -190,6 +196,7 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     grandfatheredForeignSlots,
     heyaInCustody,
     closedHeyaCount,
+    closureReasons,
     branchedHeyaCount,
     jungyoTourDays,
     errors: [...errors],
@@ -331,6 +338,10 @@ for (let yr = 0; yr < YEARS; yr++) {
       `F=${snap.foreignTotal}(sek=${snap.foreignSekitori}/low=${snap.foreignLower}) ` +
       `MN=${(snap.mongolianShare * 100).toFixed(0)}% gf+${snap.grandfatheredForeignSlots} ` +
       `custody=${snap.heyaInCustody} closed=${snap.closedHeyaCount} ` +
+      `[${Object.entries(snap.closureReasons)
+        .sort((a, b) => b[1] - a[1])
+        .map(([r, n]) => `${r}:${n}`)
+        .join("/") || "—"}] ` +
       `founded=${snap.branchedHeyaCount} jungyo=${snap.jungyoTourDays}d`
   );
 

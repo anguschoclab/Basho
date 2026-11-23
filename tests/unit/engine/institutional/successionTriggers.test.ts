@@ -24,6 +24,7 @@ function worldWithHeya(opts: {
   isPlayer?: boolean;
   tenure?: Partial<NonNullable<Oyakata["tenure"]>>;
   underperformanceBasho?: number;
+  funds?: number;
 }): { world: WorldState; oya: Oyakata } {
   const world = MockFactory.createWorld({ week: 10, year: 5 });
   const oya = {
@@ -49,6 +50,7 @@ function worldWithHeya(opts: {
   world.oyakata.set(oya.id, oya);
   const heya = MockFactory.createHeya(opts.heyaId, { oyakataId: oya.id });
   heya.consecutiveUnderperformanceBasho = opts.underperformanceBasho ?? 0;
+  if (opts.funds !== undefined) heya.funds = opts.funds;
   world.heyas.set(opts.heyaId, heya);
   if (opts.isPlayer) world.playerHeyaId = opts.heyaId;
   return { world, oya };
@@ -62,12 +64,22 @@ function succeeded(world: WorldState, heyaId: string, oldOyaId: string): boolean
 }
 
 describe("non-age succession triggers", () => {
-  it("forces NPC succession after repeated insolvency events", () => {
+  it("forces NPC succession after repeated insolvency events while still insolvent", () => {
     const { world, oya } = worldWithHeya({
       heyaId: "h-npc",
       tenure: { insolvencyEvents: 3 },
+      funds: -6_000_000, // below LOAN_ISSUANCE_THRESHOLD — still drowning
     });
     expect(succeeded(world, "h-npc", oya.id)).toBe(true);
+  });
+
+  it("does NOT force succession on historical bailouts once the stable recovered", () => {
+    const { world, oya } = worldWithHeya({
+      heyaId: "h-npc",
+      tenure: { insolvencyEvents: 3 },
+      funds: 8_000_000, // back above water — historical events stay historical
+    });
+    expect(succeeded(world, "h-npc", oya.id)).toBe(false);
   });
 
   it("forces NPC succession after accumulated major scandals", () => {
@@ -78,12 +90,22 @@ describe("non-age succession triggers", () => {
     expect(succeeded(world, "h-npc", oya.id)).toBe(true);
   });
 
-  it("forces NPC succession on chronic underperformance", () => {
+  it("forces NPC succession only on truly chronic underperformance (~4 yrs)", () => {
     const { world, oya } = worldWithHeya({
       heyaId: "h-npc",
-      underperformanceBasho: 8,
+      underperformanceBasho: 24,
     });
     expect(succeeded(world, "h-npc", oya.id)).toBe(true);
+  });
+
+  it("does NOT force succession on a moderate underperformance streak", () => {
+    // 12 basho (~2 yrs) of sekitori failure is pressure, not "chronic" — the
+    // old 8-basho leash fired inside 16 months and chained trustee-churn.
+    const { world, oya } = worldWithHeya({
+      heyaId: "h-npc",
+      underperformanceBasho: 12,
+    });
+    expect(succeeded(world, "h-npc", oya.id)).toBe(false);
   });
 
   it("DOES force-succeed the player's oyakata on non-age triggers (player-stakes fix)", () => {
@@ -125,6 +147,7 @@ describe("careerMode: sandbox vs career", () => {
     const { world, oya } = worldWithHeya({
       heyaId: "h-npc",
       tenure: { insolvencyEvents: 5 },
+      funds: -6_000_000,
     });
     world.playerHeyaId = "h-other";
     world.settings.careerMode = "sandbox";
@@ -136,6 +159,7 @@ describe("careerMode: sandbox vs career", () => {
       heyaId: "h-player",
       isPlayer: true,
       tenure: { insolvencyEvents: 5 },
+      funds: -6_000_000,
     });
     expect(succeeded(world, "h-player", oya.id)).toBe(true);
   });

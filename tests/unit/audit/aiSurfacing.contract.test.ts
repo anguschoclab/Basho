@@ -110,7 +110,13 @@ describe("WS7 surfacing contract — emitted events reach the feed", () => {
         forcedMergers: 0,
       },
     });
-    const heya = makeMockHeya("h-npc", { oyakataId: "o-old", rikishiIds: ["r-succ"] });
+    // funds below LOAN_ISSUANCE_THRESHOLD — historical bailouts only force
+    // succession while the stable is still drowning.
+    const heya = makeMockHeya("h-npc", {
+      oyakataId: "o-old",
+      rikishiIds: ["r-succ"],
+      funds: -6_000_000,
+    });
     world.oyakata.set("o-old", oya);
     world.heyas.set("h-npc", heya);
     world.rikishi.set(

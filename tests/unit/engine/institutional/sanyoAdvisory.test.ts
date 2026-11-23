@@ -69,8 +69,9 @@ describe("sanyo advisory extension to 70", () => {
 
   it("younger oyakata stepping down is removed (sanyo is post-65 only)", () => {
     const { world, oya } = worldWithAgedHeya({ age: 64 });
-    // Forced path needs a trigger — give insolvency events.
+    // Forced path needs a trigger — insolvency events on a still-drowning stable.
     oya.tenure = { ...oya.tenure!, insolvencyEvents: 5 } as Oyakata["tenure"];
+    world.heyas.set("h1", { ...world.heyas.get("h1")!, funds: -6_000_000 });
     const next = resolveImpacts(world, [DynastyService.tickSuccessionCheck(world)]);
     expect(next.oyakata.get(oya.id)).toBeUndefined();
   });

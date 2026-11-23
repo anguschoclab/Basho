@@ -240,7 +240,8 @@ exports[`DynastyService — golden master > age 65 with eligible sekitori succes
               "transitionProgress": 0
             },
             "legacyTier": "emerging",
-            "oyakataId": "oyakata_promoted_r-sec"
+            "oyakataId": "oyakata_promoted_r-sec",
+            "consecutiveUnderperformanceBasho": 0
           }
         ]
       ]
@@ -492,7 +493,8 @@ exports[`DynastyService — golden master > age 65 with only makushita-top10 dro
               "transitionProgress": 0
             },
             "legacyTier": "emerging",
-            "oyakataId": "oyakata_promoted_r-mak"
+            "oyakataId": "oyakata_promoted_r-mak",
+            "consecutiveUnderperformanceBasho": 0
           }
         ]
       ]
@@ -912,7 +914,8 @@ exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 6
         [
           "heya-1",
           {
-            "oyakataId": "oyakata_trustee_heya-1_2026"
+            "oyakataId": "oyakata_trustee_heya-1_2026",
+            "consecutiveUnderperformanceBasho": 0
           }
         ]
       ]
@@ -1003,7 +1006,8 @@ exports[`DynastyService — golden master > tickSuccessionCheck at oyakata age 7
         [
           "heya-1",
           {
-            "oyakataId": "oyakata_trustee_heya-1_2026"
+            "oyakataId": "oyakata_trustee_heya-1_2026",
+            "consecutiveUnderperformanceBasho": 0
           }
         ]
       ]

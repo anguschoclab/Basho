@@ -38,6 +38,7 @@ import {
   PRESTIGE_COLLAPSE_BAND,
   INHERIT_MAKUUCHI_BASHO,
   INHERIT_SEKITORI_BASHO,
+  LOAN_ISSUANCE_THRESHOLD,
 } from "@/constants/engine/economic";
 
 import type { RetiredRikishiSummary } from "@/engine/types/history";
@@ -47,6 +48,7 @@ import {
   SUCCESSION_UNDERPERFORMANCE_BASHO,
   LEGACY_MODIFIER_DURATION_BASHO,
   SUCCESSION_CLOSURE_MAX_ROSTER,
+  SUCCESSION_COLLAPSE_MAX_ROSTER,
   SUCCESSION_CLOSURE_SANCTION_WEEKS,
 } from "@/constants/engine/succession";
 
@@ -222,8 +224,12 @@ function tickSuccessionCheck(world: WorldState): StateImpact {
     // projectManagerCareer's successionRisk fractions.
     if (!oyakata.retirementYear) {
       const tenure = oyakata.tenure;
+      // Insolvency only forces the master out while the stable is still
+      // drowning — a heya that took bailouts then recovered (sekitori income,
+      // koenkai growth) has already answered the board's confidence question.
+      const stillInsolvent = (heya.funds ?? 0) < LOAN_ISSUANCE_THRESHOLD;
       const reason =
-        (tenure?.insolvencyEvents ?? 0) >= SUCCESSION_INSOLVENCY_EVENTS
+        (tenure?.insolvencyEvents ?? 0) >= SUCCESSION_INSOLVENCY_EVENTS && stillInsolvent
           ? "repeated insolvency — the board lost confidence"
           : (tenure?.majorScandals ?? 0) >= SUCCESSION_MAJOR_SCANDALS
             ? "accumulated major scandals"
@@ -421,6 +427,9 @@ export function triggerSuccession(
     legacyTier: newTier,
     oyakataId: newOyakataId,
     legacyModifier,
+    // The underperformance streak belonged to the predecessor's reign — the
+    // successor gets his own window before the board can act on it again.
+    consecutiveUnderperformanceBasho: 0,
   });
 
   // 8. The stable's brand identity drifts toward the new master's temperament
@@ -630,7 +639,12 @@ function triggerSuccessionWithGeneric(
   };
 
   builder.addOyakata(newOyakata);
-  builder.updateHeya(heyaId, { oyakataId: dummyId });
+  builder.updateHeya(heyaId, {
+    oyakataId: dummyId,
+    // A caretaker inherits the stable, not the predecessor's firing offense —
+    // the board must give him the same window any new master would get.
+    consecutiveUnderperformanceBasho: 0,
+  });
   // Same sanyo rule as the heir path: a stockholding elder retiring at the
   // mandatory 65 may stay in the JSA as a consultant until 70.
   if (currentOyakata.age >= 65 && (currentOyakata.elderStatus ?? "toshiyori") !== "jun_toshiyori") {
@@ -668,8 +682,11 @@ function triggerSuccessionWithGeneric(
  *
  * Dying means any of:
  * - persistently sanctioned (>= SUCCESSION_CLOSURE_SANCTION_WEEKS in state),
- * - prestigeBand collapsed ("struggling"),
- * - roster too thin to sustain keiko (<= SUCCESSION_CLOSURE_MAX_ROSTER).
+ * - prestigeBand collapsed ("struggling") AND roster too thin to sustain
+ *   keiko (<= SUCCESSION_COLLAPSE_MAX_ROSTER) — a functioning roster always
+ *   attracts a caretaker elder in real JSA practice, so prestige collapse
+ *   alone never folds a viable stable,
+ * - roster too thin to sustain keiko at all (<= SUCCESSION_CLOSURE_MAX_ROSTER).
  *
  * Guards: the player heya always gets a trustee (dynasty frame — the player
  * keeps playing as the successor), and the league never drops below
@@ -687,7 +704,8 @@ function closeIfHeirlessAndDying(world: WorldState, heya: Heya, builder: ImpactB
     (heya.welfareState?.weeksInState ?? 0) >= SUCCESSION_CLOSURE_SANCTION_WEEKS;
   const dying =
     persistentlySanctioned ||
-    heya.prestigeBand === PRESTIGE_COLLAPSE_BAND ||
+    (heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
+      rosterSize <= SUCCESSION_COLLAPSE_MAX_ROSTER) ||
     rosterSize <= SUCCESSION_CLOSURE_MAX_ROSTER;
   if (!dying) return false;
 

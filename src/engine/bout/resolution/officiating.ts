@@ -125,12 +125,16 @@ export function applyOfficiating(
     result.tactics = { east: eastTactic, west: westTactic };
   }
 
-  // Trigger scandal for the disqualified rikishi's heya
+  // Trigger a discipline note for the disqualified rikishi's heya. A hansoku is
+  // a sporting foul — a routine disqualification loss — not stable misconduct;
+  // "minor" keeps the discipline record without bumping tenure.majorScandals
+  // (a "major" report on every NPC foul mass-fired masters via the §16.1
+  // scandal trigger and churned trustees until stables folded).
   if (fouledHeyaId && world) {
     const scandalImpact = reportScandal(
       world,
       fouledHeyaId,
-      "major",
+      "minor",
       "Forbidden technique (hansoku) disqualification"
     );
     builder.merge(scandalImpact);
