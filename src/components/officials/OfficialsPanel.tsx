@@ -46,9 +46,22 @@ export function OfficialsPanel({ projection }: { projection: OfficialsProjection
                   <div className="flex items-center gap-2">
                     <SumoAvatar avatar={g.avatar} size="xs" fallback={g.name} />
                     <span className="text-sm font-medium">{g.name}</span>
+                    {g.hereditaryTitle && (
+                      <span className="text-[10px] text-gold">{g.hereditaryTitle}</span>
+                    )}
                     <Badge variant="outline" className="text-[10px] uppercase tracking-widest">
                       {g.rankLabel}
                     </Badge>
+                    {g.salaryCutPending && (
+                      <Badge variant="destructive" className="text-[10px]">
+                        Salary cut pending
+                      </Badge>
+                    )}
+                    {g.frozenUntilYear && (
+                      <Badge variant="outline" className="text-[10px]">
+                        Frozen until {g.frozenUntilYear}
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-3 text-xs tabular-nums">
                     <span className="text-muted-foreground">{g.boutsOfficiated} bouts</span>
@@ -92,6 +105,14 @@ export function OfficialsPanel({ projection }: { projection: OfficialsProjection
                   <div className="flex items-center gap-2">
                     <SumoAvatar avatar={s.avatar} size="xs" fallback={s.name} />
                     <span className="text-sm font-medium">{s.name}</span>
+                    {s.role && s.role !== "member" && (
+                      <Badge variant="secondary" className="text-[10px]">
+                        {s.role === "head" ? "Shinpan-bu Head" : "Deputy"}
+                      </Badge>
+                    )}
+                    {s.ichimon && (
+                      <span className="text-[10px] text-muted-foreground">{s.ichimon}</span>
+                    )}
                   </div>
                   <div className="flex items-center gap-3 text-xs tabular-nums">
                     <span className="text-muted-foreground">{s.consultations} consultations</span>

@@ -72,6 +72,8 @@ export interface HeyaDataUI {
   oyakata: Oyakata | undefined;
   oyakataQuirks: string[];
   oyakataTraits: OyakataTraits | undefined;
+  /** WS-5 — host stable name when the heya is under disciplinary custody. */
+  custodyHostName?: string;
 }
 
 // ── Hall of Fame UI Types ────────────────────────────────────────────────────

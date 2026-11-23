@@ -117,21 +117,45 @@ export function WelfareSection({
   );
 }
 
-/** Governance row — standing badge + optional scandal band. */
-export function GovernanceSection({ heya }: { heya: Heya }) {
+/** Governance row — standing badge + custody/foreign-slot exceptions + scandal band. */
+export function GovernanceSection({
+  heya,
+  custodyHostName,
+}: {
+  heya: Heya;
+  custodyHostName?: string;
+}) {
+  const custody = heya.custodyStatus;
+  const grandfathered = heya.grandfatheredForeignCount ?? 0;
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <Gavel className="h-4 w-4" />
         <div className="text-sm font-medium">Governance</div>
         <Badge variant="outline">{getGovernanceStatusLabel(heya.governanceStatus)}</Badge>
+        {custody && (
+          <Badge variant="destructive">
+            In Custody{custodyHostName ? ` — ${custodyHostName}` : ""}
+          </Badge>
+        )}
+        {grandfathered > 0 && (
+          <Badge variant="outline">Foreign slot +{grandfathered} grandfathered</Badge>
+        )}
         {heya.scandalScore >= 20 && (
           <Badge variant="outline">{SCANDAL_LABELS[toScandalBand(heya.scandalScore)]}</Badge>
         )}
       </div>
       <div className="text-xs text-muted-foreground">
-        Scandal score decays slowly over time. Welfare issues can escalate scrutiny even faster.
+        {custody
+          ? `Stable inactive under ${custodyHostName ?? "host stable"} supervision since ${custody.sinceYear}. Roster trains under the host.`
+          : "Scandal score decays slowly over time. Welfare issues can escalate scrutiny even faster."}
       </div>
+      {grandfathered > 0 && (
+        <div className="text-xs text-muted-foreground">
+          Merger-absorbed foreign rikishi exceed the one-slot quota — foreign recruitment stays
+          frozen until they retire or transfer out.
+        </div>
+      )}
     </div>
   );
 }

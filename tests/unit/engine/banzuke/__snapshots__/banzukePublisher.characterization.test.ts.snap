@@ -607,6 +607,21 @@ exports[`publishBanzukeUpdate â€” golden master > ozeki with consecutive yusho â
     },
     {
       "type": "BASHO_STATUS",
+      "category": "basho",
+      "data": {
+        "status": "early_promotion_announcement",
+        "rikishiId": "r_ozeki",
+        "shikona": "Wrestler-r_ozeki",
+        "kind": "sanyaku_promotion",
+        "title": "Promotion announced early",
+        "summary": "The JSA announces Wrestler-r_ozeki's promotion ahead of the banzuke reveal."
+      },
+      "heyaId": "heya-r_ozeki",
+      "rikishiId": "r_ozeki",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
       "category": "promotion",
       "data": {
         "status": "ozeki_demotion",

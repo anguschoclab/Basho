@@ -207,11 +207,14 @@ function collectJungyoParticipants(
       // Log the exhibition tour event
       builder.logEvent("BASHO_STATUS", "basho", {
         status: "exhibition_tour",
-        description: `The ${jungyoEvent.displayName} begins — ${participants.length} sekitori participate in the regional tour.`,
+        description: `The ${jungyoEvent.displayName} begins — ${jungyoEvent.tourDays} days, ${participants.length} sekitori participate in the regional tour.`,
         bashoName: jungyoEvent.name,
         month: currentMonth,
         location: jungyoEvent.location,
         participantCount: participants.length,
+        tourDays: jungyoEvent.tourDays,
+        season: jungyoEvent.season,
+        reformApplied: jungyoEvent.reformApplied,
       });
     }
   }

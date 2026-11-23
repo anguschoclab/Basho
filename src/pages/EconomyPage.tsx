@@ -125,6 +125,7 @@ export default function EconomyPage() {
             oyakata={stableHealthData.oyakata}
             oyakataQuirks={stableHealthData.oyakataQuirks}
             oyakataTraits={stableHealthData.oyakataTraits}
+            custodyHostName={stableHealthData.custodyHostName}
           />
         )}
 

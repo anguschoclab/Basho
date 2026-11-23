@@ -208,7 +208,7 @@ describe("governance headline id uniqueness (V18)", () => {
         headlines: Array.from({ length: 250 }, (_, i) => ({
           id: `MH-OLD${i}`,
           week: 9,
-          tier: "notable" as const,
+          tier: "local" as const,
           beat: "feature" as const,
           tone: "neutral" as const,
           rikishiIds: [],
@@ -216,6 +216,7 @@ describe("governance headline id uniqueness (V18)", () => {
           title: `old ${i}`,
           subtitle: "",
           impact: 10,
+          tags: [],
         })),
         headlineSeq: 250,
       },

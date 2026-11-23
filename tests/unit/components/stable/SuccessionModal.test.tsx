@@ -126,7 +126,7 @@ describe("SuccessionModal", () => {
         onSelect={vi.fn()}
       />
     );
-    expect(screen.getByText(/no Sekitori-ranked pupils or alumni eligible/i)).toBeTruthy();
+    expect(screen.getByText(/meets the succession bar/i)).toBeTruthy();
   });
 
   it("clicking a candidate selects it (gold highlight)", () => {

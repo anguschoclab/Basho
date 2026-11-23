@@ -35,6 +35,7 @@ export function StableHealthWidget() {
             oyakata={data.oyakata}
             oyakataQuirks={data.oyakataQuirks}
             oyakataTraits={data.oyakataTraits}
+            custodyHostName={data.custodyHostName}
           />
         )}
       </div>

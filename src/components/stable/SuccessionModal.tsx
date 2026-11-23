@@ -146,8 +146,8 @@ export function SuccessionModal({
                 <div className="flex flex-col items-center justify-center h-48 text-center bg-card/50 rounded-xl border border-dashed border-border">
                   <Award className="h-8 w-8 text-muted-foreground mb-2" />
                   <p className="text-xs text-muted-foreground px-8">
-                    There are currently no Sekitori-ranked pupils or alumni eligible for succession.
-                    You must wait for an elite student to rise.
+                    No pupil or alumnus currently meets the succession bar (20+ sekitori
+                    basho, or 12+ at makuuchi). An accomplished veteran is required.
                   </p>
                 </div>
               )}

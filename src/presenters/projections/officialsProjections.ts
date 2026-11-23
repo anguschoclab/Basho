@@ -19,6 +19,11 @@ export interface GyojiDTO {
   boutsOfficiated: number;
   callsReversed: number;
   reversalRate: number;
+  /** WS-9 — hereditary tate-gyōji title (Kimura Shōnosuke / Shikimori Inosuke). */
+  hereditaryTitle?: string;
+  /** WS-9 — accountability flags from yearly reversal counts. */
+  salaryCutPending?: boolean;
+  frozenUntilYear?: number;
   avatar?: AvatarRenderData;
 }
 
@@ -27,6 +32,9 @@ export interface ShimpanDTO {
   name: string;
   accuracy: number;
   consultations: number;
+  /** WS-8 — Shinpan-bu personnel: role within the judges' department. */
+  role?: "head" | "deputy" | "member";
+  ichimon?: string;
   avatar?: AvatarRenderData;
 }
 
@@ -60,6 +68,9 @@ export function projectOfficials(world: WorldState): OfficialsProjection {
     boutsOfficiated: g.boutsOfficiated,
     callsReversed: g.callsReversed,
     reversalRate: g.boutsOfficiated > 0 ? g.callsReversed / g.boutsOfficiated : 0,
+    hereditaryTitle: g.hereditaryTitle,
+    salaryCutPending: g.salaryCutPending,
+    frozenUntilYear: g.frozenUntilYear,
     avatar: resolveAvatar({ id: g.id, stored: g.avatarConfig, ...gyojiStageInput(g) }),
   }));
 
@@ -68,6 +79,8 @@ export function projectOfficials(world: WorldState): OfficialsProjection {
     name: s.name,
     accuracy: s.accuracy,
     consultations: s.consultations,
+    role: s.role,
+    ichimon: s.ichimon,
     avatar: resolveAvatar({ id: s.id, stored: s.avatarConfig, ...shimpanStageInput(s) }),
   }));
 

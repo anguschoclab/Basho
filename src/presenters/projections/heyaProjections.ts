@@ -22,11 +22,15 @@ export function projectHeyaData(world: WorldState, heyaId: string): HeyaDataUI |
   if (!heya) return null;
 
   const oyakata = world.oyakata.get(heya.oyakataId);
+  const custodyHostName = heya.custodyStatus
+    ? world.heyas.get(heya.custodyStatus.hostHeyaId)?.name
+    : undefined;
   return {
     heya,
     oyakata,
     oyakataQuirks: oyakata?.quirks ?? [],
     oyakataTraits: oyakata?.traits,
+    ...(custodyHostName ? { custodyHostName } : {}),
   };
 }
 

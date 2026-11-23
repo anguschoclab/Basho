@@ -24,11 +24,13 @@ export function StableHealthPanel({
   oyakata,
   oyakataQuirks,
   oyakataTraits,
+  custodyHostName,
 }: {
   heya: Heya;
   oyakata: Oyakata | null | undefined;
   oyakataQuirks: string[];
   oyakataTraits: OyakataTraits | null | undefined;
+  custodyHostName?: string;
 }) {
   const welfare = (heya as Heya & { welfareState?: WelfarePanelState }).welfareState;
   const risk = clamp(Number(welfare?.welfareRisk ?? 10), 0, 100);
@@ -51,7 +53,7 @@ export function StableHealthPanel({
 
         <Separator />
 
-        <GovernanceSection heya={heya} />
+        <GovernanceSection heya={heya} custodyHostName={custodyHostName} />
 
         <Separator />
 

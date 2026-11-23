@@ -107,6 +107,29 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     builder
   );
 
+  // WS-13 — early announcements: the JSA announces Ōzeki/Yokozuna and
+  // Makushita→Jūryō promotions ahead of the banzuke reveal; Jūryō→Makuuchi
+  // stays embargoed (its first public confirmation IS the printed banzuke).
+  for (const a of result.earlyAnnouncements) {
+    const r = getRikishi(world, a.rikishiId);
+    builder.logEvent(
+      "BASHO_STATUS",
+      "basho",
+      {
+        status: "early_promotion_announcement",
+        rikishiId: a.rikishiId,
+        shikona: r?.shikona,
+        kind: a.kind,
+        title: a.kind === "sanyaku_promotion" ? "Promotion announced early" : "Jūryō promotion",
+        summary:
+          a.kind === "sanyaku_promotion"
+            ? `The JSA announces ${r?.shikona ?? a.rikishiId}'s promotion ahead of the banzuke reveal.`
+            : `${r?.shikona ?? a.rikishiId}'s Jūryō promotion is confirmed ahead of the banzuke.`,
+      },
+      { rikishiId: a.rikishiId, heyaId: r?.heyaId, importance: "notable" }
+    );
+  }
+
   recordPromotionHistory(world, lastBasho, result, builder);
   updatePromotionTracking(world, result, perfMap, builder);
   applyNewRanks(world, lastBasho, result, eventsByRikishiId, builder);

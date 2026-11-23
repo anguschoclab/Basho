@@ -176,6 +176,7 @@ export function HeyaTab({ world, heya }: { world: WorldState; heya: Heya }) {
         oyakata={data.oyakata ?? null}
         oyakataQuirks={data.oyakataQuirks}
         oyakataTraits={data.oyakataTraits ?? null}
+        custodyHostName={data.custodyHostName}
       />
     </TabsContent>
   );
