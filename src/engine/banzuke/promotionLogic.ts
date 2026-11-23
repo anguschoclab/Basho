@@ -9,7 +9,7 @@ import {
   MAEGASHIRA_TOP_RANK_THRESHOLD,
   JONOKUCHI_YUSHO_TIER,
   JONOKUCHI_KACHI_TIER,
-  MAKUSHITA_PROMOTION_ZONE,
+  MAKUSHITA_PROMOTION_NETWINS,
 } from "@/constants/engine/banzuke";
 
 /**
@@ -87,14 +87,15 @@ export function bestTierAllowed(
     if ((entry.position.rankNumber ?? 99) - netWins <= 0) return 5;
   }
 
-  // WS-11 — Makushita→Juryo promotion zone: only Ms1–Ms15 can rise.
-  // An in-zone kachi-koshi is promotable (Ms1 KK and ≤Ms15 zenshō are
-  // locks); Ms16+ can NEVER promote — even a zenshō lands ~Ms5.
+  // WS-11 — Makushita→Juryo promotion zone: only Ms1–Ms15 can rise, and
+  // the required record scales with depth (Ms1-5 KK / Ms6-10 +3 / Ms11-15
+  // +5 — the real JSA exchange convention). Ms16+ can NEVER promote —
+  // even a zenshō lands ~Ms5.
   if (rank === "makushita") {
     const num = entry.position.rankNumber ?? 99;
-    const wins = perf?.wins ?? 0;
-    const losses = perf?.losses ?? 0;
-    if (num <= MAKUSHITA_PROMOTION_ZONE && (perf?.yusho || wins > losses)) return 6;
+    const netWins = (perf?.wins ?? 0) - (perf?.losses ?? 0);
+    const band = MAKUSHITA_PROMOTION_NETWINS.find((b) => num <= b.maxRank);
+    if (band && (perf?.yusho || netWins >= band.netWins)) return 6;
   }
 
   // Jonokuchi special promotion: yusho → sandanme (tier 8), kachi-koshi → jonidan (tier 9)

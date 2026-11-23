@@ -74,3 +74,17 @@ export const MAEGASHIRA_TOP_RANK_THRESHOLD = 4;
 export const JONOKUCHI_YUSHO_TIER = 8;
 export const JONOKUCHI_KACHI_TIER = 9;
 export const MAKUSHITA_PROMOTION_ZONE = 15;
+
+/**
+ * Rank-scaled net-wins (W−L) a makushita rikishi needs inside the promotion
+ * zone to be juryo-eligible — the real JSA convention. Top of the zone
+ * promotes on any kachi-koshi; deep-zone entries must force the issue with
+ * a dominant record. The last band's +5 is only reachable at 6-1 or 7-0.
+ * Without scaling, every in-zone KK qualified (~10 claims/basho → Ms→J ran
+ * 3-4× hotter than the real ~2-6).
+ */
+export const MAKUSHITA_PROMOTION_NETWINS: Array<{ maxRank: number; netWins: number }> = [
+  { maxRank: 5, netWins: 1 },
+  { maxRank: 10, netWins: 3 },
+  { maxRank: MAKUSHITA_PROMOTION_ZONE, netWins: 5 },
+];

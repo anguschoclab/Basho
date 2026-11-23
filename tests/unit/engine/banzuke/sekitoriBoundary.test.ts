@@ -115,6 +115,35 @@ describe("Ms→J promotion zone", () => {
     const landed = result.newBanzuke.find((e) => e.rikishiId === "ms14zensho");
     expect(landed!.position.rank).toBe("juryo");
   });
+
+  // Real JSA convention is rank-scaled, not flat-KK: the deeper a makushita
+  // man sits in the zone, the better his record must be to force a juryo
+  // exchange. Flat KK made ~10 in-zone rikishi eligible every basho →
+  // Ms→J ran 12-16/basho vs the real ~2-6.
+  it("Ms8 with a bare 4-3 KK does NOT qualify for juryo", () => {
+    const e = entry("ms8kk", "makushita", 8, "east", "makushita");
+    expect(bestTierAllowed(e, perf("ms8kk", 4, 3), undefined, NONE)).not.toBe(6);
+  });
+
+  it("Ms8 with 5-2 (+3 net) qualifies for juryo", () => {
+    const e = entry("ms8strong", "makushita", 8, "east", "makushita");
+    expect(bestTierAllowed(e, perf("ms8strong", 5, 2), undefined, NONE)).toBe(6);
+  });
+
+  it("Ms12 with 5-2 does NOT qualify for juryo", () => {
+    const e = entry("ms12weak", "makushita", 12, "east", "makushita");
+    expect(bestTierAllowed(e, perf("ms12weak", 5, 2), undefined, NONE)).not.toBe(6);
+  });
+
+  it("Ms12 with 6-1 (+5 net) qualifies for juryo", () => {
+    const e = entry("ms12hot", "makushita", 12, "east", "makushita");
+    expect(bestTierAllowed(e, perf("ms12hot", 6, 1), undefined, NONE)).toBe(6);
+  });
+
+  it("Ms2 with 4-3 KK qualifies (top zone keeps the flat-KK rule)", () => {
+    const e = entry("ms2kk", "makushita", 2, "east", "makushita");
+    expect(bestTierAllowed(e, perf("ms2kk", 4, 3), undefined, NONE)).toBe(6);
+  });
 });
 
 describe("J→M promotion ceiling", () => {

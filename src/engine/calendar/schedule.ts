@@ -643,6 +643,10 @@ function pairCrossDivisionLeftovers(
   const busy = new Set(scheduled.flatMap((m) => [m.eastRikishiId, m.westRikishiId]));
   const leftovers: Rikishi[] = [];
   for (const div of divisions) {
+    // Only divisions that ran a card today can leave leftovers — sweeping an
+    // off-day division's whole roster paired lower-division rikishi on every
+    // even day, doubling their bout count past the 7-bout cadence.
+    if (!needsScheduleForDay(div, args.day)) continue;
     for (const r of activeDivisionRoster(args.world, div)) {
       if (!busy.has(r.id) && !plan.excludeIds.get(div)?.has(r.id)) leftovers.push(r);
     }
