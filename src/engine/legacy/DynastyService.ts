@@ -740,7 +740,7 @@ function closeIfHeirlessAndDying(world: WorldState, heya: Heya, builder: ImpactB
   if (!dying) return false;
 
   // Branches fold back into the mother line when the parent can absorb;
-  // otherwise the standard merger-target search picks a kin stable.
+  // otherwise the standard merger-target search prefers a same-ichimon stable.
   const parent = heya.branchedFromHeyaId ? getHeya(world, heya.branchedFromHeyaId) : undefined;
   // No roster cap — the mother stable can always fold a branch back in.
   const parentCanAbsorb = parent !== undefined;
