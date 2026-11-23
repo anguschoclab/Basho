@@ -78,11 +78,20 @@ export function processRetireeOyakataConversion(
   // Use seeded RNG — needed both for merit-stock id and the oyakata/founding logic below.
   const rng = rngForWorld(world, "governance", `retirement_${id}`);
 
+  // WS-17 — evaluate founding BEFORE elder-share resolution: the founding
+  // career bar (peak-Y/O OR 25 sanyaku OR 60 makuuchi basho) is wider than
+  // the jun_toshiyori credential, so at a saturated kabu market eligible
+  // veterans would otherwise early-return below and never be evaluated —
+  // measured `founded=0` over a full 25-yr diagnostic. The founder's elder
+  // standing follows the founding, it does not gate it.
+  const foundingQualified = evaluateFoundingEligibility(world, retiree).canFound;
+
   const { availableStock, elderStatus, elderExpiryYear } = resolveElderShare(
     world,
     market,
     retiree,
-    rng
+    rng,
+    foundingQualified
   );
   // No stock and no credential — real JSA: the retiree simply retires.
   if (elderStatus == null) return;
@@ -184,7 +193,8 @@ function resolveElderShare(
   world: WorldState,
   market: Market,
   retiree: Rikishi,
-  rng: Rng
+  rng: Rng,
+  foundingQualified = false
 ): {
   availableStock: Stock | null;
   elderStatus: ElderStatus | null;
@@ -225,7 +235,14 @@ function resolveElderShare(
         : isYokozunaOrOzekiRank(retiree.rank) ||
             (retiree.careerHistory ?? []).some((h) => isYokozunaOrOzekiRank(h.rank))
           ? "jun_toshiyori"
-          : null;
+          // WS-17 — founding-qualified without stock or Y/O credential: the
+          // JSA branch-approval provisional license. A veteran who clears the
+          // founding career bar (25 san / 60 M basho) may hold bounded elder
+          // standing to attempt the branch; he must convert it to a real share
+          // within the grace window or elder life expires (standard rules).
+          : foundingQualified
+            ? "jun_toshiyori"
+            : null;
   const elderExpiryYear =
     elderStatus === "jun_toshiyori"
       ? world.year +
