@@ -232,12 +232,16 @@ function selectDesignOrigin(palette: MawashiDesignPalette, rng: SeededRNG): Desi
   // Get weights based on nationality
   let weights: { traditional: number; corporate: number; heyaLegacy: number; national: number };
 
+  // Copy, not reference: the tradition adjustment below mutates the weights,
+  // and DEFAULT_KESHO_WEIGHTS is a shared module constant — mutating it
+  // accumulated heyaLegacy +0.15 per high-tradition heya across the process,
+  // leaking state between runs and breaking determinism.
   if (nationality === "Japan") {
-    weights = DEFAULT_KESHO_WEIGHTS.japanese;
+    weights = { ...DEFAULT_KESHO_WEIGHTS.japanese };
   } else if (nationality === "Mongolia") {
-    weights = DEFAULT_KESHO_WEIGHTS.mongolian;
+    weights = { ...DEFAULT_KESHO_WEIGHTS.mongolian };
   } else {
-    weights = DEFAULT_KESHO_WEIGHTS.otherForeign;
+    weights = { ...DEFAULT_KESHO_WEIGHTS.otherForeign };
   }
 
   // Adjust for oyakata tradition level (higher = more heya legacy chance)

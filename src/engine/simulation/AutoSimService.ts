@@ -254,12 +254,23 @@ function publishBanzukeForSim(
   bashoResult: BashoSimResult,
   bashoName: BashoName
 ): WorldState {
-  // 1. Build standings map in the format publishBanzukeUpdate expects
+  // 1. Build standings map in the format publishBanzukeUpdate expects.
+  // The authoritative source is `finalWorld.currentBasho.standings` — the
+  // sim's own `result.standings` is deliberately sekitori-only (it feeds the
+  // yusho table), so publishing from it synthesized 0-0-divisionDays absence
+  // rows for every lower-division rikishi, wiped their records, and starved
+  // the Ms→J promotion feed. Use the full map; fall back to the result map
+  // only when the basho standings are missing.
+  const authoritativeStandings = currentWorld.currentBasho?.standings;
+  const source =
+    authoritativeStandings && authoritativeStandings.size > 0
+      ? authoritativeStandings
+      : bashoResult.standings;
   const standingsForPublish = new Map<
     string,
     { wins: number; losses: number; absences: number; draws?: number }
   >();
-  bashoResult.standings.forEach((stats, id) => {
+  source.forEach((stats, id) => {
     const draws = (stats as { draws?: number }).draws;
     standingsForPublish.set(id, {
       wins: stats.wins,

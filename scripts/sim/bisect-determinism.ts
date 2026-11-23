@@ -62,8 +62,13 @@ function publishBanzukeForSim(
   bashoResult: ReturnType<typeof simulateEntireBasho>,
   bashoName: BashoName
 ): WorldState {
+  const authoritativeStandings = currentWorld.currentBasho?.standings;
+  const source =
+    authoritativeStandings && authoritativeStandings.size > 0
+      ? authoritativeStandings
+      : bashoResult.standings;
   const standingsForPublish = new Map<string, { wins: number; losses: number; absences: number }>();
-  bashoResult.standings.forEach((stats, id) => {
+  source.forEach((stats, id) => {
     standingsForPublish.set(id, {
       wins: stats.wins,
       losses: stats.losses,

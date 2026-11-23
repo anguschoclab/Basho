@@ -88,17 +88,23 @@ describe("KeshoMawashiGenerator", () => {
       const world = makeMockWorldWithBrands(1);
       const heya = Array.from(world.heyas.values())[0];
       const brand = world.heyaBrandIdentities.get(heya.brandIdentityId!);
-      const rikishi = mockRikishi("test-rikishi", {
-        heyaId: heya.id,
-        nationality: "Japan",
-      });
-      world.rikishi.set(rikishi.id, rikishi as any);
-
-      const kesho = generateKeshoMawashi(world, rikishi as any, "juryo");
-
-      expect(kesho.primaryColor).toBe(brand!.primaryColor);
-      expect(kesho.secondaryColor).toBe(brand!.secondaryColor);
-      expect(kesho.accentColor).toBe(brand!.accentColor);
+      // Force the heya-legacy weight bonus so a heya_legacy origin is reachable;
+      // then scan rikishi ids (each changes the seed → different roll) until one
+      // lands on heya_legacy, and assert the brand palette is applied.
+      brand!.traditionLevel = 1.0;
+      let kesho: ReturnType<typeof generateKeshoMawashi> | undefined;
+      for (let i = 0; i < 60 && kesho?.origin !== "heya_legacy"; i++) {
+        const rikishi = mockRikishi(`test-rikishi-${i}`, {
+          heyaId: heya.id,
+          nationality: "Japan",
+        });
+        world.rikishi.set(rikishi.id, rikishi as any);
+        kesho = generateKeshoMawashi(world, rikishi as any, "juryo");
+      }
+      expect(kesho?.origin).toBe("heya_legacy");
+      expect(kesho!.primaryColor).toBe(brand!.primaryColor);
+      expect(kesho!.secondaryColor).toBe(brand!.secondaryColor);
+      expect(kesho!.accentColor).toBe(brand!.accentColor);
     });
 
     it("assigns heyaBrandId from rikishi's heya", () => {
