@@ -192,6 +192,14 @@ export interface Rikishi {
   consecutiveMakeKoshi?: number; // Tracks consecutive losing records (make-koshi) for yokozuna retirement pressure
   consecutiveKachiKoshi?: number; // Tracks consecutive winning records (kachi-koshi) for narrative
   consecutiveKyujo?: number; // Tracks consecutive tournaments missed entirely
+  /** Cumulative jungyō tours attended (sekitori duty — display stat). */
+  jungyoToursAttended?: number;
+  /**
+   * Consecutive jungyō tours skipped while eligible — only tracked for
+   * yokozuna, whose tour presence is a Yokozuna Deliberation Council duty.
+   * At JUNGYO_YDC_ABSENCE_THRESHOLD the YDC issues a formal warning.
+   */
+  consecutiveJungyoAbsences?: number;
   /** Consecutive basho contested with zero absences — the "Iron Man" streak. */
   consecutiveBashoFought?: number;
   /** Set at banzuke publish when this rikishi is the first from his origin to

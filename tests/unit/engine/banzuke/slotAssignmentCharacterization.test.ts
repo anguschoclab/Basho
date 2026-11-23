@@ -182,7 +182,7 @@ describe("slotAssignmentCharacterization — diverse field", () => {
     // Golden master: exact snapshot
     expect(snapshot).toMatchInlineSnapshot(`
       [
-        "j1 -> makuuchi:前頭6W",
+        "j1 -> makuuchi:前頭8E",
         "j10 -> juryo:十両10E",
         "j11 -> juryo:十両10W",
         "j12 -> juryo:十両11E",
@@ -225,7 +225,7 @@ describe("slotAssignmentCharacterization — diverse field", () => {
         "k2 -> makuuchi:前頭4E",
         "m1 -> makuuchi:関脇W",
         "m10 -> makuuchi:前頭5E",
-        "m11 -> makuuchi:前頭7W",
+        "m11 -> makuuchi:前頭7E",
         "m12 -> makuuchi:前頭10E",
         "m13 -> makuuchi:前頭3W",
         "m14 -> makuuchi:前頭1W",
@@ -233,11 +233,11 @@ describe("slotAssignmentCharacterization — diverse field", () => {
         "m16 -> makuuchi:前頭5W",
         "m17 -> makuuchi:前頭2W",
         "m18 -> makuuchi:前頭11E",
-        "m19 -> makuuchi:前頭8E",
+        "m19 -> makuuchi:前頭7W",
         "m2 -> makuuchi:前頭4W",
         "m20 -> makuuchi:前頭6E",
         "m3 -> makuuchi:前頭8W",
-        "m4 -> makuuchi:前頭7E",
+        "m4 -> makuuchi:前頭6W",
         "m5 -> makuuchi:前頭2E",
         "m6 -> makuuchi:前頭3E",
         "m7 -> makuuchi:前頭9E",

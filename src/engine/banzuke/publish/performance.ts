@@ -438,6 +438,20 @@ export function buildPerformanceList(
   const performanceList: BashoPerformance[] = [];
   const normalizedEntries = normalizeStandingEntries(world, standingEntries);
 
+  // WS-11 — crossover evidence: bouts tagged `crossDivisionCallupId` are
+  // sekitori-boundary exchanges (juryo↔makushita, makuuchi↔juryo callups).
+  // Wins there are direct boundary merit; the pulled-up flag marks the
+  // lower-division man fighting the card above.
+  const crossWins = new Map<string, number>();
+  const pulledUp = new Set<string>();
+  for (const m of lastBasho.matches ?? []) {
+    if (!m.crossDivisionCallupId || !m.result) continue;
+    pulledUp.add(m.crossDivisionCallupId);
+    const winnerId =
+      m.result.winnerRikishiId ?? (m.result.winner === "east" ? m.eastRikishiId : m.westRikishiId);
+    crossWins.set(winnerId, (crossWins.get(winnerId) ?? 0) + 1);
+  }
+
   // Loop-invariant: the just-published basho result is the same for every entry.
   const history = world.history[world.history.length - 1];
   const junYushoSet = new Set(history?.junYusho ?? []);
@@ -531,6 +545,8 @@ export function buildPerformanceList(
       edgeCrisisSurvived: boutMetrics?.edgeCrisisSurvived,
       comebackWins: boutMetrics?.comebackWins,
       opponentAvgTier,
+      ...(crossWins.get(id) ? { crossDivisionWins: crossWins.get(id) } : {}),
+      ...(pulledUp.has(id) ? { crossoverPulledUp: true } : {}),
     });
   }
 

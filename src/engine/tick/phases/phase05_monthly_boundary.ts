@@ -52,6 +52,7 @@ import {
 } from "@/constants/engine/time";
 import { clampFundsToDebtLimit } from "@/constants/engine/economic";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { JUNGYO_YDC_ABSENCE_THRESHOLD } from "@/constants/engine/exhibitionBasho";
 import { getRikishi } from "@/engine/core/queries";
 import {
   getExhibitionBashoSchedule,
@@ -200,6 +201,27 @@ function collectJungyoParticipants(
       if (!isSekitoriDivision(r.division) || r.isRetired) continue;
       const heya = world.heyas.get(r.heyaId);
       if (heya?.jungyoOptOut) continue;
+      // WS-14 — an injured yokozuna sits out the tour. Repeated skips are a
+      // YDC-tracked duty absence: at JUNGYO_YDC_ABSENCE_THRESHOLD the council
+      // issues a formal warning (councilWarnings + stat debuff downstream).
+      if (r.rank === "yokozuna" && r.currentInjury) {
+        const absences = (r.consecutiveJungyoAbsences ?? 0) + 1;
+        const update: Partial<Rikishi> = { consecutiveJungyoAbsences: absences };
+        if (absences >= JUNGYO_YDC_ABSENCE_THRESHOLD) {
+          update.councilWarnings = (r.councilWarnings ?? 0) + 1;
+          builder.logEvent(
+            "GOVERNANCE_RULING",
+            "discipline",
+            {
+              incident: "ydc_jungyo_absence",
+              description: `The Yokozuna Deliberation Council issues a formal warning to Yokozuna ${r.shikona || r.name} after skipping ${absences} consecutive jungyō tours while kyūjō.`,
+            },
+            { rikishiId: r.id, heyaId: r.heyaId }
+          );
+        }
+        builder.updateRikishi(r.id, update);
+        continue;
+      }
       participants.push(r);
     }
     if (participants.length > 0) {

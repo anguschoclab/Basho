@@ -39,7 +39,11 @@ import {
 import type { WorldState } from "@/engine/types/world";
 import { getOzekiStatus, type OzekiKadobanMap } from "@/engine/banzuke/ozekiLogic";
 import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
-import { MAKUSHITA_PROMOTION_ZONE } from "@/constants/engine/banzuke";
+import {
+  CROSS_DIVISION_WIN_BONUS,
+  MAKUSHITA_PROMOTION_ZONE,
+  SEKITORI_INCUMBENT_BONUS,
+} from "@/constants/engine/banzuke";
 import { deliberateBanzukeMovement } from "@/engine/banzuke/banzukeCommittee";
 import type { CommitteeDecision } from "@/engine/committee/committee";
 import { rngForWorld } from "@/engine/core/rng";
@@ -596,6 +600,21 @@ function scoreBanzukeCandidates(
       ) {
         desiredKey -= (MAKUSHITA_PROMOTION_ZONE + 1 - (e.position.rankNumber ?? 99)) * 400;
       }
+
+      // WS-11 — incumbent preference: a sekitori incumbent's drift is
+      // damped toward the status quo, so bubble calls (bottom maegashira
+      // MK vs a marginal J1 promotable) keep the incumbent. Applied to both
+      // directions of drift — it mutes bubble movement, not real records.
+      if (RANK_HIERARCHY[e.position.rank].tier <= 6) {
+        const drift = desiredKey - oldKey;
+        const damped = Math.sign(drift) * Math.max(0, Math.abs(drift) - SEKITORI_INCUMBENT_BONUS);
+        desiredKey = oldKey + damped;
+      }
+
+      // WS-11 — crossover merit: wins against the opposite sekitori
+      // division are direct boundary evidence, applied on top of the
+      // damped drift so a proven challenger still wins the bubble call.
+      desiredKey -= (p?.crossDivisionWins ?? 0) * CROSS_DIVISION_WIN_BONUS;
       return {
         entry: e,
         oldKey,

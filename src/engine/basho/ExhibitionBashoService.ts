@@ -178,6 +178,14 @@ export function simulateExhibitionBasho(
   for (const riki of participants) {
     if (riki.isRetired) continue;
 
+    // WS-14 — tour attendance: every participant logs the tour; a yokozuna's
+    // consecutive-absence streak resets (his YDC duty is fulfilled). The
+    // absence side is tracked upstream in collectJungyoParticipants.
+    builder.updateRikishi(riki.id, {
+      jungyoToursAttended: (riki.jungyoToursAttended ?? 0) + 1,
+      consecutiveJungyoAbsences: 0,
+    });
+
     // Partial stipend — the 2027 JSA package raises jungyo allowances
     // ~20-50% by rank (jsaJungyoStipendMultiplier is the midpoint proxy).
     const baseStipend = EXHIBITION_BASE_STIPEND;

@@ -40,3 +40,12 @@ export const JUNGYO_SEASON_FATIGUE_MULT: Record<
   summer: 1.5,
   autumn: 1.0,
 };
+
+/**
+ * WS-14 — consecutive jungyō tours an eligible yokozuna may skip before the
+ * Yokozuna Deliberation Council issues a formal warning (the real YDC
+ * duty-attendance channel: a yokozuna is expected to appear on tour unless
+ * genuinely hurt — repeated skips while kyūjō draw kankoku-level pressure).
+ * At the threshold the rikishi gains a `councilWarnings` increment.
+ */
+export const JUNGYO_YDC_ABSENCE_THRESHOLD = 2;

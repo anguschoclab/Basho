@@ -88,3 +88,22 @@ export const MAKUSHITA_PROMOTION_NETWINS: Array<{ maxRank: number; netWins: numb
   { maxRank: 10, netWins: 3 },
   { maxRank: MAKUSHITA_PROMOTION_ZONE, netWins: 5 },
 ];
+
+/**
+ * WS-11 — incumbent preference: a sekitori incumbent's desiredKey drift is
+ * damped by this many key units (1000 = one slot-delta, so 250 ≈ a
+ * quarter-slot). On a bubble call — bottom maegashira MK vs a marginal J1
+ * promotable — the makuuchi incumbent keeps his slot; the committee swaps
+ * only when the challenger's case is clear. Applied symmetrically to
+ * promotion and demotion drift so strong records still move.
+ */
+export const SEKITORI_INCUMBENT_BONUS = 250;
+
+/**
+ * WS-11 — desiredKey merit per cross-division win (wins against the
+ * opposite sekitori division in tagged crossover bouts). Direct boundary
+ * evidence: a J1 promotable who beat makuuchi men has proven the swap; an
+ * in-zone makushita who beat juryo men has proven his claim; an incumbent
+ * who held serve has proven he belongs.
+ */
+export const CROSS_DIVISION_WIN_BONUS = 150;
