@@ -14,6 +14,7 @@ import {
   type FavorType,
 } from "@/engine/governance/services/PoliticalFavorsService";
 import { RikishiCouncilService } from "@/engine/governance/services/RikishiCouncilService";
+import { changeHeyaIchimon } from "@/engine/governance/ichimon";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { updateHeyaInWorld } from "@/engine/core/queries";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
@@ -126,6 +127,13 @@ export function governanceCommands(rt: WorkerRuntime): CommandHandlerMap {
     VOTE_COUNCIL_MOTION: (cmd) => {
       if (rt.world) {
         const impact = RikishiCouncilService.voteCouncilMotion(rt.world, cmd.motionId, cmd.vote);
+        rt.world = resolveImpacts(rt.world, [impact]);
+        rt.syncAndDigest();
+      }
+    },
+    CHANGE_ICHIMON: (cmd) => {
+      if (rt.world) {
+        const impact = changeHeyaIchimon(rt.world, cmd.heyaId, cmd.ichimon);
         rt.world = resolveImpacts(rt.world, [impact]);
         rt.syncAndDigest();
       }

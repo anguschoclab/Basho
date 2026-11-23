@@ -42,6 +42,8 @@ import {
 } from "@/constants/engine/economic";
 
 import type { RetiredRikishiSummary } from "@/engine/types/history";
+import { rngForWorld } from "@/engine/core/rng";
+import { ICHIMON_MIGRATION_CHANCE } from "@/constants/engine/governance";
 import {
   SUCCESSION_INSOLVENCY_EVENTS,
   SUCCESSION_MAJOR_SCANDALS,
@@ -431,6 +433,34 @@ export function triggerSuccession(
     // successor gets his own window before the board can act on it again.
     consecutiveUnderperformanceBasho: 0,
   });
+
+  // 7b. WS-7 — ichimon migration: a heya's clan follows the lineage of the
+  // elder stock its master holds. If the inherited share belongs to another
+  // clan, the new master MAY realign (seeded — migration is a choice, and
+  // real realignments are rare). The stock transfer above already ran, so
+  // read the queued market snapshot for the lineage.
+  {
+    const stock = Object.values(
+      worldWithQueuedFields(world, builder).myosekiMarket?.stocks ?? {}
+    ).find((s) => s.holderId === newOyakataId);
+    if (stock?.ichimon && stock.ichimon !== heya.ichimon) {
+      const roll = rngForWorld(world, "governance", `ichimon_migration_${heyaId}`).bool(
+        ICHIMON_MIGRATION_CHANCE
+      );
+      if (roll) {
+        builder.updateHeya(heyaId, { ichimon: stock.ichimon });
+        builder.logEvent(
+          "GOVERNANCE_RULING",
+          "discipline",
+          {
+            incident: "ichimon_migration",
+            description: `${heya.name} realigns from ${heya.ichimon ?? "unaffiliated"} to the ${stock.ichimon} ichimon under its new master — the clan lineage of his elder stock.`,
+          },
+          { heyaId, importance: "notable" }
+        );
+      }
+    }
+  }
 
   // 8. The stable's brand identity drifts toward the new master's temperament
   // — a succession under a traditionalist pulls traditionLevel up, a

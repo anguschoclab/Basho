@@ -34,3 +34,18 @@ export const SCANDAL_REDUCTION_MAINTENANCE = 2;
 export const SCANDAL_SEVERITY_MULT_LENIENT = 0.5;
 export const SCANDAL_SEVERITY_MULT_STANDARD = 1.0;
 export const SCANDAL_SEVERITY_MULT_HARSH = 1.5;
+
+// ── Ichimon defection / migration (WS-7) ──────────────────────────────────────
+
+/** Political-capital cost of a voluntary clan defection. */
+export const ICHIMON_DEFECTION_CAPITAL_COST = 15;
+
+/** Reputation cost — defections are contentious. */
+export const ICHIMON_DEFECTION_REPUTATION_COST = 5;
+
+/**
+ * Seeded chance a new oyakata realigns his heya to the clan lineage of the
+ * elder stock he inherits on succession (the Takanohana-era realignments
+ * are the model — kabu carry clan loyalty, but migration is a choice).
+ */
+export const ICHIMON_MIGRATION_CHANCE = 0.35;

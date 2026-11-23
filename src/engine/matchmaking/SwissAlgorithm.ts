@@ -71,6 +71,19 @@ function banzukeOrdinal(r: Rikishi): number {
   return base + num * RANK_NUMBER_MULTIPLIER + side;
 }
 
+/**
+ * WS-10 — even-day west priority: within a rank number, the east man takes
+ * pairing priority on odd days and the west man on even days (the real
+ * torikumi alternation — the committee swaps who draws the nominally
+ * tougher opponent). Used ONLY for pairing-priority queues (record buckets,
+ * pull-up selection); seniority ordering keeps the east-first convention.
+ */
+function pairOrdinal(r: Rikishi, day: number): number {
+  if (day % 2 !== 0) return banzukeOrdinal(r);
+  const flipped: Rikishi = { ...r, side: r.side === "east" ? "west" : "east" };
+  return banzukeOrdinal(flipped);
+}
+
 /** Checks if a rikishi is in san'yaku ranks (delegates to canonical helper). */
 const isSanyakuRikishi = (r: Rikishi): boolean => isSanyakuRank(r.rank);
 
@@ -147,7 +160,7 @@ function phase1(
   for (const r of pool) {
     if (!paired.has(r.id)) remaining.push(r);
   }
-  remaining.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+  remaining.sort((a, b) => pairOrdinal(a, day) - pairOrdinal(b, day));
 
   for (let i = 0; i < remaining.length; i++) {
     const a = remaining[i];
@@ -350,7 +363,7 @@ function phase2(
     for (const r of bucketMap.get(wins) ?? []) {
       if (!paired.has(r.id)) bucket.push(r);
     }
-    bucket.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+    bucket.sort((a, b) => pairOrdinal(a, day) - pairOrdinal(b, day));
 
     let extraFromBelow: Rikishi | undefined;
     if (bucket.length % 2 !== 0) {
@@ -360,7 +373,7 @@ function phase2(
         for (const r of bucketMap.get(lowerWins) ?? []) {
           if (!paired.has(r.id) && !pulledUp.has(r.id)) lowerBucket.push(r);
         }
-        lowerBucket.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+        lowerBucket.sort((a, b) => pairOrdinal(a, day) - pairOrdinal(b, day));
         if (lowerBucket.length > 0) {
           extraFromBelow = lowerBucket[0];
           pulledUp.add(extraFromBelow.id);

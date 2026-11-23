@@ -17,12 +17,22 @@ import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import type { StatItem } from "@/components/layout/page-shell/index";
 import { POLITICAL_FAVORS } from "@/presenters/projections/governanceProjections";
+import type { IchimonName } from "@/engine/types/economy";
+import { ICHIMON_DEFECTION_CAPITAL_COST } from "@/constants/engine/governance";
 import { RikishiCouncilPanel } from "@/components/governance/RikishiCouncilPanel";
 import { getOyakata } from "@/presenters/worldAccess";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Heya } from "@/engine/types/heya";
 import type { Faction } from "@/engine/types/economy";
 import type { GovernanceDerivedData } from "@/hooks/useGovernanceDerived";
+
+const ICHIMON_NAMES: IchimonName[] = [
+  "Dewanoumi",
+  "Nishonoseki",
+  "Takasago",
+  "Tokitsukaze",
+  "Isegahama",
+];
 
 const FACTION_SORT_OPTIONS: SortOption[] = [
   { key: "influence", label: "Influence" },
@@ -50,6 +60,12 @@ export function GovernancePoliticsTab({ world, heya, derived }: Props) {
 }
 
 function PoliticalStanding({ heya }: { heya: Heya }) {
+  const sendCommand = useGameStore((s) => s.sendCommand);
+  const [targetIchimon, setTargetIchimon] = useState<IchimonName>(
+    ICHIMON_NAMES.find((n) => n !== heya.ichimon) ?? "Dewanoumi"
+  );
+  const capital = heya.politicalCapital ?? 0;
+  const canDefect = capital >= ICHIMON_DEFECTION_CAPITAL_COST && targetIchimon !== heya.ichimon;
   return (
     <div className="space-y-4">
       <SectionHeader eyebrow="CAPITAL" title="Your Political Standing" />
@@ -59,12 +75,52 @@ function PoliticalStanding({ heya }: { heya: Heya }) {
         stats={[
           {
             label: "Political Capital",
-            value: heya.politicalCapital ?? 0,
-            tone: (heya.politicalCapital ?? 0) >= 100 ? "gold" : "default",
+            value: capital,
+            tone: capital >= 100 ? "gold" : "default",
             sub: "Spent via the favors below — bare spending has no effect",
           },
         ]}
       />
+      <Card className="border-border/40 bg-card">
+        <CardContent className="p-3.5 flex items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-bold text-foreground/90">Change Ichimon Allegiance</div>
+            <div className="text-[10px] text-muted-foreground/80 leading-tight">
+              Defect to another clan — costs {ICHIMON_DEFECTION_CAPITAL_COST} capital and damages
+              standing with the abandoned ichimon.
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              className="h-7 rounded border border-border/50 bg-background px-2 text-[11px]"
+              value={targetIchimon}
+              onChange={(e) => setTargetIchimon(e.target.value as IchimonName)}
+            >
+              {ICHIMON_NAMES.filter((n) => n !== heya.ichimon).map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 px-3 text-[10px] uppercase font-black tracking-tighter border-primary/20 hover:border-primary/50 transition-all"
+              disabled={!canDefect}
+              tooltip={
+                !canDefect
+                  ? `Not enough Political Capital (need ${ICHIMON_DEFECTION_CAPITAL_COST})`
+                  : undefined
+              }
+              onClick={() =>
+                sendCommand({ type: "CHANGE_ICHIMON", heyaId: heya.id, ichimon: targetIchimon })
+              }
+            >
+              Defect
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

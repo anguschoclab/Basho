@@ -61,6 +61,11 @@ export type EngineCommand =
       trainingState: import("@/engine/types/training").HeyaTrainingState;
     }
   | { type: "REQUEST_POLITICAL_FAVOR"; heyaId: string; favorId: string }
+  | {
+      type: "CHANGE_ICHIMON";
+      heyaId: string;
+      ichimon: import("@/engine/types/economy").IchimonName;
+    }
   | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
   | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }
   | { type: "PAUSE_SIM" }
