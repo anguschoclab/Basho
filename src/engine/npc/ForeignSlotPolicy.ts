@@ -26,6 +26,7 @@ import {
   FOREIGN_SLOT_BASE_AGGRESSION,
   FOREIGN_SLOT_AGGRESSION_TRAIT_WEIGHT,
   FOREIGN_SLOT_BELIEVER_QUIRK_BONUS,
+  FOREIGN_PIPELINE_BONUS_MULT,
   FOREIGN_SUNK_COST_RETENTION_MULT,
   FOREIGN_BID_BLOCKING_QUIRKS,
   FOREIGN_BID_TAPER_START_AGE,
@@ -48,8 +49,15 @@ export function foreignSlotOccupied(world: WorldState, heyaId: Id): boolean {
  * How hard this oyakata chases foreign talent — a multiplier on the foreign
  * bid. >1 for bold/ambitious personas and Foreign Talent Believers; <1 for
  * conservative stables that treat the slot as a last resort.
+ *
+ * `heyaHadForeigner` models the established-channel effect: a stable that
+ * has fielded a foreigner before retains the amateur-network relationships
+ * to pursue a replacement above base parity.
  */
-export function foreignSlotBidAggression(oyakata: Oyakata): number {
+export function foreignSlotBidAggression(
+  oyakata: Oyakata,
+  opts?: { heyaHadForeigner?: boolean }
+): number {
   // Domestic-only pipelines: these oyakata never take a foreigner — the
   // 0.4 trait floor must not rescue them.
   if (FOREIGN_BID_BLOCKING_QUIRKS.some((q) => oyakata.quirks?.includes(q))) return 0;
@@ -61,7 +69,11 @@ export function foreignSlotBidAggression(oyakata: Oyakata): number {
   const quirkBonus = oyakata.quirks?.includes("Foreign Talent Believer")
     ? FOREIGN_SLOT_BELIEVER_QUIRK_BONUS
     : 0;
-  const base = Math.max(0.4, Math.min(1.5, FOREIGN_SLOT_BASE_AGGRESSION + traitEdge + quirkBonus));
+  const pipelineMult = opts?.heyaHadForeigner ? FOREIGN_PIPELINE_BONUS_MULT : 1;
+  const base = Math.max(
+    0.4,
+    Math.min(1.5, (FOREIGN_SLOT_BASE_AGGRESSION + traitEdge + quirkBonus) * pipelineMult)
+  );
   if (age >= FOREIGN_BID_TAPER_START_AGE) {
     return (
       base *

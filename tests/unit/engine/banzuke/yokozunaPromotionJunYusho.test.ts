@@ -86,7 +86,7 @@ function makeBashoWorldForPromotion(opts: {
   return world;
 }
 
-describe("yokozuna promotion Case 2 — 1 yusho + 1 jun-yusho (13+ wins both)", () => {
+describe("yokozuna promotion Case 2 — 1 yusho + 1 jun-yusho (11+ wins both)", () => {
   it("promotes ozeki to yokozuna with prev yusho + current jun-yusho (13+ wins)", () => {
     const world = makeBashoWorldForPromotion({
       ozekiId: "oz-1",
@@ -123,11 +123,11 @@ describe("yokozuna promotion Case 2 — 1 yusho + 1 jun-yusho (13+ wins both)", 
     expect(updated!.rank).toBe("yokozuna");
   });
 
-  it("does NOT promote ozeki with jun-yusho but < 13 wins", () => {
+  it("does NOT promote ozeki with jun-yusho but < 11 wins", () => {
     const world = makeBashoWorldForPromotion({
       ozekiId: "oz-3",
-      currentWins: 12,
-      currentLosses: 3,
+      currentWins: 10,
+      currentLosses: 5,
       prevYusho: true,
       prevWins: 14,
       isJunYushoThisBasho: true,

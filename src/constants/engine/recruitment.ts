@@ -54,9 +54,17 @@ export const DUAL_CITIZEN_RECRUIT_SHARE = 0.07;
 /** §9.3 — NPCs are reluctant to release foreign-slot rikishi (sunk cost). */
 export const FOREIGN_SUNK_COST_RETENTION_MULT = 1.6;
 /** Bid-policy multipliers around the foreign slot. */
-export const FOREIGN_SLOT_BASE_AGGRESSION = 0.8;
+// §5.x — base parity: an eligible open-slot heya bids on a foreigner as it
+// would on an equal domestic. 0.8 systematically lost vacancy budgets to
+// domestics, collapsing steady-state foreign occupancy (measured +0 intake
+// for 4+ consecutive years once all genesis slots filled).
+export const FOREIGN_SLOT_BASE_AGGRESSION = 1.0;
 export const FOREIGN_SLOT_AGGRESSION_TRAIT_WEIGHT = 0.006; // per point of risk+ambition over 100 combined
 export const FOREIGN_SLOT_BELIEVER_QUIRK_BONUS = 0.35;
+/** Established channel bonus: a heya that has fielded a foreigner before
+ *  has the relationship pipeline to re-sign one (real-world amateur-network
+ *  durability). Multiplies the aggression score for open-slot pursuit. */
+export const FOREIGN_PIPELINE_BONUS_MULT = 1.25;
 export const DUAL_CITIZEN_BID_PREFERENCE = 0.25; // dual citizens are exempt — always attractive
 export const BASE_SCOUT_COST = 50000;
 export const REVEAL_COST = 100000;

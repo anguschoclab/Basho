@@ -74,7 +74,13 @@ export function materializeCandidateToRikishiInternal(
     newRikishiId = rikishi.id;
     const heya = getHeya(world, heyaId);
     if (heya) {
-      builder.updateHeya(heyaId, { rikishiIds: [...(heya.rikishiIds || []), rikishi.id] });
+      builder.updateHeya(heyaId, {
+        rikishiIds: [...(heya.rikishiIds || []), rikishi.id],
+        // §5.x established channel: whichever path minted the foreigner
+        // (NPC bid, direct pick, player offer), the amateur-network
+        // pipeline is now live — see `Heya.hadForeigner`.
+        ...(candidateConsumesForeignSlot(candidate) ? { hadForeigner: true } : {}),
+      });
     }
   }
 

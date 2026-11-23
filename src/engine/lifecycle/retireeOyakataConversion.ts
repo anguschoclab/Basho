@@ -219,8 +219,11 @@ function resolveElderShare(
       : retiree.rank === "yokozuna" && yushoCount >= ICHIDAI_TOSHIYORI_YUSHO_THRESHOLD
         ? "ichidai_toshiyori"
         // Post-2006 rules: jun-toshiyori grace is Yokozuna/Ōzeki only —
-        // Komusubi/Sekiwake without stock get no elder status.
-        : isYokozunaOrOzekiRank(retiree.rank)
+        // Komusubi/Sekiwake without stock get no elder status. The test is
+        // PEAK rank, not final rank: an ex-ōzeki demoted to sekiwake before
+        // intai still earned the credential during his career.
+        : isYokozunaOrOzekiRank(retiree.rank) ||
+            (retiree.careerHistory ?? []).some((h) => isYokozunaOrOzekiRank(h.rank))
           ? "jun_toshiyori"
           : null;
   const elderExpiryYear =

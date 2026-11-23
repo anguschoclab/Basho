@@ -141,6 +141,9 @@ export function GovernanceSection({
         {grandfathered > 0 && (
           <Badge variant="outline">Foreign slot +{grandfathered} grandfathered</Badge>
         )}
+        {heya.hadForeigner && (
+          <Badge variant="outline">Foreign pipeline established</Badge>
+        )}
         {heya.scandalScore >= 20 && (
           <Badge variant="outline">{SCANDAL_LABELS[toScandalBand(heya.scandalScore)]}</Badge>
         )}

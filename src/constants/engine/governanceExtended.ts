@@ -56,5 +56,14 @@ export const YOKOZUNA_SENTIMENT_CONSECUTIVE_MAKEKOSHI_PENALTY = 25;
 /** Basho of yokozuna vacancy before prestige promotion relaxes criteria. */
 export const YOKOZUNA_VACANCY_STREAK_THRESHOLD = 4;
 
+/**
+ * Measured elite-basho bar for ōzeki→yokozuna bids. The engine's win
+ * distribution compresses at the top of makuuchi — a dominant yusho lands at
+ * ~11 wins, so 12–13-win criteria are unreachable in practice (25-yr
+ * diagnostic: consecutiveStrongOzeki=0 across every ōzeki). 11 preserves the
+ * consecutive-excellence structure at the engine's actual scale.
+ */
+export const OZEKI_YOKOZUNA_BID_WINS = 11;
+
 /** Wins required for prestige promotion during extended vacancy (reduced from 13). */
-export const YOKOZUNA_VACANCY_PRESTIGE_WINS = 12;
+export const YOKOZUNA_VACANCY_PRESTIGE_WINS = OZEKI_YOKOZUNA_BID_WINS;

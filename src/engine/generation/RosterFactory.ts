@@ -56,7 +56,11 @@ function markGenesisForeignHosts(
         roll -= pool[idx].w;
         if (roll <= 0) break;
       }
-      markedForForeign.add(pool.splice(idx, 1)[0].h.id);
+      const host = pool.splice(idx, 1)[0].h;
+      markedForForeign.add(host.id);
+      // §5.x established channel: a genesis host has already recruited
+      // through the foreign pipeline once — the relationships persist.
+      host.hadForeigner = true;
     }
   }
   const foreignDivisionByHeya = new Map<string, Division>();

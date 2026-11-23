@@ -149,7 +149,11 @@ export function tickScoutMissions(world: WorldState): StateImpact {
       const scout = world.staff.get(m.scoutStaffId);
       const stats = deriveScoutStats(scout);
       const def = SCOUT_TIERS[m.tier];
-      const reveals = def.revealCount + Math.floor(stats.network / 4);
+      // §5.x established channel: a heya that has fielded a foreigner before
+      // draws extra introductions from its live amateur network.
+      const pipelineBonus =
+        m.tier === "international" && world.heyas.get(m.heyaId)?.hadForeigner ? 1 : 0;
+      const reveals = def.revealCount + Math.floor(stats.network / 4) + pipelineBonus;
       const tp = nextPool?.pools[def.pool];
       if (tp) {
         // Move candidates from the hidden reserve into the visible list.

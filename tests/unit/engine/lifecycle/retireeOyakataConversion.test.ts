@@ -13,6 +13,7 @@ import {
   HEYA_SOFT_TARGET,
   HEYA_FOUNDING_RAMP,
   MERGER_THRESHOLD,
+  MYOSEKI_TOTAL_COUNT,
 } from "@/constants/engine/economic";
 
 describe("processRetireeOyakataConversion — guard conditions", () => {
@@ -484,5 +485,98 @@ describe("evaluateFoundingEligibility — JSA branching gates", () => {
     const crowded = worldWithParent({ funds: 100_000_000 }, HEYA_SOFT_TARGET - 5);
     const e = evaluateFoundingEligibility(crowded, retiree);
     expect(e.effectiveChance).toBeCloseTo(FOUNDING_CHANCE * (4 / HEYA_FOUNDING_RAMP), 6);
+  });
+});
+
+describe("processRetireeOyakataConversion — saturated kabu market (founding gate)", () => {
+  /** 105 held shares — the MYOSEKI_TOTAL_COUNT cap; nothing available, nothing mintable. */
+  function saturatedMarket() {
+    const stocks: Record<string, unknown> = {};
+    for (let i = 0; i < MYOSEKI_TOTAL_COUNT; i++) {
+      stocks[`MY-held-${i}`] = {
+        id: `MY-held-${i}`,
+        name: `Elder${i}`,
+        prestigeTier: "modest",
+        ownerId: `oyakata-${i}`,
+        holderId: `oyakata-${i}`,
+        status: "held",
+      };
+    }
+    return { stocks, history: [] } as any;
+  }
+
+  const ozekiBasho = {
+    id: "b1",
+    bashoId: "b1",
+    year: 2020,
+    month: 1,
+    bashoName: "hatsu" as const,
+    rank: "ozeki" as const,
+    division: "makuuchi" as const,
+    rankNumber: 1,
+    side: "east" as const,
+    wins: 10,
+    losses: 5,
+    absences: 0,
+    isYusho: false,
+    isJunYusho: false,
+    specialPrizes: { shukunsho: false, kantosho: false, ginosho: false },
+    weight: 150,
+    momentum: 0,
+  };
+
+  it("jun_toshiyori: ex-ozeki demoted to sekiwake still converts when stock is saturated (peak-rank credential)", () => {
+    const retiree = mockRikishi("fallen", {
+      heyaId: "h1",
+      rank: "sekiwake",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 400,
+      nationality: "Japan",
+      careerHistory: [ozekiBasho] as any,
+    });
+    const heya = makeMockHeya("h1", { rikishiIds: ["fallen"] });
+    const world = makeMockWorld({
+      year: 2025,
+      rikishi: new Map([["fallen", retiree]]),
+      heyas: new Map([["h1", heya]]),
+      myosekiMarket: saturatedMarket(),
+    });
+    const builder = createImpactBuilder("test");
+
+    processRetireeOyakataConversion(world, retiree, builder);
+    const next = resolveImpacts(world, [builder.build()]);
+
+    const newOyakata = Array.from(next.oyakata?.values() ?? []).find(
+      (o) => o.heyaId === "h1"
+    );
+    expect(newOyakata).toBeDefined();
+    expect(newOyakata?.elderStatus).toBe("jun_toshiyori");
+  });
+
+  it("jun_toshiyori does NOT leak to non-elite careers: 200-win sekiwake-only retiree still bails on saturated market", () => {
+    const retiree = mockRikishi("lifer", {
+      heyaId: "h1",
+      rank: "sekiwake",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 400,
+      nationality: "Japan",
+      careerHistory: [],
+    });
+    const heya = makeMockHeya("h1", { rikishiIds: ["lifer"] });
+    const world = makeMockWorld({
+      year: 2025,
+      rikishi: new Map([["lifer", retiree]]),
+      heyas: new Map([["h1", heya]]),
+      myosekiMarket: saturatedMarket(),
+    });
+    const builder = createImpactBuilder("test");
+    const beforeOyakata = world.oyakata?.size ?? 0;
+
+    processRetireeOyakataConversion(world, retiree, builder);
+    const next = resolveImpacts(world, [builder.build()]);
+
+    expect(next.oyakata?.size ?? 0).toBe(beforeOyakata);
   });
 });

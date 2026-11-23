@@ -18,7 +18,10 @@ import {
   isCandidateAgeEligible,
 } from "@/engine/generation/talentPoolReads";
 import { foreignSlotBidAggression, foreignSlotOccupied } from "@/engine/npc/ForeignSlotPolicy";
-import { DUAL_CITIZEN_BID_PREFERENCE } from "@/constants/engine/recruitment";
+import {
+  DUAL_CITIZEN_BID_PREFERENCE,
+  FOREIGN_PIPELINE_BONUS_MULT,
+} from "@/constants/engine/recruitment";
 
 /**
  * Re-issues the accumulated rikishiIds roster after a materialization. The
@@ -105,7 +108,13 @@ export function fillVacanciesForNPC(
           if (talent >= 80 && repScore < 70) affinity = 0.1;
           if (talent >= 90 && repScore < 85) affinity = 0.05;
 
-          const score = talent * affinity + rng.int(0, 20);
+          // §5.x established channel: a heya whose pipeline is live pursues
+          // its replacement foreigner ahead of equal domestics.
+          const pipelineBonus =
+            heya.hadForeigner && candidateConsumesForeignSlot(c)
+              ? Math.round((FOREIGN_PIPELINE_BONUS_MULT - 1) * 100)
+              : 0;
+          const score = talent * affinity + pipelineBonus + rng.int(0, 20);
           return { cId, score, c };
         });
 
@@ -226,7 +235,9 @@ export function fillVacanciesForNPCWithBidding(
     const rivalHeyaId = rivalHeyaMap.get(heyaId as Id);
     const balanceMult = balanceMap.get(heyaId as Id) ?? 1;
     const slotOccupied = foreignOccupied.get(heyaId) ?? false;
-    const slotAggression = foreignSlotBidAggression(oyakata);
+    const slotAggression = foreignSlotBidAggression(oyakata, {
+      heyaHadForeigner: heya.hadForeigner,
+    });
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     for (const candidate of allVisibleCandidates) {
       // §5.4 hard gate: slot occupied → slot-consuming candidates are invisible.

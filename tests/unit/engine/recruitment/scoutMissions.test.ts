@@ -112,6 +112,43 @@ describe("tickScoutMissions (P4)", () => {
     expect(remaining[0].id).toBe("m1");
     expect((impact.events ?? []).some((e) => e.type === "RECRUIT_DISCOVERED")).toBe(true);
   });
+
+  it("established foreign pipeline reveals +1 candidate on an international mission", () => {
+    const { world } = mk();
+    const pool = MockFactory.createTalentPool({ candidates: {} });
+    for (const id of ["fc1", "fc2", "fc3", "fc4", "fc5"]) {
+      pool.pools.foreign.candidatesHidden.push(id);
+    }
+    world.talentPool = pool;
+
+    const runMission = (hadForeigner: boolean) => {
+      world.heyas.get("h1")!.hadForeigner = hadForeigner;
+      world.talentPool = MockFactory.createTalentPool({ candidates: {} });
+      for (const id of ["fc1", "fc2", "fc3", "fc4", "fc5"]) {
+        world.talentPool.pools.foreign.candidatesHidden.push(id);
+      }
+      world.activeScoutMissions = [
+        {
+          id: "mi",
+          heyaId: "h1",
+          scoutStaffId: "scout1",
+          tier: "international",
+          startedWeek: 1,
+          returnsWeek: 4,
+          costYen: 450_000,
+        },
+      ];
+      const impact = tickScoutMissions(world);
+      const visible =
+        (impact.worldFields?.talentPool as { pools?: { foreign?: { candidatesVisible?: string[] } } })
+          ?.pools?.foreign?.candidatesVisible ?? [];
+      return visible.length;
+    };
+
+    const fresh = runMission(false);
+    const pipelined = runMission(true);
+    expect(pipelined).toBe(fresh + 1);
+  });
 });
 
 describe("deriveScoutStats", () => {

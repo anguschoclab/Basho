@@ -98,3 +98,71 @@ describe("yokozuna vacancy streak prestige promotion", () => {
     expect(updatedOzeki!.rank).toBe("ozeki");
   });
 });
+
+describe("yokozuna promotion at measured win scale (11-win elite basho)", () => {
+  it("vacancy rescue promotes on an 11-win yusho after the streak threshold", () => {
+    const world = makeBashoWorld({
+      yokozunaVacancyStreak: YOKOZUNA_VACANCY_STREAK_THRESHOLD,
+    });
+
+    const ozeki = mockRikishi("oz-11", {
+      rank: "ozeki",
+      division: "makuuchi",
+      heyaId: "heya-1",
+      shikona: "ElevenWinOzeki",
+    });
+    world.rikishi.set("oz-11", ozeki);
+    world.activeRikishiIds.add("oz-11");
+    world.currentBasho!.standings = new Map([
+      ["oz-11", { wins: 11, losses: 4, absences: 0 }],
+    ]);
+    world.history[0].yusho = "oz-11";
+
+    const next = resolveImpacts(world, [publishBanzukeUpdate(world)]);
+    expect(next.rikishi.get("oz-11")!.rank).toBe("yokozuna");
+  });
+
+  it("an 11-win yusho with streak below threshold does NOT promote (vacancy gate holds)", () => {
+    const world = makeBashoWorld({
+      yokozunaVacancyStreak: YOKOZUNA_VACANCY_STREAK_THRESHOLD - 1,
+    });
+
+    const ozeki = mockRikishi("oz-p11", {
+      rank: "ozeki",
+      division: "makuuchi",
+      heyaId: "heya-1",
+      shikona: "PrestigeOzeki",
+    });
+    world.rikishi.set("oz-p11", ozeki);
+    world.activeRikishiIds.add("oz-p11");
+    world.currentBasho!.standings = new Map([
+      ["oz-p11", { wins: 11, losses: 4, absences: 0 }],
+    ]);
+    world.history[0].yusho = "oz-p11";
+
+    const next = resolveImpacts(world, [publishBanzukeUpdate(world)]);
+    expect(next.rikishi.get("oz-p11")!.rank).toBe("ozeki");
+  });
+
+  it("a 10-win yusho still does NOT promote (elite bar holds)", () => {
+    const world = makeBashoWorld({
+      yokozunaVacancyStreak: YOKOZUNA_VACANCY_STREAK_THRESHOLD,
+    });
+
+    const ozeki = mockRikishi("oz-10", {
+      rank: "ozeki",
+      division: "makuuchi",
+      heyaId: "heya-1",
+      shikona: "TenWinOzeki",
+    });
+    world.rikishi.set("oz-10", ozeki);
+    world.activeRikishiIds.add("oz-10");
+    world.currentBasho!.standings = new Map([
+      ["oz-10", { wins: 10, losses: 5, absences: 0 }],
+    ]);
+    world.history[0].yusho = "oz-10";
+
+    const next = resolveImpacts(world, [publishBanzukeUpdate(world)]);
+    expect(next.rikishi.get("oz-10")!.rank).toBe("ozeki");
+  });
+});

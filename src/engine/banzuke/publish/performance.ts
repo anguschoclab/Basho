@@ -13,6 +13,7 @@ import { DIVISIONS, isLowerSanyakuRank } from "@/constants/engine/rankDisplay";
 import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
+  OZEKI_YOKOZUNA_BID_WINS,
 } from "@/constants/engine/governanceExtended";
 import { SEKIWAKE_33_WIN_THRESHOLD, SEKIWAKE_OZEKI_RECLAIM_WINS } from "@/constants/engine/banzuke";
 
@@ -55,14 +56,14 @@ function evaluateOzekiYokozunaBid(
   if (isYusho && wonPrevious) {
     promoteToYokozuna = true;
   }
-  // Promotion Case 2: 1 Yusho + 1 Jun-Yusho (13+ wins both)
+  // Promotion Case 2: 1 Yusho + 1 Jun-Yusho (elite-win bar both basho)
   else if (
-    (isYusho && wasJunYushoPrevious && lastWins >= 13) ||
-    (isJunYusho && wonPrevious && currentWins >= 13)
+    (isYusho && wasJunYushoPrevious && lastWins >= OZEKI_YOKOZUNA_BID_WINS) ||
+    (isJunYusho && wonPrevious && currentWins >= OZEKI_YOKOZUNA_BID_WINS)
   ) {
     promoteToYokozuna = true;
   }
-  // Promotion Case 3: 3 consecutive 12+ wins + at least one yusho
+  // Promotion Case 3: 3 consecutive elite-win basho + at least one yusho
   else if ((rikishi.consecutiveStrongOzeki || 0) >= 2 && (isYusho || wonPrevious)) {
     promoteToYokozuna = true;
   }
@@ -81,7 +82,7 @@ function evaluateOzekiYokozunaBid(
   }
   // Promotion Case 5: Vacancy-streak prestige promotion
   // After YOKOZUNA_VACANCY_STREAK_THRESHOLD basho with no yokozuna,
-  // relax criteria: 12+ win yusho is sufficient.
+  // relax criteria: an elite-win yusho is sufficient.
   else if (
     (world.yokozunaVacancyStreak ?? 0) >= YOKOZUNA_VACANCY_STREAK_THRESHOLD &&
     stats.wins >= YOKOZUNA_VACANCY_PRESTIGE_WINS &&
@@ -90,8 +91,9 @@ function evaluateOzekiYokozunaBid(
     promoteToYokozuna = true;
   }
 
-  // Track consecutive strong performances (12+) for borderline cases
-  const consecutiveStrongOzeki = currentWins >= 12 ? (rikishi.consecutiveStrongOzeki || 0) + 1 : 0;
+  // Track consecutive strong performances (elite-win bar) for borderline cases
+  const consecutiveStrongOzeki =
+    currentWins >= OZEKI_YOKOZUNA_BID_WINS ? (rikishi.consecutiveStrongOzeki || 0) + 1 : 0;
 
   // Narrative: Yokozuna Watch
   if (isYusho && !promoteToYokozuna) {

@@ -114,6 +114,14 @@ export interface Heya {
    * plus the disgraced master's resignation with no revival proposal.
    */
   custodyStatus?: { hostHeyaId: string; sinceYear: number };
+  /**
+   * §5.x — established foreign pipeline: the heya has fielded at least one
+   * foreign-slot rikishi (genesis-seeded or signed since). A live channel
+   * weights replacement pursuit (`FOREIGN_PIPELINE_BONUS_MULT`); it persists
+   * after the foreigner retires, matching the real-world amateur-network
+   * durability that lets e.g. Mongolian stables re-sign within a cycle.
+   */
+  hadForeigner?: boolean;
   politicalCapital?: number;
   location?: string;
 
