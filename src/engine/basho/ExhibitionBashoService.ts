@@ -18,6 +18,8 @@ import {
   EXHIBITION_BASE_STIPEND,
   EXHIBITION_INJURY_BASE_CHANCE,
   EXHIBITION_INJURY_FATIGUE_PENALTY,
+  JUNGYO_FATIGUE_PER_TOUR_DAY,
+  JUNGYO_SEASON_FATIGUE_MULT,
 } from "@/constants/engine/exhibitionBasho";
 import {
   isPostRevision,
@@ -48,7 +50,7 @@ export {
 };
 
 /** Exhibition basho info */
-interface ExhibitionBashoInfo {
+export interface ExhibitionBashoInfo {
   name: ExhibitionBashoName;
   displayName: string;
   month: number;
@@ -141,13 +143,17 @@ export function isHonbasho(name: string): boolean {
 /**
  * Simulate an exhibition basho for a heya's rikishi.
  * No banzuke updates, reduced injury risk, partial stipend, possible rivalry seeding.
+ * WS-14: tour length + season drive a real fatigue load on every participant.
  */
 export function simulateExhibitionBasho(
   world: WorldState,
-  bashoName: ExhibitionBashoName,
+  jungyoEvent: ExhibitionBashoName | Pick<ExhibitionBashoInfo, "name" | "tourDays" | "season">,
   participants: Rikishi[]
 ): StateImpact {
   const builder = createImpactBuilder("simulateExhibitionBasho");
+  const bashoName = typeof jungyoEvent === "string" ? jungyoEvent : jungyoEvent.name;
+  const tourDays = typeof jungyoEvent === "string" ? 0 : jungyoEvent.tourDays;
+  const season = typeof jungyoEvent === "string" ? undefined : jungyoEvent.season;
   const rng = rngForWorld(world, "exhibition", bashoName);
 
   // Rivalry seeds accumulate into a single overlay — writing the worldField
@@ -185,6 +191,21 @@ export function simulateExhibitionBasho(
           cash: (riki.economics.cash ?? 0) + stipend,
         },
       });
+    }
+
+    // WS-14 — travel load: every participant carries fatigue proportional
+    // to the real tour length, season-scaled (the August gauntlet is the
+    // dangerous one). Feeds the fatigue → injury-chance coupling in
+    // InjuryService and the condition pipelines downstream.
+    if (tourDays > 0) {
+      const load = Math.round(
+        tourDays * JUNGYO_FATIGUE_PER_TOUR_DAY * (JUNGYO_SEASON_FATIGUE_MULT[season ?? "spring"] ?? 1)
+      );
+      if (load > 0) {
+        builder.updateRikishi(riki.id, {
+          fatigue: Math.min(100, (riki.fatigue ?? 0) + load),
+        });
+      }
     }
 
     // Reduced injury risk — exhibition knocks are modeled as fatigue, not an

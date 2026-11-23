@@ -128,7 +128,7 @@ export function generateInitialWorld(seed: string): WorldState {
     gyojiPool: generateInitialGyojiPool(seed),
     shimpanPool: generateInitialShimpanPool(seed),
     // Elder share market: JSA-held pool + per-oyakata assignments
-    myosekiMarket: generateMyosekiMarket(seed, oyakataMap),
+    myosekiMarket: generateMyosekiMarket(seed, oyakataMap, heyaMap),
   };
 
   // 3. Generate Heya Brand Identities (for kesho-mawashi designs)

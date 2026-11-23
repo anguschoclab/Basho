@@ -234,4 +234,44 @@ describe("simulateExhibitionBasho", () => {
     expect(new Set([pair.aId, pair.bId])).toEqual(new Set(["r-1", "r-2"]));
     expect(pair.heat).toBeGreaterThan(0);
   });
+
+  // WS-14 — tour-length fatigue coupling: every participant carries a real
+  // travel load proportional to tourDays × season. The August summer
+  // gauntlet is the dangerous one; a short winter hop is light.
+  it("accrues tour fatigue scaled by tourDays and season (August >> February)", () => {
+    const mkWorld = (id: string) => {
+      const r = mockRikishi(id, { shikona: id, fatigue: 0 });
+      return { r, world: makeMockWorld({ rikishi: new Map([[r.id, r]]) }) };
+    };
+    const august = mkWorld("r-aug");
+    const february = mkWorld("r-feb");
+
+    const augImpact = simulateExhibitionBasho(
+      august.world,
+      { name: "august-jungyo", tourDays: 28, season: "summer" },
+      [august.r]
+    );
+    const febImpact = simulateExhibitionBasho(
+      february.world,
+      { name: "february-jungyo", tourDays: 8, season: "winter" },
+      [february.r]
+    );
+
+    const augFatigue = resolveImpacts(august.world, [augImpact]).rikishi.get("r-aug")?.fatigue ?? 0;
+    const febFatigue = resolveImpacts(february.world, [febImpact]).rikishi.get("r-feb")?.fatigue ?? 0;
+
+    expect(augFatigue).toBeGreaterThan(0);
+    expect(febFatigue).toBeGreaterThan(0);
+    // 28 summer days should land several times the 8 winter days' load.
+    expect(augFatigue).toBeGreaterThanOrEqual(febFatigue * 4);
+  });
+
+  it("legacy name-only callers accrue no tour fatigue", () => {
+    const r1 = mockRikishi("r-1", { shikona: "Rikishi 1", fatigue: 0 });
+    const world = makeMockWorld({ rikishi: new Map([[r1.id, r1]]) });
+    // No injury roll mocking — a name-only call carries no tour metadata.
+    const impact = simulateExhibitionBasho(world, "february-jungyo", [r1]);
+    const updated = resolveImpacts(world, [impact]);
+    expect(updated.rikishi.get("r-1")?.fatigue ?? 0).toBe(0);
+  });
 });

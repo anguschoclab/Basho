@@ -1,4 +1,5 @@
 import type { Id } from "@/engine/types/common";
+import type { IchimonName } from "@/engine/types/economy";
 
 /** Type representing myoseki status. */
 export type MyosekiStatus = "held" | "leased" | "available";
@@ -31,6 +32,13 @@ export interface MyosekiStock {
 
   /** Optional training style bonus associated with this stock. */
   bonusType?: string;
+
+  /**
+   * WS-6 — ichimon lineage of the share. Elder stock names are historically
+   * attached to a stable's clan; the lineage lets transfer paths prefer
+   * same-ichimon holders (kabu stays inside the clan where possible).
+   */
+  ichimon?: IchimonName;
 }
 
 /** Defines the structure for myoseki transaction. */

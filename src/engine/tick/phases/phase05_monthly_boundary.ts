@@ -122,7 +122,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   ];
   if (jungyoParticipants && jungyoEvent) {
     const participants = jungyoParticipants;
-    producers.push((w) => simulateExhibitionBasho(w, jungyoEvent.name, participants));
+    producers.push((w) => simulateExhibitionBasho(w, jungyoEvent, participants));
   }
   producers.push((w) => payMochikyukinBonuses(w, currentMonth));
   // Dated JSA rule-change bulletins (pay revision announced Aug 2026,

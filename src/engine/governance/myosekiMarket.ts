@@ -211,12 +211,16 @@ while (uniqueNames.length < MYOSEKI_TOTAL_COUNT) {
  */
 export function generateMyosekiMarket(
   seed: string,
-  oyakataMap: IdMapRuntime<Oyakata>
+  oyakataMap: IdMapRuntime<Oyakata>,
+  heyaMap?: IdMapRuntime<Heya>
 ): MyosekiMarket {
   const rng = rngFromSeed(seed, "myoseki", "init");
   const stocks: Record<Id, MyosekiStock> = {};
 
   const availableNames = [...uniqueNames].slice(0, MYOSEKI_TOTAL_COUNT);
+  // WS-6 — a share's ichimon lineage follows the holder's stable clan.
+  const ichimonOf = (oyakata: Oyakata) =>
+    heyaMap ? heyaMap.get(oyakata.heyaId)?.ichimon : undefined;
 
   let i = 0;
   // First pass: Assign to every active Oyakata
@@ -226,6 +230,7 @@ export function generateMyosekiMarket(
     const name = availableNames[i];
     const prestigeTier = rng.next() > 0.8 ? "elite" : rng.next() > 0.4 ? "respected" : "modest";
     const id = rng.uuid("MS");
+    const ichimon = ichimonOf(oyakata);
 
     stocks[id] = {
       id,
@@ -234,6 +239,7 @@ export function generateMyosekiMarket(
       ownerId: oyakata.id,
       holderId: oyakata.id,
       status: "held",
+      ...(ichimon ? { ichimon } : {}),
     };
     i++;
   }

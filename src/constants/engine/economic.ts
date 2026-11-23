@@ -184,8 +184,14 @@ export const LOAN_ISSUANCE_THRESHOLD = -5_000_000;
 /** Merger threshold (¥) - when funds drop below this, NPC stables are forced to merge. */
 export const MERGER_THRESHOLD = -15_000_000;
 
-/** Seed funds for a newly founded stable (¥). */
-export const FOUNDING_SEED_FUNDS = 30_000_000;
+/**
+ * Seed funds for a newly founded stable (¥) — and, via
+ * `retireeOyakataConversion`, the solvency bar for branching out
+ * (retiree needs the full amount or a parent holding 2×). Calibrated to
+ * the real ~¥200M independence hurdle: branch-outs are rare and only
+ * elite-career retirement funds or wealthy parent stables clear it.
+ */
+export const FOUNDING_SEED_FUNDS = 200_000_000;
 
 /**
  * WS-6 — JSA three-tier elder eligibility ladder (post-2006 rules).

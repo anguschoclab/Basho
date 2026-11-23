@@ -21,3 +21,22 @@ export const EXHIBITION_INJURY_BASE_CHANCE = 0.02;
 
 /** Fatigue penalty added on minor injury */
 export const EXHIBITION_INJURY_FATIGUE_PENALTY = 2;
+
+/**
+ * WS-14 — jungyo travel-load coupling. Every tour participant accrues
+ * fatigue proportional to real tour length; the August summer gauntlet
+ * carries the heaviest load (~21 for a 28-day tour), a 4-day winter hop
+ * ~3. Feeds the existing fatigue → weekly-injury-chance coupling in
+ * InjuryService — the heat, travel, and back-to-back appearances are
+ * what make summer jungyo dangerous.
+ */
+export const JUNGYO_FATIGUE_PER_TOUR_DAY = 0.5;
+export const JUNGYO_SEASON_FATIGUE_MULT: Record<
+  "winter" | "spring" | "summer" | "autumn",
+  number
+> = {
+  winter: 0.75,
+  spring: 1.0,
+  summer: 1.5,
+  autumn: 1.0,
+};
