@@ -60,13 +60,7 @@ export function executeMerger(
   }
 
   // 1. Transfer rikishi (foreign-slot-aware — §5.1 holds "at any time").
-  const transferredRikishiIds = transferRosterAcrossMerger(
-    world,
-    source,
-    target,
-    builder,
-    reason === "mandated"
-  );
+  const transferredRikishiIds = transferRosterAcrossMerger(world, source, target, builder);
 
   // 2. Combine funds (partially, penalties apply for scandal)
   // If source had debt, it might not transfer fully, but positive funds transfer partially
@@ -167,8 +161,7 @@ function transferRosterAcrossMerger(
   world: WorldState,
   source: NonNullable<ReturnType<typeof getHeya>>,
   target: NonNullable<ReturnType<typeof getHeya>>,
-  builder: ReturnType<typeof createImpactBuilder>,
-  mandated = false
+  builder: ReturnType<typeof createImpactBuilder>
 ): Id[] {
   // updateRikishi(heyaId) does not resync heya.rikishiIds — accumulate
   // incoming ids and write them back explicitly, or roster reads
@@ -208,13 +201,14 @@ function transferRosterAcrossMerger(
     );
   }
 
-  // Mandated absorptions may stack foreign-slot rikishi past the cap —
-  // stamp the excess so the exception is tracked (and decays on
+  // Any absorption may stack foreign-slot rikishi past the cap — the quota
+  // binds future recruitment, not existing roster, so receivers legally
+  // hold the excess. Stamp it so the exception is tracked (and decays on
   // retirement/transfer) instead of silently persisting.
   const update: Record<string, unknown> = {
     rikishiIds: [...new Set([...(target.rikishiIds ?? []), ...addedIds])],
   };
-  if (mandated && incomingForeign > 0) {
+  if (incomingForeign > 0) {
     const targetForeign = getHeyaRoster(world, target.id).filter((r) =>
       countsAsForeign(r, world.year)
     ).length;

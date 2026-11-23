@@ -93,4 +93,31 @@ describe("mandated absorption — foreign-slot exception tracking", () => {
       ?.grandfatheredForeignCount;
     expect(g).toBe(1);
   });
+
+  it("a NON-mandated closure (succession_no_heir) also stamps the exception", () => {
+    // 25-yr diagnostic found heyas holding 2–4 foreigners with +0
+    // grandfathered: closure-path mergers (succession_no_heir, insolvency)
+    // absorbed rosters without stamping. The quota waiver accompanies any
+    // closure absorption — the receiver can't cut rostered foreigners.
+    const world = makeMockWorld({ year: 2026 });
+    const source = makeMockHeya("heya-src", { rikishiIds: ["f2"] });
+    const target = makeMockHeya("heya-tgt", { rikishiIds: ["f1"] });
+    world.heyas.set("heya-src", source);
+    world.heyas.set("heya-tgt", target);
+    world.rikishi.set(
+      "f1",
+      mockRikishi("f1", { heyaId: "heya-tgt", nationality: "Mongolia", citizenshipStatus: "foreign" })
+    );
+    world.rikishi.set(
+      "f2",
+      mockRikishi("f2", { heyaId: "heya-src", nationality: "Mongolia", citizenshipStatus: "foreign" })
+    );
+
+    const next = resolveImpacts(world, [
+      executeMerger(world, "heya-src", "heya-tgt", "succession_no_heir"),
+    ]);
+    const g = (next.heyas.get("heya-tgt") as { grandfatheredForeignCount?: number })
+      ?.grandfatheredForeignCount;
+    expect(g).toBe(1);
+  });
 });
