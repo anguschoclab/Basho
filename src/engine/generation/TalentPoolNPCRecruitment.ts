@@ -69,8 +69,9 @@ export function fillVacanciesForNPC(
     const heya = getHeya(world, heyaId);
     if (!heya || vacancyCount <= 0) continue;
 
-    // Citizenship-aware slot check (§5.1–5.3): naturalized/dual-citizen
-    // incumbents free the slot; dual-citizen candidates are exempt anyway.
+    // Citizenship-aware slot check (§5.1–5.3): the slot binds at debut
+    // citizenship — post-debut naturalization does NOT free it. Dual
+    // citizens never consume it and are exempt as candidates anyway.
     // `hasForeigner` is mutable: a slot-consuming pick earlier in this SAME
     // batch consumes the slot for the remaining vacancies.
     // Reads rikishi-side truth (foreignSlotOccupied scans activeRikishiIds +

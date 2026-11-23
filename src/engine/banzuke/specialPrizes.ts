@@ -34,8 +34,8 @@ function topScorers(scores: Map<string, number>, minScore: number): string[] {
  * Logic to determine Gino-sho, Kanto-sho, and Shukun-sho prizes.
  *
  * JSA eligibility: any makuuchi rikishi ranked below ozeki (sekiwake,
- * komusubi, maegashira) who posts kachi-koshi. The yusho winner is excluded —
- * the champion takes the Emperor's Cup, not sansho.
+ * komusubi, maegashira) who posts kachi-koshi. Yūshō winners ARE eligible —
+ * a dominant champion can take sanshō alongside the Emperor's Cup (WS-12).
  *
  * Award selection runs through the shared committee framework
  * (SANSHO_COMMITTEE): the deterministic stat scores below are each case's

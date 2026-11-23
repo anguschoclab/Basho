@@ -26,10 +26,10 @@ import { getHeya } from "@/engine/core/queries";
 
 /**
  * Settles Kensho (prize money) rewards when a bout is resolved.
- * Implements real JSA model: ¥70,000 per envelope split as:
+ * Implements the post-May-2025 JSA model: ¥70,000 per envelope split as:
  *   ¥10,000 JSA fee (not credited to anyone)
- *   ¥30,000 cash to winner
- *   ¥30,000 to winner's retirement fund
+ *   ¥10,000 cash to winner
+ *   ¥50,000 to winner's retirement fund (nōzei jūtōkin tax reserve)
  * Heya receives ¥0 from kensho (real-world JSA model).
  *
  * @param {WorldState} world - The current world state.
