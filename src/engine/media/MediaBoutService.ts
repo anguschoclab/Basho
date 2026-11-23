@@ -48,7 +48,11 @@ import {
   generateRecapHeadline,
   generateStreakHeadline,
 } from "@/engine/media/HeadlineGenerator";
-import { createDefaultMediaState } from "@/engine/media/MediaStateService";
+import {
+  createDefaultMediaState,
+  headlineMintSeq,
+  mergeHeadlines,
+} from "@/engine/media/MediaStateService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getRikishi } from "@/engine/core/queries";
@@ -75,7 +79,7 @@ export function updateMediaFromBout(args: {
   const rng = rngForWorld(
     world,
     "media",
-    `bout::${result.boutId}::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}::${state.headlines.length}`
+    `bout::${result.boutId}::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}::${headlineMintSeq(state)}`
   );
 
   const winner = getRikishi(world, result.winnerRikishiId);
@@ -217,7 +221,8 @@ function applyHeadlineEffects(
     ...state,
     mediaHeat: nextHeat,
     heyaPressure: nextPressure,
-    headlines: [...state.headlines, headline].slice(-MAX_HEADLINES),
+    headlineSeq: headlineMintSeq(state) + 1,
+    headlines: mergeHeadlines(state.headlines, [headline], MAX_HEADLINES),
     mediaHeatHistory: nextHistory,
   };
 }

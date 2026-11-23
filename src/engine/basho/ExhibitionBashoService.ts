@@ -75,7 +75,7 @@ function jungyoSeason(month: number): "winter" | "spring" | "summer" | "autumn" 
  * Returns the jungyo events for a given year, inserted between the 6 honbasho.
  */
 export function getExhibitionBashoSchedule(_year: number): ExhibitionBashoInfo[] {
-  const events: ExhibitionBashoInfo[] = [
+  const events: Omit<ExhibitionBashoInfo, "tourDays" | "season" | "reformApplied">[] = [
     {
       name: "february-jungyo",
       displayName: "February Jungyo Tour",

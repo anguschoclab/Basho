@@ -94,6 +94,12 @@ export interface MediaHeadline {
 export interface MediaState {
   version: string;
   headlines: MediaHeadline[];
+  /**
+   * Monotonic headline-mint counter — the only reliable discriminator for
+   * MH ids. `headlines.length` cannot serve: a re-mint against a pre-merge
+   * world reads a stale length and re-mints identical uuids.
+   */
+  headlineSeq?: number;
   mediaHeat: Record<string, number>;
   heyaPressure: Record<string, number>;
   bashoStreaks: Record<string, number>;

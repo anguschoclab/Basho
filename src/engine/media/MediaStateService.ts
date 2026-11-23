@@ -3,7 +3,7 @@
 // snapshotMediaHeatForBasho, and processWeeklyMediaBoundary.
 
 import type { WorldState } from "@/engine/types/world";
-import { MediaState } from "@/engine/types/media";
+import { MediaState, MediaHeadline } from "@/engine/types/media";
 import { decayHeat, decayPressure } from "@/engine/media/MediaImpactService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
@@ -15,6 +15,7 @@ export function createDefaultMediaState(): MediaState {
   return {
     version: "1.0.0",
     headlines: [],
+    headlineSeq: 0,
     mediaHeat: {},
     mediaHeatHistory: {},
     heyaPressure: {},
@@ -26,6 +27,29 @@ export function createDefaultMediaState(): MediaState {
     injuryWithdrawalFired: {},
     absenceAnnouncements: [],
   };
+}
+
+/**
+ * Current headline-mint sequence — falls back to the array length for
+ * pre-counter worlds (saves/older fixtures).
+ */
+export function headlineMintSeq(state: MediaState | undefined): number {
+  return state?.headlineSeq ?? state?.headlines.length ?? 0;
+}
+
+/**
+ * Appends headlines with id-dedup: a re-mint against a pre-merge world
+ * produces identical ids, and identical ids must never land twice in the
+ * array (world id-integrity invariant). Returns the merged array.
+ */
+export function mergeHeadlines(
+  existing: MediaHeadline[],
+  additions: MediaHeadline[],
+  max: number
+): MediaHeadline[] {
+  const seen = new Set(existing.map((h) => h.id));
+  const fresh = additions.filter((h) => !seen.has(h.id));
+  return [...existing, ...fresh].slice(-max);
 }
 
 /**

@@ -164,4 +164,84 @@ describe("governance headline id uniqueness (V18)", () => {
     expect(headlines.length).toBe(2);
     expect(headlines[0].id).not.toBe(headlines[1].id);
   });
+
+  it("re-mint against a pre-merge world can never land a duplicate id", () => {
+    // Both impacts are built from the SAME stale world — headlineSeq is
+    // unread between them, so both mint identical MH ids. mergeHeadlines
+    // is the hard invariant: identical ids must never coexist in the array.
+    const world = makeMockWorld({
+      year: 2025,
+      week: 10,
+      heyas: new Map([["h1", makeMockHeya("h1")]]),
+      mediaState: createDefaultMediaState(),
+    });
+
+    const i1 = generateGovernanceHeadline({
+      world,
+      heyaId: "h1",
+      templatePath: "institutional.governance.scandal",
+      severity: "national",
+    });
+    const i2 = generateGovernanceHeadline({
+      world,
+      heyaId: "h1",
+      templatePath: "institutional.governance.scandal",
+      severity: "national",
+    });
+
+    const w1 = resolveImpacts(world, [i1]);
+    const w2 = resolveImpacts(w1, [i2]);
+
+    const ids = w2.mediaState!.headlines.map((h) => h.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("headlineSeq advances past MAX_HEADLINES rotation so mints stay distinct", () => {
+    // After rotation, headlines.length is capped — seq must keep climbing
+    // or two mints in the same week produce identical ids.
+    const world = makeMockWorld({
+      year: 2025,
+      week: 10,
+      heyas: new Map([["h1", makeMockHeya("h1")]]),
+      mediaState: {
+        ...createDefaultMediaState(),
+        headlines: Array.from({ length: 250 }, (_, i) => ({
+          id: `MH-OLD${i}`,
+          week: 9,
+          tier: "notable" as const,
+          beat: "feature" as const,
+          tone: "neutral" as const,
+          rikishiIds: [],
+          heyaIds: [],
+          title: `old ${i}`,
+          subtitle: "",
+          impact: 10,
+        })),
+        headlineSeq: 250,
+      },
+    });
+
+    const w1 = resolveImpacts(world, [
+      generateGovernanceHeadline({
+        world,
+        heyaId: "h1",
+        templatePath: "institutional.governance.scandal",
+        severity: "national",
+      }),
+    ]);
+    const w2 = resolveImpacts(w1, [
+      generateGovernanceHeadline({
+        world: w1,
+        heyaId: "h1",
+        templatePath: "institutional.governance.retirement",
+        severity: "national",
+      }),
+    ]);
+
+    const headlines = w2.mediaState!.headlines;
+    const newIds = headlines.filter((h) => !h.id.startsWith("MH-OLD")).map((h) => h.id);
+    expect(newIds.length).toBe(2);
+    expect(newIds[0]).not.toBe(newIds[1]);
+    expect(headlines.length).toBe(250); // rotation cap respected
+  });
 });

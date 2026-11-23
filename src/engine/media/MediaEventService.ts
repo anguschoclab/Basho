@@ -4,6 +4,7 @@
 import type { WorldState } from "@/engine/types/world";
 import { MediaHeadline, HeadlineTier } from "@/engine/types/media";
 import { createDefaultMediaState } from "@/engine/media/MediaService";
+import { headlineMintSeq, mergeHeadlines } from "@/engine/media/MediaStateService";
 import type { GovernanceRuling } from "@/engine/types/economy";
 import { rngForWorld } from "@/engine/core/rng";
 import { BardEngine } from "@/engine/bard/BardEngine";
@@ -43,7 +44,7 @@ export function generateGovernanceHeadline(args: {
   const rng = rngForWorld(
     world,
     "media",
-    `gov::${heyaId}::${templatePath}::${week}::${world.dayIndexGlobal ?? 0}::${args.salt ?? ""}::${world.mediaState.headlines.length}`
+    `gov::${heyaId}::${templatePath}::${week}::${world.dayIndexGlobal ?? 0}::${args.salt ?? ""}::${headlineMintSeq(world.mediaState)}`
   );
 
   // Resolve title from archive
@@ -63,13 +64,11 @@ export function generateGovernanceHeadline(args: {
     tags: ["governance", "institutional"],
   };
 
-  // Update media state with new headline
-  const updatedHeadlines = [...world.mediaState.headlines, headline];
-  if (updatedHeadlines.length > 250) updatedHeadlines.shift();
-
+  // Update media state with new headline (id-dedup via mergeHeadlines)
   builder.updateWorldField("mediaState", {
     ...world.mediaState,
-    headlines: updatedHeadlines,
+    headlineSeq: headlineMintSeq(world.mediaState) + 1,
+    headlines: mergeHeadlines(world.mediaState.headlines, [headline], 250),
     heyaPressure: {
       ...world.mediaState.heyaPressure,
       [heyaId]: Math.min(100, (world.mediaState.heyaPressure[heyaId] ?? 0) + headline.impact / 2),
@@ -271,10 +270,14 @@ export function announceJsaBulletins(world: WorldState): StateImpact {
   const fired = bulletins.filter((b) => b.when && !headlines.some((h) => h.tags?.includes(b.tag)));
   if (fired.length === 0) return builder.build();
 
-  const rng = rngForWorld(world, "media", `jsa-bulletins::${year}::${month}::${headlines.length}`);
-  const newHeadlines = [...headlines];
+  const rng = rngForWorld(
+    world,
+    "media",
+    `jsa-bulletins::${year}::${month}::${headlineMintSeq(world.mediaState)}`
+  );
+  const minted: MediaHeadline[] = [];
   for (const b of fired) {
-    newHeadlines.push({
+    minted.push({
       id: rng.uuid("MH"),
       week,
       tier: b.tier,
@@ -288,11 +291,11 @@ export function announceJsaBulletins(world: WorldState): StateImpact {
       tags: ["governance", "jsa", b.tag],
     });
   }
-  if (newHeadlines.length > 250) newHeadlines.splice(0, newHeadlines.length - 250);
 
   builder.updateWorldField("mediaState", {
     ...(world.mediaState ?? createDefaultMediaState()),
-    headlines: newHeadlines,
+    headlineSeq: headlineMintSeq(world.mediaState) + minted.length,
+    headlines: mergeHeadlines(headlines, minted, 250),
   });
   return builder.build();
 }

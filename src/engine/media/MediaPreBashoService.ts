@@ -8,6 +8,7 @@ import type { MediaHeadline } from "@/engine/types/media";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { rngForWorld, SeededRNG } from "@/engine/core/rng";
 import { generatePreBashoHeadline } from "@/engine/media/HeadlineGenerator";
+import { headlineMintSeq, mergeHeadlines } from "@/engine/media/MediaStateService";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya, getRikishi } from "@/engine/core/queries";
@@ -19,13 +20,15 @@ import { MAX_HEADLINES } from "@/constants/engine/media";
  */
 export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   const builder = createImpactBuilder("triggerPreBashoJournalism");
-  // Week + headline count in the label: the assessment phase dedupes by
-  // assessedAtWeek only, so a re-assessment in a later week — or a second
-  // mint after headlines accumulated — must not re-mint identical MH ids.
+  // Week + monotonic headline seq in the label: the assessment phase
+  // dedupes by assessedAtWeek only, so a re-assessment in a later week —
+  // or a second mint after headlines accumulated — must not re-mint
+  // identical MH ids. `headlineSeq` advances on every minted batch even
+  // when `headlines.length` is capped by MAX_HEADLINES rotation.
   const rng = rngForWorld(
     world,
     "media",
-    `pre_basho_${world.year}_${world.currentBasho?.name}_${world.week ?? 0}_${world.mediaState?.headlines.length ?? 0}`
+    `pre_basho_${world.year}_${world.currentBasho?.name}_${world.week ?? 0}_${headlineMintSeq(world.mediaState)}`
   );
   const week = world.week ?? 0;
   const headlines: MediaHeadline[] = [];
@@ -97,7 +100,8 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   const currentHeadlines = world.mediaState?.headlines || [];
   builder.updateWorldField("mediaState", {
     version: world.mediaState?.version ?? "1.0.0",
-    headlines: [...currentHeadlines, ...headlines].slice(-MAX_HEADLINES),
+    headlineSeq: headlineMintSeq(world.mediaState) + headlines.length,
+    headlines: mergeHeadlines(currentHeadlines, headlines, MAX_HEADLINES),
     mediaHeat: world.mediaState?.mediaHeat ?? {},
     heyaPressure: world.mediaState?.heyaPressure ?? {},
     bashoStreaks: world.mediaState?.bashoStreaks ?? {},
