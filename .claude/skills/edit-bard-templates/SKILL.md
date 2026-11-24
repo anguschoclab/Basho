@@ -7,7 +7,7 @@ description: Add or edit BardEngine narrative templates safely. Use whenever tou
 
 ## Layout
 
-Templates live in `src/engine/bard/domains/*.json` (25 files: `kyujo`, `rikishi`, `media`, `institutional`, `post_bout`, etc.). Paths follow a `domain.subdomain.type` hierarchy — e.g. `kyujo.*` paths live in `kyujo.json`. There is **no `archive.json`** — generated/enriched content merges into `src/engine/bard/registry.json` via `bun scripts/narrative/bard-orchestrator.ts`.
+Templates live in `src/engine/bard/domains/*.json` (26 files: `kyujo`, `rikishi`, `media`, `institutional`, `post_bout`, etc.). Paths follow a `domain.subdomain.type` hierarchy — e.g. `kyujo.*` paths live in `kyujo.json`. There is **no `archive.json`** — generated/enriched content merges into `src/engine/bard/registry.json` via `bun scripts/narrative/bard-orchestrator.ts`.
 
 ## Resolution contract
 

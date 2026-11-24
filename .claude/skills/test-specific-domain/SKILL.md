@@ -30,6 +30,12 @@ bun run test -- tests/unit/engine/economy
 
 # Governance tests
 bun run test -- tests/unit/engine/governance
+
+# NPC AI tests (see the ai-agent skill for filter groups incl. parity)
+bun run test -- tests/unit/engine/ai tests/unit/engine/npc
+
+# Recruitment/scouting tests
+bun run test -- tests/unit/engine/recruitment
 ```
 
 Or pass a single file: `bunx vitest run tests/unit/engine/banzuke/promotionLogic.test.ts`

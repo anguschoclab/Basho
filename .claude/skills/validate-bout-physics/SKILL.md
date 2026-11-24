@@ -10,4 +10,4 @@ Run bout physics engine comparison and validation for Combat System B+ (from the
 bun scripts/measure/compare-engines.ts --count=100 --seed=validation-001
 ```
 
-This validates determinism, kimarite distribution, winner balance, and duration bounds. Ensures no kimarite drops to zero frequency.
+This validates determinism, kimarite distribution, winner balance, and duration bounds. Ensures no kimarite drops to zero frequency. For the full diagnostic catalog see the `sim-diagnostics` skill; for the physics architecture see `bout-combat`.

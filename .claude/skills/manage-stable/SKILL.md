@@ -24,8 +24,8 @@ Facilities' three axes feed `ActiveModifiers` in `phase02_context`, which multip
 ## Worker commands (see `add-engine-command` skill for the full path)
 
 - `commands/economy.ts`: `BUY_MYOSEKI`, `LEASE_MYOSEKI`, `LIST_MYOSEKI_FOR_SALE`, `RETURN_MYOSEKI_LEASE`, `RENEW_SPONSOR`, `RECRUIT_SPONSOR`, `REQUEST_BAILOUT`, `PREPAY_LOAN`, `HIRE_STAFF`, `FIRE_STAFF`
-- `commands/heya.ts`: `INVEST_IN_FACILITY`, `BUILD_INFRASTRUCTURE`, `SET_HEYA_DIET`, `TRIGGER_SUCCESSION`, `SET_KESHO_CONFIG` (writes `world.customKeshoConfigs`), `RETIRE_RIKISHI`
-- `commands/governance.ts`: `ISSUE_RULING`, `REQUEST_POLITICAL_FAVOR`, `SPEND_POLITICAL_CAPITAL`, `RESOLVE_CRISIS`, `HANDLE_MEDIA_EVENT`, `APPLY_PRESS_CONFERENCE`
+- `commands/heya.ts`: `INVEST_IN_FACILITY`, `BUILD_INFRASTRUCTURE`, `REPAIR_INFRASTRUCTURE`, `BUY_PHYSIO`, `SET_HEYA_DIET`, `SET_RIKISHI_DIET`, `TRIGGER_SUCCESSION`, `PLAYER_FOUND_STABLE` (player branches off to found a new heya — `lifecycle/playerFounding.ts`), `SET_KESHO_CONFIG` (writes `world.customKeshoConfigs`), `RETIRE_RIKISHI`
+- `commands/governance.ts`: `ISSUE_RULING`, `REQUEST_POLITICAL_FAVOR`, `SPEND_POLITICAL_CAPITAL`, `RESOLVE_CRISIS`, `HANDLE_MEDIA_EVENT`, `APPLY_PRESS_CONFERENCE`, `CHANGE_ICHIMON`, `PROPOSE_COUNCIL_MOTION`, `VOTE_COUNCIL_MOTION`, plus academy commands (`BUILD_YOUTH_ACADEMY`, `BUILD_FOREIGN_ACADEMY`, `INVEST_ACADEMY`, `UPGRADE_YOUTH_ACADEMY`, `HIRE_ACADEMY_STAFF`, `MANAGE_ACADEMY`)
 
 ## Governance & welfare
 
@@ -33,7 +33,13 @@ Facilities' three axes feed `ActiveModifiers` in `phase02_context`, which multip
 
 ## Recruitment
 
-`src/engine/recruitment/` — `ScoutingService` and `FogOfWarService` (candidates start fogged; scouting reveals info). Commands: `SCOUT_POOL`, `SCOUT_CANDIDATE`, `OFFER_CONTRACT`, `POACH_CANDIDATE`. Hard rule: `FOREIGN_RIKISHI_LIMIT_PER_HEYA` in `src/constants/engine/recruitment` (enforced + checked by the 25-yr diagnostic).
+`src/engine/recruitment/` — `ScoutingService` and `FogOfWarService` (candidates start fogged; scouting reveals info). Commands: `SCOUT_POOL`, `SCOUT_CANDIDATE`, `SEND_SCOUT`, `SET_SCOUTING_INVESTMENT`, `OFFER_CONTRACT`, `POACH_CANDIDATE`. Hard rule: `FOREIGN_RIKISHI_LIMIT_PER_HEYA` in `src/constants/engine/recruitment` (enforced + checked by the 25-yr diagnostic). See the `scout-recruit` skill for the CA/PA fog channel and talent-pool pipeline.
+
+## Stable lifecycle — founding, closure, custody, elections
+
+- **Founding:** `lifecycle/playerFounding.ts` handles `PLAYER_FOUND_STABLE`; NPC retirees can found heyas through the founding funnel (founder brings deshi on branch-out; JSA-backed waiver for dead/dying parents; founding gate + credentials in constants). A retired founder converts via `lifecycle/retireeOyakataConversion.ts`.
+- **Closure & custody:** `economy/mergers.ts` — disciplinary closure, merger absorption (stamps `grandfatheredForeignCount` on absorbed foreigners), `azukari` custody placements, insolvency as a terminal-debt line unified with succession.
+- **JSA board & clans:** `governance/elections.ts` — clan-quota JSA elections persisted on `world.jsaBoard`, three-tier elder ladder, kabu-weighted board seats; `governance/ichimon.ts` — ichimon membership + defection path. Council motions are player commands (`PROPOSE_COUNCIL_MOTION`/`VOTE_COUNCIL_MOTION`).
 
 ## Tuning knobs
 
