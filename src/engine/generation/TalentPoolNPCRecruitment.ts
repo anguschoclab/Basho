@@ -11,13 +11,17 @@ import { isRecruitmentPlayerRelevant } from "@/engine/npc/eventSurfacing";
 import { getHeya } from "@/engine/core/queries";
 import { recruitmentBalanceMultipliers } from "@/engine/generation/competitiveBalance";
 import { error } from "@/engine/utils/Logger";
-import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";
+import {
+  perceivedTalentSeed,
+  scoutNoiseSpreadForHeya,
+} from "@/engine/recruitment/perceivedTalent";
 import { isForeign } from "@/engine/utils/identity";
 import {
   candidateConsumesForeignSlot,
   isCandidateAgeEligible,
 } from "@/engine/generation/talentPoolReads";
 import { foreignSlotBidAggression, foreignSlotOccupied } from "@/engine/npc/ForeignSlotPolicy";
+import { getForeignCountsByHeya } from "@/engine/generation/talentPoolReads";
 import {
   DUAL_CITIZEN_BID_PREFERENCE,
   FOREIGN_PIPELINE_BONUS_MULT,
@@ -218,10 +222,13 @@ export function fillVacanciesForNPCWithBidding(
   // §5.4: heya whose single foreign slot is already consumed (roster or a
   // signed-pending foreign candidate) may not bid on slot-consuming recruits.
   const foreignOccupied = new Map<Id, boolean>();
+  // One full rikishi+pool pass — the map already carries every heya's count,
+  // so running foreignSlotOccupied per target would repeat it 45×.
+  const foreignCounts = getForeignCountsByHeya(world);
   for (const hid of targetHeyaIds) {
     // Rikishi-side truth: scans world.rikishi (r.heyaId) plus signed-pending
     // candidates — heya.rikishiIds can desync after merger transfers.
-    foreignOccupied.set(hid, foreignSlotOccupied(world, hid));
+    foreignOccupied.set(hid, (foreignCounts.get(hid) ?? 0) >= 1);
   }
 
   for (const heyaId of targetHeyaIds) {
@@ -239,6 +246,8 @@ export function fillVacanciesForNPCWithBidding(
       heyaHadForeigner: heya.hadForeigner,
     });
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
+    // Candidate-independent scouting terms hoist out of the H×C bid loop.
+    const noiseSpread = scoutNoiseSpreadForHeya(world, heyaId);
     for (const candidate of allVisibleCandidates) {
       // §5.4 hard gate: slot occupied → slot-consuming candidates are invisible.
       // Dual citizens are exempt and may always appear.
@@ -252,7 +261,8 @@ export function fillVacanciesForNPCWithBidding(
         candidate,
         { rivalHeyaId, balanceMult, slotAggression, systemBackfill: opts?.systemBackfill },
         bidPolicy,
-        recruitmentStrat
+        recruitmentStrat,
+        noiseSpread
       );
       bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
     }
@@ -291,14 +301,16 @@ function computeNpcBid(
     systemBackfill?: boolean;
   },
   bidPolicy: NonNullable<WorldState["npcBidPolicies"]>[Id] | undefined,
-  recruitmentStrat: ReturnType<typeof getRecruitmentStrategy>
+  recruitmentStrat: ReturnType<typeof getRecruitmentStrategy>,
+  noiseSpread?: number
 ): number {
   const rawBid = recruitmentStrat.calculateMaxBid(
     world,
     heya,
     oyakata,
     candidate.candidateId,
-    ctx.rivalHeyaId
+    ctx.rivalHeyaId,
+    noiseSpread
   );
   let bidAmount = Math.round(rawBid * ctx.balanceMult);
   // Meta-adaptation lever (WS2): bias bids toward candidates whose

@@ -43,6 +43,23 @@ export function scoutingNoiseSpread(scoutCount: number, hasScoutingOffice: boole
 }
 
 /**
+ * The stable's scouting noise spread — the candidate-independent part of
+ * `perceivedTalentSeed`, hoisted per-heya by hot callers that estimate a
+ * whole candidate slate in one pass.
+ */
+export function scoutNoiseSpreadForHeya(world: WorldState, heyaId: Id): number {
+  let scoutCount = 0;
+  for (const s of getHeyaStaff(world, heyaId)) {
+    if (s.role === "scout" && s.careerPhase !== "retired") {
+      scoutCount++;
+    }
+  }
+  const heya = getHeya(world, heyaId);
+  const hasScoutingOffice = heya?.infrastructure?.scouting_office?.status === "active";
+  return scoutingNoiseSpread(scoutCount, hasScoutingOffice ?? false);
+}
+
+/**
  * Returns a deterministic, per-(stable, candidate) noisy ESTIMATE of a recruitment
  * candidate's true talentSeed. Different stables perceive the same candidate
  * differently; the same stable always perceives the same candidate identically
@@ -50,23 +67,16 @@ export function scoutingNoiseSpread(scoutCount: number, hasScoutingOffice: boole
  *
  * Tolerates heyas with no staff/infrastructure records (0 scouts, no office) — this is
  * also the correct production default for a stable that hasn't invested in scouting.
+ * `spreadOverride` must equal `scoutNoiseSpreadForHeya(world, heyaId)` — hot
+ * callers pass the hoisted value rather than re-deriving it per candidate.
  */
 export function perceivedTalentSeed(
   world: WorldState,
   heyaId: Id,
-  candidate: TalentCandidate
+  candidate: TalentCandidate,
+  spreadOverride?: number
 ): number {
-  let scoutCount = 0;
-  for (const s of getHeyaStaff(world, heyaId)) {
-    if (s.role === "scout" && s.careerPhase !== "retired") {
-      scoutCount++;
-    }
-  }
-
-  const heya = getHeya(world, heyaId);
-  const hasScoutingOffice = heya?.infrastructure?.scouting_office?.status === "active";
-
-  const spread = scoutingNoiseSpread(scoutCount, hasScoutingOffice ?? false);
+  const spread = spreadOverride ?? scoutNoiseSpreadForHeya(world, heyaId);
 
   const rng = rngFromSeed(`scout_${heyaId}_${candidate.candidateId}`, "scouting", "estimate");
   const noise = (rng.next() * 2 - 1) * spread;

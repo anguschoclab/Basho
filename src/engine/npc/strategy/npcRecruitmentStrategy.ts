@@ -32,7 +32,8 @@ interface RecruitmentStrategy {
     heya: Heya,
     oyakata: Oyakata,
     candidateId: string,
-    rivalHeyaId?: string
+    rivalHeyaId?: string,
+    noiseSpread?: number
   ) => number;
 }
 
@@ -80,7 +81,7 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     return { impact: builder.build(), count };
   },
 
-  calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId) {
+  calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId, noiseSpread) {
     let maxBid = calculateRunwayAwareMaxBid(heya, oyakata, RECRUITMENT_BASE_MULTIPLIER);
 
     // Talent premium: scale bid 0.5x–1.5x by the stable's SCOUTED ESTIMATE of the
@@ -88,7 +89,9 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     // high-potential prospects trigger competitive bidding wars between stables,
     // without the richest stable always identifying the objectively best prospect.
     const candidate = candidateId ? world.talentPool?.candidates?.[candidateId] : undefined;
-    const talentSeed = candidate ? perceivedTalentSeed(world, heya.id, candidate) : 50;
+    const talentSeed = candidate
+      ? perceivedTalentSeed(world, heya.id, candidate, noiseSpread)
+      : 50;
     const talentMult = 0.5 + talentSeed / 100;
     maxBid *= talentMult;
 

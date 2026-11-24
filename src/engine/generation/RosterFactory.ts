@@ -113,21 +113,30 @@ function pickGenesisStable(
     );
   });
 
-  const prestigePool = (pool: Heya[]): Heya[] =>
-    pool.flatMap((h) => {
-      const t = STABLE_TIER_VALUE[h.statureBand] ?? 0;
-      return new Array(t * t + 4).fill(h);
-    });
-
+  // Weighted draw — identical to the old duplicated-entry pool pick
+  // (int(0, Σw-1) indexes the same cumulative ranges), without
+  // materializing a ~460-element array per rikishi.
   const drawPool = eligibleStables.length > 0 ? eligibleStables : heyaList;
-  const rosteredPool = prestigePool(drawPool);
-  let heya = worldRng.pick(rosteredPool);
+  const weights = drawPool.map((h) => {
+    const t = STABLE_TIER_VALUE[h.statureBand] ?? 0;
+    return t * t + 4;
+  });
+  const totalWeight = weights.reduce((a, w) => a + w, 0);
+  const draw = (): Heya => {
+    let roll = worldRng.int(0, totalWeight - 1);
+    for (let i = 0; i < drawPool.length - 1; i++) {
+      if (roll < weights[i]) return drawPool[i];
+      roll -= weights[i];
+    }
+    return drawPool[drawPool.length - 1];
+  };
+  let heya = draw();
   for (
     let tries = 0;
     tries < 8 && heya && (heya.rikishiIds?.length ?? 0) >= getHeyaRosterTarget(heya);
     tries++
   ) {
-    heya = worldRng.pick(rosteredPool);
+    heya = draw();
   }
   return { heya, eligibleStables };
 }

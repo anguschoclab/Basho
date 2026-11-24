@@ -324,28 +324,29 @@ function mintMaezumoEntrant(world: WorldState, basho: BashoState, index: number)
   };
 }
 
-/** Count resolved bouts a rikishi has contested this basho. */
-function completedBouts(basho: BashoState, rikishiId: string): number {
-  let n = 0;
+/** One-pass map of resolved bouts per rikishi this basho. */
+function completedBoutCounts(basho: BashoState): Map<string, number> {
+  const counts = new Map<string, number>();
   for (const m of basho.matches) {
     if (!m.result) continue;
-    if (m.eastRikishiId === rikishiId || m.westRikishiId === rikishiId) n++;
+    counts.set(m.eastRikishiId, (counts.get(m.eastRikishiId) ?? 0) + 1);
+    counts.set(m.westRikishiId, (counts.get(m.westRikishiId) ?? 0) + 1);
   }
-  return n;
+  return counts;
 }
 
 /** Pick the hachiban-zumo filler — a lower-division man finishing his 7th. */
 function pickEighthBoutMan(
   world: WorldState,
-  basho: BashoState,
-  skip: Set<string>
+  skip: Set<string>,
+  boutCounts: Map<string, number>
 ): Rikishi | undefined {
   const candidates: Rikishi[] = [];
   for (const div of ["makushita", "sandanme", "jonidan", "jonokuchi"] as const) {
     for (const r of activeDivisionRoster(world, div)) {
       if (r.injured || skip.has(r.id)) continue;
       // ≥6 completed: he completes his 7th on today's card, then fights the 8th.
-      if (completedBouts(basho, r.id) >= LOWER_DIVISION_BOUT_COUNT - 1) candidates.push(r);
+      if ((boutCounts.get(r.id) ?? 0) >= LOWER_DIVISION_BOUT_COUNT - 1) candidates.push(r);
     }
   }
   candidates.sort(byBottomRank);
@@ -373,6 +374,9 @@ export function planDivisionCallups(args: {
   const busyToday = new Set(
     basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
   );
+  // Single O(matches) pass — the hachiban-zumo scan would otherwise re-scan
+  // every resolved match per lower-division candidate (~1.5M compares/day).
+  const boutCounts = completedBoutCounts(basho);
   const excluded = (d: Division) => plan.excludeIds.get(d) ?? new Set<string>();
   const excludedEverywhere = () => {
     const all = new Set<string>();
@@ -460,13 +464,13 @@ export function planDivisionCallups(args: {
     }
 
     if (!callup && D === "jonokuchi") {
-      callup = resolveJonokuchiFill(world, basho, day, excludedEverywhere(), plan);
+      callup = resolveJonokuchiFill(world, basho, day, excludedEverywhere(), plan, boutCounts);
     }
 
     if (!callup) continue; // documented edge — the odd man sits.
     markExcluded(D, bottom.id);
     const isEighth =
-      !callup.isMaezumo && day === EIGHTH_BOUT_DAY && completedBouts(basho, callup.id) > 0;
+      !callup.isMaezumo && day === EIGHTH_BOUT_DAY && (boutCounts.get(callup.id) ?? 0) > 0;
     pushFixed(D, {
       boutId: boutId(bottom.id, callup.id),
       day,
@@ -490,7 +494,8 @@ function resolveJonokuchiFill(
   basho: BashoState,
   day: number,
   taken: Set<string>,
-  plan: DivisionCallupPlan
+  plan: DivisionCallupPlan,
+  boutCounts: Map<string, number>
 ): Rikishi | undefined {
   const existing: Rikishi[] = [];
   let liveMaezumo = 0;
@@ -508,7 +513,7 @@ function resolveJonokuchiFill(
     plan.maezumoToAdd.push(entrant);
     return entrant;
   }
-  if (day === EIGHTH_BOUT_DAY) return pickEighthBoutMan(world, basho, taken);
+  if (day === EIGHTH_BOUT_DAY) return pickEighthBoutMan(world, taken, boutCounts);
   return undefined;
 }
 
