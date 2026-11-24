@@ -33,6 +33,7 @@ import {
   HEYA_STATURE_TIER_REBUILDING,
   HEYA_STATURE_TIER_FRAGILE,
   HEYA_ELITE_TIER_THRESHOLD,
+  HEYA_ICHIMON,
 } from "@/constants/engine/generation";
 
 export function createHeyaWithOyakata(args: {
@@ -115,7 +116,11 @@ export function createHeyaWithOyakata(args: {
       nutrition: HEYA_FACILITIES_DEFAULT,
     },
     riskIndicators: { financial: false, governance: false, rivalry: false },
-    ichimon: seededPick(rng, ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"]),
+    // Real 2026 clan membership is fixed per stable (17/14/5/5/4), not a
+    // coin flip — unknown names (founded stables) draw a random clan.
+    ichimon:
+      HEYA_ICHIMON[name] ??
+      seededPick(rng, ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"]),
     politicalCapital: HEYA_POLITICAL_CAPITAL_DEFAULT,
     location: "Tokyo",
     lineage: [],

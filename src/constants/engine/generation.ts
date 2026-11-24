@@ -2,6 +2,8 @@
  * World generation constants.
  */
 
+import type { IchimonName } from "@/engine/types/economy";
+
 /** Makushita tier count */
 export const MAKUSHITA_TIER_COUNT = 150;
 
@@ -860,3 +862,63 @@ export const JAPANESE_GIVEN_NAMES: readonly string[] = [
   "Sho",
   "Takumi",
 ];
+
+/**
+ * Genesis heya→ichimon alignment (fixed clan membership, 2026 real world).
+ * Nishonoseki 17 / Dewanoumi 14 / Isegahama 5 / Tokitsukaze 5 / Takasago 4
+ * — the two great clans hold 31 of 45 stables and ~60% of the banzuke.
+ * Attested memberships are exact; closed/fictional tail stables sit in
+ * the clan that preserves the real counts.
+ */
+export const HEYA_ICHIMON: Record<string, IchimonName> = {
+  // — Takasago ichimon (4) —
+  Takasago: "Takasago",
+  Kokonoe: "Takasago",
+  Hakkaku: "Takasago",
+  Hanakago: "Takasago",
+  // — Isegahama ichimon (5) —
+  Isegahama: "Isegahama",
+  Asakayama: "Isegahama",
+  Ajigawa: "Isegahama",
+  Miyagino: "Isegahama",
+  Magaki: "Isegahama",
+  // — Tokitsukaze ichimon (5) —
+  Tokitsukaze: "Tokitsukaze",
+  Isenoumi: "Tokitsukaze",
+  Arashio: "Tokitsukaze",
+  Minato: "Tokitsukaze",
+  Kagamiyama: "Tokitsukaze",
+  // — Dewanoumi ichimon (14) —
+  Dewanoumi: "Dewanoumi",
+  Sakaigawa: "Dewanoumi",
+  Kasugano: "Dewanoumi",
+  Kise: "Dewanoumi",
+  Musashigawa: "Dewanoumi",
+  Kataonami: "Dewanoumi",
+  Onoe: "Dewanoumi",
+  Tatsunami: "Dewanoumi",
+  Tamanoi: "Dewanoumi",
+  Shikihide: "Dewanoumi",
+  Yamahibiki: "Dewanoumi",
+  Futagoyama: "Dewanoumi",
+  Fujishima: "Dewanoumi",
+  Chiganoura: "Dewanoumi",
+  // — Nishonoseki ichimon (17) —
+  Nishonoseki: "Nishonoseki",
+  Sadogatake: "Nishonoseki",
+  Shibatayama: "Nishonoseki",
+  Takadagawa: "Nishonoseki",
+  Tagonoura: "Nishonoseki",
+  Michinoku: "Nishonoseki",
+  Oigami: "Nishonoseki",
+  Naruto: "Nishonoseki",
+  Nakagawa: "Nishonoseki",
+  Irumagawa: "Nishonoseki",
+  Hanahago: "Nishonoseki",
+  Shirane: "Nishonoseki",
+  Katsushika: "Nishonoseki",
+  Oshogatsu: "Nishonoseki",
+  Shikoroyama: "Nishonoseki",
+  Oguruma: "Nishonoseki",
+  Minezaki: "Nishonoseki",
+};
