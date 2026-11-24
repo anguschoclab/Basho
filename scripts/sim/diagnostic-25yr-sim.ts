@@ -107,6 +107,22 @@ interface YearSnapshot {
   /** Median stats.height / potential.heightCm among actives ≤19 — maturation
    *  telemetry: ~0.88 at intake, should climb toward 1.0 through teens. */
   teenHeightRatio: number;
+  // ── Pipeline / governance tracking (week-of commits) ─────────────────────
+  /** Actives per division — the promotion funnel. A collapsed lower rung
+   *  (jonokuchi/jonidan draining) or a bloated sekitori tier surfaces here. */
+  divisionCounts: Record<string, number>;
+  /** Off-banzuke actives (kyujo/overflow) — should stay small + transient. */
+  banzukeGai: number;
+  /** Rikishi whose debutYear is this year — annual intake rate (~real 100). */
+  debutsThisYear: number;
+  /** Ozeki currently kadoban (demotion-threatened) — pressure-cycle health. */
+  kadobanOzeki: number;
+  /** Active heyas per ichimon — defections/closures drift clan strength. */
+  ichimonCounts: Record<string, number>;
+  /** Year the seated JSA board was elected — biennial elections should tick. */
+  jsaBoardElectedYear: number;
+  /** Unresolved pendingDecisions — the backlog-treadmill fix keeps this ~0. */
+  pendingDecisions: number;
   errors: string[];
 }
 
@@ -292,6 +308,23 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     }
   }
 
+  // ── Pipeline / governance tracking ──────────────────────────────────────
+  const divisionCounts: Record<string, number> = {};
+  let banzukeGai = 0;
+  let debutsThisYear = 0;
+  for (const r of active) {
+    divisionCounts[r.division] = (divisionCounts[r.division] ?? 0) + 1;
+    if (r.isBanzukeGai) banzukeGai++;
+    if (r.debutYear === world.year) debutsThisYear++;
+  }
+  const kadobanOzeki = Object.keys(world.ozekiKadoban ?? {}).length;
+  const ichimonCounts: Record<string, number> = {};
+  for (const h of heyas) {
+    const clan = h.ichimon ?? "unaffiliated";
+    ichimonCounts[clan] = (ichimonCounts[clan] ?? 0) + 1;
+  }
+  const jsaBoardElectedYear = world.jsaBoard?.electedYear ?? 0;
+
   return {
     year: world.year,
     rikishiTotal: allRikishi.length,
@@ -336,6 +369,13 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     bustsActive,
     medRealizationPrime: median(primeRealizations),
     teenHeightRatio: median(teenHeightRatios),
+    divisionCounts,
+    banzukeGai,
+    debutsThisYear,
+    kadobanOzeki,
+    ichimonCounts,
+    jsaBoardElectedYear,
+    pendingDecisions: world.pendingDecisions?.length ?? 0,
     errors: [...errors],
   };
 }
@@ -370,6 +410,18 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
   if (snap.heyaCount < 3) issues.push(`ERROR: Heya count collapsed to ${snap.heyaCount}`);
   if (snap.avgAge > 35) issues.push(`WARN: Avg rikishi age ${snap.avgAge} — roster aging out`);
   if (snap.avgAge < 18) issues.push(`WARN: Avg age ${snap.avgAge} — suspiciously young`);
+  // Pipeline funnel — the intake divisions should never drain to zero.
+  if ((snap.divisionCounts.jonokuchi ?? 0) < 40)
+    issues.push(`WARN: jonokuchi thin (${snap.divisionCounts.jonokuchi ?? 0}) — intake stalling`);
+  if ((snap.divisionCounts.juryo ?? 0) > 40)
+    issues.push(`WARN: juryo bloated (${snap.divisionCounts.juryo}) — division quota broken`);
+  if (snap.banzukeGai > 6)
+    issues.push(`WARN: ${snap.banzukeGai} rikishi off-banzuke — banzuke-gai accumulating`);
+  if (snap.pendingDecisions > 5)
+    issues.push(`WARN: ${snap.pendingDecisions} unresolved decisions — backlog treadmill`);
+  // A clan dying out means defections/closures erased an ichimon line.
+  for (const [clan, n] of Object.entries(snap.ichimonCounts))
+    if (n === 0) issues.push(`WARN: ichimon ${clan} has no active heyas`);
 
   if (prev) {
     const rikishiDelta = snap.rikishiActive - prev.rikishiActive;
@@ -618,6 +670,38 @@ function lifecycleAudit(world: WorldState, snaps: YearSnapshot[]): void {
       `    ${r.shikona ?? r.id} (${r.rank}) — chance ${e.effectiveChance.toFixed(2)} via ${src}`
     );
   }
+  // Deshi-follow: founders seed their branch with juniors — a young branch
+  // at roster ~1 means the seeded-deshi path failed.
+  const youngBranches = branches.filter(
+    (h) => h.foundedYear != null && Y - h.foundedYear <= 5
+  );
+  if (youngBranches.length) {
+    const rosters = youngBranches.map((h) => h.rikishiIds?.length ?? 0);
+    console.log(
+      `  Branch deshi-follow (founded ≤5y ago): med roster ${median(rosters).toFixed(0)} across ` +
+        `${youngBranches.length} branches [${rosters.join(",")}]`
+    );
+  }
+  // JSA board cadence — biennial elections should fire ~12 times in 25y.
+  const electionYears = new Set(snaps.map((s) => s.jsaBoardElectedYear).filter((y) => y > 0));
+  console.log(
+    `  JSA board: ${electionYears.size} distinct elections seated over ${snaps.length}y ` +
+      `(biennial ≈ ${Math.floor(snaps.length / 2)} expected) | chair clan seats: ` +
+      `${Object.entries(world.jsaBoard?.clanSeats ?? {}).map(([c, n]) => `${c.slice(0, 3)}:${n}`).join(" ") || "—"}`
+  );
+
+  // ── 6b. Career economics — do careers pay like real sumo? ───────────────
+  const earnings = allRetired.flatMap((r) => {
+    const e = "yearlyAggregates" in r ? r.totalEarnings : (r.economics?.totalEarnings ?? 0);
+    return e > 0 ? [e / 1e6] : [];
+  });
+  if (earnings.length) {
+    console.log(
+      `  Career earnings (¥M): med=${median(earnings).toFixed(0)} ` +
+        `p90=${[...earnings].sort((a, b) => a - b)[Math.floor(earnings.length * 0.9)]?.toFixed(0) ?? "—"} ` +
+        `max=${Math.max(...earnings).toFixed(0)}`
+    );
+  }
   if (closedBranches.length) {
     const spans = closedBranches.flatMap((h) =>
       h.foundedYear != null ? [h.closedAtYear - h.foundedYear] : []
@@ -752,6 +836,18 @@ for (let yr = 0; yr < YEARS; yr++) {
   console.log(
     `    dev | ${prof} | derailed=${snap.derailedActive} busts=${snap.bustsActive} | ` +
       `real@prime=${snap.medRealizationPrime.toFixed(2)} teenHt=${snap.teenHeightRatio.toFixed(2)}`
+  );
+  // Funnel line — division stack, off-banzuke, intake, governance.
+  const div = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"]
+    .map((d, i) => `${["mk", "ju", "ms", "sd", "jd", "jk"][i]}=${snap.divisionCounts[d] ?? 0}`)
+    .join(" ");
+  const clans = Object.entries(snap.ichimonCounts)
+    .map(([c, n]) => `${c.slice(0, 3)}:${n}`)
+    .join(" ");
+  console.log(
+    `    fun | ${div} gai=${snap.banzukeGai} | debuts=${snap.debutsThisYear} ` +
+      `kadoban=${snap.kadobanOzeki} pend=${snap.pendingDecisions} | ` +
+      `board@${snap.jsaBoardElectedYear || "—"} clans ${clans}`
   );
 
   for (const a of anomalies) console.log(`    ${a}`);
