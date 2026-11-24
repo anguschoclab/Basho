@@ -86,7 +86,7 @@ export function HoFInductionCeremony({
               isRetired: true,
               age: 60,
             })}
-            size="lg"
+            size="xl"
             fallback={inductee.shikona}
             expression={inductee.category === "champion" ? "confident" : "determined"}
             className={`border-2 ${ceremony.color}`}

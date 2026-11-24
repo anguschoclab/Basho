@@ -26,7 +26,8 @@ interface SumoAvatarProps {
   /** Expression override applied on top of the resolved stage. */
   expression?: AvatarExpression;
   /** Prefer a pre-rendered polished PNG when the entity's signature is
-   *  cataloged (see polishedCatalog); falls back to the procedural SVG. */
+   *  cataloged (see polishedCatalog); falls back to the procedural SVG.
+   *  Defaults to true — pass polished={false} to force the SVG. */
   polished?: boolean;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
@@ -92,7 +93,7 @@ export const SumoAvatar = memo(function SumoAvatar({
   fallback,
   rankTier,
   showGlow,
-  polished,
+  polished = true,
 }: SumoAvatarProps) {
   const pixelSize = SIZE_MAP[size];
 

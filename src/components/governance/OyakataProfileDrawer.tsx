@@ -32,7 +32,7 @@ export function OyakataProfileDrawer({
       <SheetContent side="right" className="overflow-y-auto" data-testid="oyakata-profile-drawer">
         <SheetHeader>
           <div className="flex items-center gap-3">
-            <SumoAvatar avatar={rival.oyakataAvatar} size="lg" fallback={rival.oyakataName} />
+            <SumoAvatar avatar={rival.oyakataAvatar} size="xl" fallback={rival.oyakataName} />
             <div>
               <SheetTitle data-testid="drawer-heya-name">{rival.heyaName}</SheetTitle>
               <SheetDescription>

@@ -113,7 +113,7 @@ export function RecruitSigningDialog({
               <div className="flex items-center gap-3">
                 <SumoAvatar
                   avatar={candidate.visibilityBand === "hidden" ? undefined : candidate.avatar}
-                  size="lg"
+                  size="xl"
                   fallback={name}
                   className="border border-border"
                 />

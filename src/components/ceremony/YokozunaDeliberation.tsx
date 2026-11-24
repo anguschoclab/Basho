@@ -79,7 +79,7 @@ export function YokozunaDeliberation({
         <>
           <SumoAvatar
             avatar={rikishi.avatar}
-            size="lg"
+            size="xl"
             fallback={rikishi.shikona}
             className="border-2 border-gold/40"
           />

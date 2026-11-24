@@ -112,7 +112,7 @@ export function IntaiCeremony({
             className={`p-4 rounded-lg border ${isPlayerRikishi ? "border-primary/30 bg-primary/5" : "border-border bg-muted/30"}`}
           >
             <div className="flex items-center gap-4">
-              <SumoAvatar avatar={rikishi.avatar} size="lg" fallback={rikishi.shikona} />
+              <SumoAvatar avatar={rikishi.avatar} size="xl" fallback={rikishi.shikona} />
               <div className="flex-1">
                 <h3 className="text-2xl font-display font-bold">
                   <RikishiName id={rikishi.id} name={rikishi.shikona} />

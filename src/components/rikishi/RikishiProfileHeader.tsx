@@ -63,7 +63,7 @@ export function RikishiProfileHeader({
             <div className="flex items-center gap-6">
               <SumoAvatar
                 avatar={rikishi.avatar}
-                size="lg"
+                size="xl"
                 expression={rikishi.isInjured ? "intense" : "determined"}
                 fallback={rikishi.shikona}
                 className="border-4 border-on-scrim/20 shadow-2xl"

@@ -202,7 +202,7 @@ export function CupChampionBanner({
         <Trophy className="h-12 w-12 text-gold" />
         <SumoAvatar
           avatar={championAvatar}
-          size="lg"
+          size="xl"
           fallback={rikishiNames.get(cup.championId) || "?"}
         />
         <div>

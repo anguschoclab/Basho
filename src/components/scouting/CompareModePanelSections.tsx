@@ -64,7 +64,7 @@ export function CompareRikishiHeader({
         highlight ? "bg-primary/5 border-primary/20" : "bg-muted/20 border-primary/10"
       )}
     >
-      <SumoAvatar avatar={rikishi.avatar} size="lg" className="mx-auto" expression="neutral" />
+      <SumoAvatar avatar={rikishi.avatar} size="xl" className="mx-auto" expression="neutral" />
       <h3 className={cn("font-display font-bold text-lg", highlight && "text-primary")}>
         {rikishi.shikona ?? rikishi.name}
       </h3>

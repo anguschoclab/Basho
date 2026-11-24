@@ -41,7 +41,7 @@ export function DossierHeader({ rikishi }: { rikishi: UIRikishi }) {
       <div className="space-y-2 relative z-10 flex items-center gap-4">
         <SumoAvatar
           avatar={rikishi.avatar}
-          size="lg"
+          size="xl"
           fallback={rikishi.shikona}
           className="border-2 border-on-scrim/20"
         />

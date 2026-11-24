@@ -55,7 +55,7 @@ export function ExhibitionHeader({
         <div className="flex-1 text-center space-y-2">
           <SumoAvatar
             avatar={exhibitionAvatar(east, currentYear)}
-            size="lg"
+            size="xl"
             fallback={east.shikona}
             className="mx-auto"
           />
@@ -72,7 +72,7 @@ export function ExhibitionHeader({
         <div className="flex-1 text-center space-y-2">
           <SumoAvatar
             avatar={exhibitionAvatar(west, currentYear)}
-            size="lg"
+            size="xl"
             fallback={west.shikona}
             className="mx-auto"
           />

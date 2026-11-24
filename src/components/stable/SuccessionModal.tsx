@@ -66,7 +66,7 @@ export function SuccessionModal({
           <div className="flex items-center gap-3">
             <SumoAvatar
               avatar={oyakataAvatar}
-              size="lg"
+              size="xl"
               fallback={oyakata.name}
               className="border-2 border-gold/30"
             />

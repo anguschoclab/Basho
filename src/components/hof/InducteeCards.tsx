@@ -35,7 +35,7 @@ export function RikishiPortrait({
   return (
     <SumoAvatar
       avatar={rikishi?.avatar}
-      size="lg"
+      size="xl"
       fallback={rikishi?.shikona}
       expression={
         category === "champion" ? "confident" : category === "technician" ? "determined" : "neutral"

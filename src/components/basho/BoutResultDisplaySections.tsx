@@ -45,7 +45,7 @@ export function WinnerReveal({
             <div className="flex flex-col items-center gap-1">
               <SumoAvatar
                 avatar={east.avatar}
-                size="lg"
+                size="xl"
                 expression="neutral"
                 fallback={east.shikona}
                 className="border-2 border-east/50 shadow-xs"
@@ -58,7 +58,7 @@ export function WinnerReveal({
             <div className="flex flex-col items-center gap-1">
               <SumoAvatar
                 avatar={west.avatar}
-                size="lg"
+                size="xl"
                 expression="neutral"
                 fallback={west.shikona}
                 className="border-2 border-west/50 shadow-xs"
@@ -95,7 +95,7 @@ export function WinnerReveal({
           <div className="flex flex-col items-center gap-1">
             <SumoAvatar
               avatar={winner.avatar}
-              size="lg"
+              size="xl"
               expression="confident"
               fallback={winner.shikona}
               className="border-2 border-gold/50 shadow-lg"
@@ -108,7 +108,7 @@ export function WinnerReveal({
           <div className="flex flex-col items-center gap-1">
             <SumoAvatar
               avatar={loser.avatar}
-              size="lg"
+              size="xl"
               expression="neutral"
               fallback={loser.shikona}
               className="border-2 border-muted opacity-70"

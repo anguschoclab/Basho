@@ -50,7 +50,7 @@ const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
       <div className="relative">
         <SumoAvatar
           avatar={entry.avatar}
-          size="lg"
+          size="xl"
           rankTier={entry.division === "makuuchi" ? entry.rank : undefined}
           showGlow={rank === 1}
           expression={rank === 1 ? "confident" : rank <= 3 ? "determined" : "neutral"}
