@@ -221,11 +221,11 @@ describe("succession closure — dying stable folds instead of trustee", () => {
     expect(next.closedHeyas?.get("h-thin")).toBeDefined();
   });
 
-  it("closes a terminally insolvent stable at 65 even with a full roster — no caretakers for corpses", () => {
-    // Roster 20 clears every roster threshold; only the debt makes it
-    // dying. Same MERGER_THRESHOLD line as the post-basho insolvency
-    // review: "bankrupt" means dying through whichever door opens first.
-    const { world } = buildWorld({ dyingId: "h-bankrupt", rosterSize: 20 });
+  it("closes a terminally insolvent AND thin stable at 65 — debt compounds a failing operation", () => {
+    // Roster 12 clears the auto-fold bound (≤8) but sits inside the
+    // collapse bound (≤15): insolvency + thin = dying. Same
+    // MERGER_THRESHOLD line as the post-basho insolvency review.
+    const { world } = buildWorld({ dyingId: "h-bankrupt", rosterSize: 12 });
     world.heyas.set("h-bankrupt", {
       ...world.heyas.get("h-bankrupt")!,
       funds: MERGER_THRESHOLD - 1,
@@ -235,6 +235,22 @@ describe("succession closure — dying stable folds instead of trustee", () => {
 
     expect(next.heyas.has("h-bankrupt")).toBe(false);
     expect(next.closedHeyas?.get("h-bankrupt")).toBeDefined();
+  });
+
+  it("keeps an insolvent-but-healthy stable alive under a trustee — debt alone is not death", () => {
+    // Roster 20 clears every roster bound: a functioning stable gets a
+    // caretaker; its pure-debt fate belongs to the post-basho insolvency
+    // review, which evaluates terminal equity at any roster size.
+    const { world } = buildWorld({ dyingId: "h-indebted", rosterSize: 20 });
+    world.heyas.set("h-indebted", {
+      ...world.heyas.get("h-indebted")!,
+      funds: MERGER_THRESHOLD - 1,
+    });
+
+    const next = resolveImpacts(world, [DynastyService.tickSuccessionCheck(world)]);
+
+    expect(next.heyas.has("h-indebted")).toBe(true);
+    expect(next.heyas.get("h-indebted")?.oyakataId).toContain("oyakata_trustee_");
   });
 
   it("keeps a merely-tight stable alive under a trustee — debt above the line is not death", () => {
