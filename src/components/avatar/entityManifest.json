@@ -1,5 +1,15 @@
 {
  "ent::1": "entities/ent-ent-1-4a5c76.png",
  "ent::0": "entities/ent-ent-0-458cdc.png",
- "demo-terunofuji": "entities/ent-demo-terunofuji-4029f5.png"
+ "demo-terunofuji": "entities/ent-demo-terunofuji-4029f5.png",
+ "RK-10BA0BD4": "entities/ent-rk-10ba0bd4-4843cb.png",
+ "RK-12BA0EFA": "entities/ent-rk-12ba0efa-7e728e.png",
+ "RK-13BA108D": "entities/ent-rk-13ba108d-c1228b.png",
+ "RK-0DBA071B": "entities/ent-rk-0dba071b-bb69ef.png",
+ "RK-0CBA0588": "entities/ent-rk-0cba0588-666569.png",
+ "RK-0FBA0A41": "entities/ent-rk-0fba0a41-e06a88.png",
+ "RK-09BA00CF": "entities/ent-rk-09ba00cf-b2fc96.png",
+ "RK-08B9FF3C": "entities/ent-rk-08b9ff3c-b2670c.png",
+ "RK-0EBA08AE": "entities/ent-rk-0eba08ae-78fe74.png",
+ "RK-38E0B7EC": "entities/ent-rk-38e0b7ec-b7bd4f.png"
 }

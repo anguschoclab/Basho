@@ -340,7 +340,10 @@ await Promise.all(
       }
       manifest[s.seed] = `entities/${file}.png`;
       done++;
-      if (done % 10 === 0 || done === pending.length) console.log(`  ${done}/${pending.length}`);
+      if (done % 10 === 0 || done === pending.length) {
+        writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 1) + "\n");
+        console.log(`  ${done}/${pending.length} (manifest flushed)`);
+      }
     }
   })
 );
