@@ -125,7 +125,12 @@ export const FOREIGN_RECRUIT_CHANCE_BY_DIVISION: Record<string, number> = {
 /** Foreign recruits debut older and arrive with proven ability. */
 export const FOREIGN_DEBUT_AGE_MIN = 18;
 export const FOREIGN_DEBUT_AGE_MAX = 22;
-export const FOREIGN_PA_FLOOR = 58;
+// The selection funnel is harsher than domestic intake — survivors are
+// proven amateurs, not average juryo prospects. Measured: a 58 floor
+// produces makushita-ceiling careers and zero organic sekitori over
+// 16 sim-years (real ~23% of sekitori are foreign). Floored at
+// maegashira-mean potential so a non-trivial share converts upward.
+export const FOREIGN_PA_FLOOR = 64;
 export const FOREIGN_DEVSPEED_MULT = 1.4;
 
 /** Rare foreign sandanme-tsukedashi (the Kinbozan path); MsTD is never foreign. */
