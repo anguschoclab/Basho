@@ -12,8 +12,12 @@
  *
  * Outputs (default docs/avatar-contact-sheet/):
  *   src-png/<key>.png          untouched 24×24 renders (Gemini input)
- *   polished/<key>.png         Gemini-polished renders
+ *   src/components/avatar/polished/<key>.png   Gemini-polished assets
  *   contact-sheet-polished.html / .png
+ *
+ * Polished PNGs are written straight into the app's avatar asset dir;
+ * regenerate the runtime catalog afterwards via
+ * `bun scripts/lib/gen-polished-manifest.ts`.
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -32,7 +36,9 @@ const opt = (name: string, dflt: string) => {
 
 const outDir = resolve(opt("--out", join("docs", "avatar-contact-sheet")));
 const srcDir = join(outDir, "src-png");
-const polishedDir = join(outDir, "polished");
+const polishedDir = resolve(
+  opt("--polished-dir", join("src", "components", "avatar", "polished"))
+);
 for (const d of [srcDir, polishedDir]) mkdirSync(d, { recursive: true });
 const CONCURRENCY = Math.max(1, parseInt(opt("--concurrency", "4"), 10) || 4);
 
@@ -229,7 +235,9 @@ const polishedSections = sections.map((s) => ({
     const hasImg = existsSync(join(polishedDir, `${it.key}.png`));
     return {
       label: hasImg ? it.label : `${it.label} (src)`,
-      inner: hasImg ? `<img src="polished/${it.key}.png" alt="${it.label}"/>` : it.svg,
+      inner: hasImg
+        ? `<img src="file://${join(polishedDir, `${it.key}.png`)}" alt="${it.label}"/>`
+        : it.svg,
     };
   }),
 }));

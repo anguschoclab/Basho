@@ -182,7 +182,7 @@ const VARIETY_CELLS: Cell[] = Array.from({ length: 24 }, (_, i) => {
 // Feature-matrix sections (explicit coverage of every enum value)
 // ---------------------------------------------------------------------------
 
-const BASE_IDENTITY: AvatarIdentity = {
+export const BASE_IDENTITY: AvatarIdentity = {
   version: 2,
   seed: "matrix",
   role: "rikishi",
@@ -199,7 +199,7 @@ const BASE_IDENTITY: AvatarIdentity = {
   facialHair: "none",
 };
 
-const BASE_STAGE: AvatarStage = {
+export const BASE_STAGE: AvatarStage = {
   role: "rikishi",
   ageStage: "prime",
   graying: 0,
@@ -213,13 +213,13 @@ const BASE_STAGE: AvatarStage = {
   expression: "neutral",
 };
 
-interface MatrixCell {
+export interface MatrixCell {
   label: string;
   id?: Partial<AvatarIdentity>;
   stage?: Partial<AvatarStage>;
 }
 
-const MATRIX_GROUPS: { title: string; cells: MatrixCell[] }[] = [
+export const MATRIX_GROUPS: { title: string; cells: MatrixCell[] }[] = [
   {
     title: "Head shapes",
     cells: (["full", "round", "oval", "square", "broad", "long"] as const).map((h) => ({
@@ -401,7 +401,7 @@ function partSvg(runs: PixelRun[], px = 96): string {
   );
 }
 
-const slug = (s: string) =>
+export const slug = (s: string) =>
   s
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")

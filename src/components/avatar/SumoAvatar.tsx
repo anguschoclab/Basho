@@ -13,6 +13,7 @@ import type {
 } from "@/engine/types/avatar";
 import { deriveAvatarStage } from "@/presenters/projections/avatarProjections";
 import { composeAvatar } from "@/components/avatar/pixelCompose";
+import { resolvePolishedAvatar } from "@/components/avatar/polishedCatalog";
 import { cn } from "@/lib/utils";
 
 interface SumoAvatarProps {
@@ -24,6 +25,9 @@ interface SumoAvatarProps {
   stage?: AvatarStage;
   /** Expression override applied on top of the resolved stage. */
   expression?: AvatarExpression;
+  /** Prefer a pre-rendered polished PNG when the entity's signature is
+   *  cataloged (see polishedCatalog); falls back to the procedural SVG. */
+  polished?: boolean;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
   animate?: boolean;
@@ -88,6 +92,7 @@ export const SumoAvatar = memo(function SumoAvatar({
   fallback,
   rankTier,
   showGlow,
+  polished,
 }: SumoAvatarProps) {
   const pixelSize = SIZE_MAP[size];
 
@@ -102,8 +107,35 @@ export const SumoAvatar = memo(function SumoAvatar({
     [identity, resolvedStage]
   );
 
-  if (!identity || !paths) {
+  const polishedUrl = useMemo(
+    () =>
+      polished && identity && resolvedStage
+        ? resolvePolishedAvatar(identity, resolvedStage)
+        : undefined,
+    [polished, identity, resolvedStage]
+  );
+
+  if (!identity || (!paths && !polishedUrl)) {
     return <AvatarFallback pixelSize={pixelSize} className={className} fallback={fallback} />;
+  }
+
+  if (polishedUrl) {
+    return (
+      <img
+        data-avatar
+        src={polishedUrl}
+        width={pixelSize}
+        height={pixelSize}
+        role="img"
+        className={cn(
+          "rounded overflow-hidden shrink-0",
+          animate && "avatar-animate",
+          rankTier && RANK_BORDER_COLORS[rankTier] && `border-2 ${RANK_BORDER_COLORS[rankTier]}`,
+          showGlow && "avatar-glow",
+          className
+        )}
+      />
+    );
   }
 
   return (
@@ -122,7 +154,7 @@ export const SumoAvatar = memo(function SumoAvatar({
         className
       )}
     >
-      {[...paths.entries()].map(([hex, d]) => (
+      {[...(paths?.entries() ?? [])].map(([hex, d]) => (
         <path key={hex} d={d} fill={hex} />
       ))}
     </svg>
