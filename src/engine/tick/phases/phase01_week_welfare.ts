@@ -52,6 +52,36 @@ interface HeyaRiskIndicators {
   welfare?: boolean;
 }
 
+/** §3 morale composition for one heya — kept under the function-length budget. */
+function computeWeeklyMorale(
+  world: WorldState,
+  heya: Heya,
+  nextState: WelfareState,
+  hasWelfareStandardsPolicy: boolean
+): number {
+  const roster = getHeyaRoster(world, heya.id);
+  let momentumSum = 0;
+  for (const r of roster) {
+    momentumSum += r.momentum ?? 0;
+  }
+  const avgMomentum = roster.length > 0 ? momentumSum / roster.length : 0;
+  let morale = Math.round(
+    (100 - nextState.welfareRisk) * MORALE_WELFARE_RISK_WEIGHT +
+      (avgMomentum + MORALE_MOMENTUM_OFFSET) * MORALE_MOMENTUM_NORMALIZER
+  );
+  // Compliance penalties
+  if (nextState.complianceState === "sanctioned") morale -= MORALE_SANCTIONED_PENALTY;
+  else if (nextState.complianceState === "investigation") morale -= MORALE_INVESTIGATION_PENALTY;
+  else if (nextState.complianceState === "watch") morale -= MORALE_WATCH_PENALTY;
+  // Facility morale bonuses (dormitory quarters lift heya morale)
+  morale += Math.round(InfrastructureService.getHeyaBonuses(heya).moraleBonus);
+  // §3 Rikishi-kai welfare_standards charter lifts morale across all stables
+  if (hasWelfareStandardsPolicy) {
+    morale += 3;
+  }
+  return clamp(morale, 0, MAX_MORALE);
+}
+
 export function phase01_week_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_welfare");
   const week = world.calendar?.currentWeek ?? 0;
@@ -82,27 +112,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     nextState.lastReviewedWeek = week;
 
     // 1b. Calculate Morale (0..100)
-    const roster = getHeyaRoster(world, heya.id);
-    let momentumSum = 0;
-    for (const r of roster) {
-      momentumSum += r.momentum ?? 0;
-    }
-    const avgMomentum = roster.length > 0 ? momentumSum / roster.length : 0;
-    let morale = Math.round(
-      (100 - nextState.welfareRisk) * MORALE_WELFARE_RISK_WEIGHT +
-        (avgMomentum + MORALE_MOMENTUM_OFFSET) * MORALE_MOMENTUM_NORMALIZER
-    );
-    // Compliance penalties
-    if (nextState.complianceState === "sanctioned") morale -= MORALE_SANCTIONED_PENALTY;
-    else if (nextState.complianceState === "investigation") morale -= MORALE_INVESTIGATION_PENALTY;
-    else if (nextState.complianceState === "watch") morale -= MORALE_WATCH_PENALTY;
-    // Facility morale bonuses (dormitory quarters lift heya morale)
-    morale += Math.round(InfrastructureService.getHeyaBonuses(heya).moraleBonus);
-    // §3 Rikishi-kai welfare_standards charter lifts morale across all stables
-    if (hasWelfareStandardsPolicy) {
-      morale += 3;
-    }
-    nextState.morale = clamp(morale, 0, MAX_MORALE);
+    nextState.morale = computeWeeklyMorale(world, heya, nextState, hasWelfareStandardsPolicy);
 
     // 2. Transition Logic (Inlined/Refactored for purity)
     orchestrateTransitionsPure(

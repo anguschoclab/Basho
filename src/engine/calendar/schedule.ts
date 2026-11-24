@@ -373,6 +373,23 @@ function pickEighthBoutMan(
   return candidates[0];
 }
 
+/**
+ * Lowest-ranked-by-`byTopRank` free rikishi in a division roster — a
+ * single-pass minimum, same pick as filter().sort(byTopRank)[0].
+ */
+function topFreeRikishi(
+  roster: Rikishi[] | undefined,
+  taken: ReadonlySet<string>,
+  busyToday: ReadonlySet<string>
+): Rikishi | undefined {
+  let best: Rikishi | undefined;
+  for (const r of roster ?? []) {
+    if (r.injured || taken.has(r.id) || busyToday.has(r.id) || r.isMaezumo) continue;
+    if (!best || byTopRank(r, best) < 0) best = r;
+  }
+  return best;
+}
+
 export function planDivisionCallups(args: {
   world: WorldState;
   basho: BashoState;
@@ -486,14 +503,7 @@ export function planDivisionCallups(args: {
     const lowerDivs = CALLUP_CASCADE_ORDER.slice(CALLUP_CASCADE_ORDER.indexOf(D) + 1) as Division[];
     for (const lower of lowerDivs) {
       if (callup) break;
-      const taken = excludedEverywhere();
-      // Single-pass minimum under the same byTopRank order — the previous
-      // .filter().sort()[0] sorted an entire lower-division roster to keep
-      // only its top man.
-      for (const r of rosterByDiv.get(lower) ?? []) {
-        if (r.injured || taken.has(r.id) || busyToday.has(r.id) || r.isMaezumo) continue;
-        if (!callup || byTopRank(r, callup) < 0) callup = r;
-      }
+      callup = topFreeRikishi(rosterByDiv.get(lower), excludedEverywhere(), busyToday);
       if (callup) markExcluded(lower, callup.id);
     }
 
