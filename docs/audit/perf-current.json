@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-24T08:35:58.584Z",
+  "timestamp": "2026-11-24T08:40:14.274Z",
   "environment": {
     "platform": "darwin",
     "arch": "arm64",
@@ -8,33 +8,33 @@
   "results": [
     {
       "scenario": "S1_single_day",
-      "p50_ms": 1.7,
-      "p99_ms": 3,
-      "mean_ms": 1.8,
+      "p50_ms": 1.9,
+      "p99_ms": 7.8,
+      "mean_ms": 2.2,
       "runs": 50,
       "total_days": 1
     },
     {
       "scenario": "S2_weekly",
-      "p50_ms": 603.4,
-      "p99_ms": 730.8,
-      "mean_ms": 615.9,
+      "p50_ms": 599.3,
+      "p99_ms": 717.5,
+      "mean_ms": 595.9,
       "runs": 50,
       "total_days": 7
     },
     {
       "scenario": "S3_year",
-      "p50_ms": 2507.4,
-      "p99_ms": 7636.8,
-      "mean_ms": 2939.4,
+      "p50_ms": 2307.3,
+      "p99_ms": 2720.1,
+      "mean_ms": 2286.7,
       "runs": 50,
       "total_days": 365
     },
     {
       "scenario": "S4_25yr",
-      "p50_ms": 2830,
-      "p99_ms": 8210,
-      "mean_ms": 3315.7,
+      "p50_ms": 2279.4,
+      "p99_ms": 2363,
+      "mean_ms": 2291.3,
       "runs": 10,
       "total_days": 9125
     }
