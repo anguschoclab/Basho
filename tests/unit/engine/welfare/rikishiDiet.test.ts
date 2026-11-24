@@ -79,6 +79,7 @@ describe("expected-injury floor", () => {
     heya.welfareState = {
       welfareRisk: 0,
       morale: 50,
+      activeDiet: "maintenance",
       complianceState: "compliant",
       weeksInState: 0,
     };
@@ -111,6 +112,7 @@ describe("expected-injury floor", () => {
     heya.welfareState = {
       welfareRisk: 0,
       morale: 50,
+      activeDiet: "maintenance",
       complianceState: "compliant",
       weeksInState: 0,
     };
