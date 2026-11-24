@@ -158,6 +158,7 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 - **Command-path note:** engine mutations go through the worker via `sendCommand`. The interactive basho path (`SIMULATE_BOUT` etc.) still resolves on the main thread for match animation, but tactics live on `world.boutTactics` and every world-mutating slice case bumps `state.uiWorldRevision`, which GameContext syncs back to the worker via `LOAD_WORLD`. Never reintroduce a world write that skips this sync.
 
 ## Routing (src/app/routes.tsx — TanStack Router)
+
 `routes.tsx` is the source of truth (~45 paths). Highlights: `/` Dashboard, `/stable` (+ `/stable/$id`, `/stable/roster|training|medical|staff|oyakata|infrastructure`), `/basho`, `/banzuke`, `/office/finances`, `/jsa/governance`, `/rikishi/$rikishiId`, `/hall-of-fame`, `/records/*` (history/awards namespace). `/history` and `/museum` are redirect routes into `/records/*` — do not link to them directly.
 **Lazy loading:** All page components except `MainMenu`, `NewGameWizard`, and `Dashboard` are lazy-loaded via `React.lazy()` + `Suspense` with a spinner fallback. This splits the bundle into per-route chunks.
 **Vendor chunks:** `vite.config.ts` defines manual chunks for `vendor-react`, `vendor-recharts`, `vendor-framer`, `vendor-lucide`.
@@ -166,8 +167,9 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 Invoke the matching skill before starting work — they carry repo-specific traps and canonical paths. Command skills (`/name`) are one-shot actions; domain skills are advisory context.
 
 **Domain skills:**
+
 | Skill | Use when |
-|-------|----------|
+| ----- | -------- |
 | `add-engine-command` | Adding a player-triggered gameplay action (worker command path end-to-end) |
 | `ai-agent` | NPC AI / advisor work; running AI test groups incl. the player↔NPC parity invariant |
 | `banzuke-torikumi` | Banzuke publishing, promotion/ozeki logic, division quotas, torikumi pairing rules |
