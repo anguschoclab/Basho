@@ -2,11 +2,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { ChronicleReport, ChampionEntry } from "@/engine/types/records";
 import { stableTieBreak } from "@/engine/utils/sort";
-import {
-  getRikishi,
-  getRikishiAnywhere,
-  isRetiredRikishiSummaryEntry,
-} from "@/engine/core/queries";
+import { getRikishiAnywhere, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
 
 /**
  * Chronicle Service handles historical data aggregation and era detection.
@@ -37,12 +33,16 @@ export const ChronicleService = {
     const championsList: ChampionEntry[] = [];
 
     for (const [id, count] of championCounts.entries()) {
-      const rikishi = getRikishi(world, id);
+      const entry = getRikishiAnywhere(world, id);
       championsList.push({
         rikishiId: id,
-        shikona: rikishi?.shikona || "Unknown",
+        shikona: entry?.shikona || "Unknown",
         yushoCount: count,
-        bestRank: rikishi?.rank || "unknown",
+        bestRank: entry
+          ? isRetiredRikishiSummaryEntry(entry)
+            ? entry.peakRank
+            : entry.rank
+          : "unknown",
       });
     }
 

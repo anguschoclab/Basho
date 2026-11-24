@@ -90,6 +90,46 @@ describe("ChronicleService.finalizeReport", () => {
     expect(report.greatestRivalries[0].meetingCount).toBe(10);
   });
 
+  it("resolves topChampions names for active and summarized retired champions", () => {
+    const active = mockRikishi("r-active", { shikona: "Alpha" });
+    (active as any).rank = "ozeki";
+
+    const world = makeMockWorld({
+      year: 2025,
+      rikishi: new Map([["r-active", active]]),
+    }) as any;
+    world.historicalRikishi.set("r-retired", {
+      isSummary: true,
+      id: "r-retired",
+      shikona: "Beta",
+      peakRank: "yokozuna",
+    });
+
+    const report = ChronicleService.finalizeReport(
+      world,
+      ChronicleService.createEmptyReport(),
+      new Map([
+        ["r-active", 3],
+        ["r-retired", 7],
+      ]),
+      2020
+    );
+
+    expect(report.topChampions[0]).toMatchObject({
+      rikishiId: "r-retired",
+      shikona: "Beta",
+      bestRank: "yokozuna",
+      yushoCount: 7,
+    });
+    expect(report.topChampions[1]).toMatchObject({
+      rikishiId: "r-active",
+      shikona: "Alpha",
+      bestRank: "ozeki",
+      yushoCount: 3,
+    });
+    expect(report.eraLabels[0]).toContain("Beta");
+  });
+
   it("leaves greatestRivalries empty when no h2h records exist", () => {
     const world = makeMockWorld({ year: 2025 }) as any;
 
