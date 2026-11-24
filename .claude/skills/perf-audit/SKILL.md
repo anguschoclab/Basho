@@ -1,6 +1,6 @@
 ---
 name: perf-audit
-description: Find and fix performance problems — suboptimal data structures, O(N*M) loops (includes() inside filter/find), repeated allocation/sort/clone in iterations, unmemoized selectors and derived render lists. Use whenever hunting speedups, auditing hot paths, investigating tick/sim slowness or UI render cost, reviewing code for perf regressions, or before/after landing a perf fix. Wraps the repo's perf-hotspots static scanner, bench-pipelines + perf-gate measurement, and tests/perf suite into a scan → triage → measure → fix → verify workflow. Carries the cardinality rubric (what's a real hotspot vs a false positive) and the determinism cautions (never change Map iteration order or seeded-RNG call order).
+description: Find and fix performance problems — suboptimal data structures, O(N*M) loops (includes() inside filter/find), repeated allocation/sort/clone in iterations, unmemoized selectors and derived render lists — plus advanced levers: V8 shape/monomorphism hygiene, merge-join on sorted lists, maintained indexes, top-k selection, lazy WeakMap-cached derivations, revision-gated rebuilds. Use whenever hunting speedups, auditing hot paths, investigating tick/sim slowness or UI render cost, reviewing code for perf regressions, or before/after landing a perf fix. Wraps the repo's perf-hotspots static scanner, bench-pipelines + perf-gate measurement, and tests/perf suite into a scan → triage → measure → fix → verify workflow. Carries the cardinality rubric (what's a real hotspot vs a false positive) and the determinism cautions (never change Map iteration order or seeded-RNG call order).
 ---
 
 # Performance Audit (`src/engine/**` + `src/{presenters,components,pages,state}/**`)
@@ -46,8 +46,9 @@ grep -rn "reduce(\|\.\.\.acc\|\.\.\.\w*, *{" src/engine
 # chained array passes that could be one loop
 grep -rn "\.filter([^)]*)\.map(\|\.map([^)]*)\.filter(" src
 
-# UI: derived lists recomputed every render
-grep -rn "sort(\|filter(\|reduce(" src/components src/pages --include="*.tsx" | grep -v "useMemo\|createSelector\|useCallback"
+# UI: derivations inside render bodies — Compiler auto-memoizes but the
+# underlying scan still runs on every input change; these want selectors
+grep -rn "sort(\|filter(\|reduce(" src/components src/pages --include="*.tsx" | grep -v "createSelector\|select"
 ```
 
 Also grep the file you're editing for `includes`/`find` usage against `world.rikishi`, `world.events`, `currentBasho.matches`, `world.history*` — the big collections.
@@ -73,6 +74,22 @@ bun run test:perf                          # tests/perf/** benchmarks
 
 Baseline is machine-local: `perf-gate-check` passes (skips) when platform/arch differ — don't compare numbers across machines. Record before/after p50 for the scenario covering your path (S1/S2 for tick work, S3/S4 for boundary/yearly code). For UI cost use React DevTools Profiler or a render counter, not wall-clock guesses. See `sim-diagnostics` for the full measurement-script catalog; `analyze-bundle` for bundle-size cost.
 
+**Deeper profiling when p50 moves but you need the call site:**
+
+```bash
+# CPU profile of an engine script under node+V8 (npx fetches tsx; NODE_OPTIONS injects V8 flags)
+NODE_OPTIONS="--cpu-prof --cpu-prof-dir=/tmp/prof" npx -y tsx scripts/measure/bench-pipelines.ts
+# → open the .cpuprofile in Chrome DevTools → Performance
+
+# V8 opt/deopt trace — catch megamorphic churn in a hot function
+NODE_OPTIONS="--trace-opt --trace-deopt" npx -y tsx scripts/measure/bench-pipelines.ts 2>&1 | grep -i "deopt" | head -40
+
+# Profile the shipped runtime itself (Electron = V8)
+npx electron . --js-flags="--cpu-prof --cpu-prof-dir=/tmp/prof"
+```
+
+Runtime caveat: `bun`/`tsx` scripts run on JavaScriptCore; the shipped app is Electron (V8/Chromium). Big-O fixes transfer; shape/IC-level micro-optimizations should be verified under V8 (node or Electron), and bench deltas under bun are directional, not absolute.
+
 ## Phase 4 — Fix recipes
 
 | Smell | Fix |
@@ -84,7 +101,43 @@ Baseline is machine-local: `perf-gate-check` passes (skips) when platform/arch d
 | `[...acc, x]` / `{...acc, k}` in reduce/loop | `acc.push(x)` / `acc[k] = v` on a mutable local, or `new Set`/`new Map` accumulation |
 | `.filter().map()` chains | single `for`/`reduce` pass |
 | `.sort()` per iteration/render | hoist; sort once into a cached structure; `stableSort` (`engine/utils/sort.ts`) keeps determinism |
-| derived list in render | `useMemo` on the component, or move the derivation into a `createSelector`-wrapped presenter selector |
+| derived list in render | **React Compiler is enabled** (`reactCompilerPreset target:19` in `vite.config.ts`) — memoization is automatic; do NOT sprinkle `useMemo`/`useCallback`. Instead: move the derivation into a `createSelector`-wrapped presenter selector, keep input references stable so compiler memo actually hits, and split components to shrink re-render scope |
+| type-ahead filter over a big list | `useDeferredValue`/`startTransition` so keystrokes stay responsive (e.g. `RosterList`) |
+| 860-row list/table in the DOM | virtualization (`@tanstack/react-virtual` is NOT a dependency — propose adding it, or window manually); until then paginate/limit render count |
+| `data=` arrays rebuilt per render into Recharts | build once in a selector — a fresh array identity defeats memoized children |
+
+## Advanced techniques (after the basics are clean)
+
+Bigger levers for when a hot path is still slow — each with the repo hook where it applies.
+
+### Algorithmic
+
+| Technique | Where it pays here |
+|-----------|--------------------|
+| **Merge-join on sorted lists** — two-pointer walk over two sorted arrays, O(N+M) instead of nested `.find` O(N·M) | joins of `currentBasho.matches` × `standings`, rikishi × banzuke slots, events × entities; both sides already ordered by `stableSort` |
+| **Maintained indexes, not rebuilds** — build `Map<heyaId, Rikishi[]>` once per tick and share across phases instead of every phase re-filtering all ~860 rikishi | weekly pipelines all scanning `world.rikishi` per phase; precedent: `getHeyaRoster` memoization in `engine/core/queries.ts`, `historyIndex` in `engine/history/` |
+| **Top-k without full sort** — single-pass selection / bounded insert when only the best N needed | `selectTopRivals`, standings leaders, candidate-pool pruning — replaces `.sort().slice(0, k)` O(N log N) with O(N·k) or O(N) |
+| **Binary search on sorted thresholds** | rank-band / `descriptorBands` / prize-tier lookups that linear-scan sorted constants |
+| **Cheap-predicate-first + early exit** — order `&&`/`||` and filter predicates so O(1) field checks run before computed ones; bail before allocating | eligibility filters over rosters, bout candidate selection |
+| **Bitmask niche** — small-enum membership as integer flags | only the very hottest paths (bout physics inner loop) and only with profile evidence — `Set.has` is fine elsewhere |
+
+### V8 / JIT-level (shipped app runs on V8)
+
+| Technique | Rule |
+|-----------|------|
+| **Shape stability (hidden classes)** | hot-path objects (`StateImpact`, `deltas`, `BoutResult`, `EngineEvent`, pbp frames): initialize every field at construction, same key order every literal; `null` defaults instead of conditional props; never `delete` (→ dictionary mode) |
+| **Monomorphic call sites** | per-tick/per-bout functions see one object shape; normalize union inputs at the boundary and dispatch once; pick ONE absent sentinel (`null` or `undefined`, not both); keep return types consistent (`X` always, never `X \| null \| undefined` mixes) |
+| **Packed arrays** | `[]` + `push`, never `new Array(n)` holes or mixed `[1, "two", {}]` — transitions to HOLEY are one-way; applies to standings, match lists, event accumulation |
+| **Closure/scratch reuse in hot loops** | reuse a scratch object per iteration instead of allocating literals; hoist callbacks, regexes, and constant arrays to module scope — precedent exists: `StrategicPlanner.ts`/`npcAIWorkers.ts` "single pass manual loop" comments |
+| **`for` over iterator chains in engine hot paths** | `.forEach/.map` in a per-bout inner loop allocates a closure + iterator per element — an indexed `for` avoids both |
+
+### Architectural
+
+| Technique | Where it pays here |
+|-----------|--------------------|
+| **Per-tick WeakMap caches** — the pattern already in `engine/core/selectors.ts` (`cacheMap` keyed by `WorldState`, bucketed by `dayIndexGlobal`): reuse it for any derivation recomputed by multiple phases in one day | standings projections, roster partitions, modifier lookups |
+| **Lazy derivation** — compute only when consumed, cache on first need | precedent: `getCachedPerception` in `presenters/uiDigest.ts`; apply to digest sections and heavy projections |
+| **Revision-gated rebuilds / delta sync** | `uiWorldRevision` already gates `LOAD_WORLD` sync; advanced lever only: `postMessage` structured-clones the ENTIRE world (~860 rikishi + events) per sync — scoped payloads or diff patches are a large win but touch the sanctioned sync path — measure first, see `manage-stable`/worker docs before touching |
 
 ## Phase 5 — Verify
 
@@ -100,6 +153,7 @@ Baseline is machine-local: `perf-gate-check` passes (skips) when platform/arch d
 ```
 finding: <file:line> [<kind>/<severity>]
   hot path: <tier> | cardinality: ~<N> × ~<M>
-  fix: <recipe> | expected: O(N*M) → O(N+M)
+  fix: <recipe or advanced technique> | expected: O(N*M) → O(N+M)
+  measured: <scenario> p50 <before>ms → <after>ms | determinism: <pass/n-a>
   status: fixed | suppressed | dismissed (<reason>)
 ```
