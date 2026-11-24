@@ -124,14 +124,17 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
   return (PHILOSOPHY_HANDLERS[philosophy] || PHILOSOPHY_HANDLERS.balanced)();
 }
 
-/** Score a candidate for a given oyakata's preferences (0-100) */
+/** Score a candidate for a given oyakata's preferences (0-100).
+ *  `perceivedTalent` is the fogged estimate — callers must pass
+ *  `perceivedTalentSeed(world, oyakata.heyaId, c)`, never the true seed. */
 export function scoreRecruitForOyakata(
   world: WorldState,
   oyakata: Oyakata,
   candidate: {
     archetype: CombatArchetype;
     style: Style;
-    talentSeed: number;
+    /** The stable's scouted talent estimate — NOT the true talentSeed. */
+    perceivedTalent: number;
     weightPotentialKg: number;
     combatProfile?: CombatProfile;
   }
@@ -147,7 +150,7 @@ export function scoreRecruitForOyakata(
   if (profile.preferredStyle !== "any" && candidate.style !== profile.preferredStyle) score -= 10;
 
   // Stat weights
-  score += (candidate.talentSeed ?? 50) * profile.statWeights.potential * 0.2;
+  score += (candidate.perceivedTalent ?? 50) * profile.statWeights.potential * 0.2;
   score += (candidate.weightPotentialKg > 130 ? 10 : 0) * profile.statWeights.size;
 
   // Meta Shift: Combat Profile preferences

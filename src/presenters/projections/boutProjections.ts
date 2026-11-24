@@ -18,7 +18,12 @@ import * as talentpool from "@/engine/generation/TalentPoolService";
 import { getOrCreateScouted, getScoutingLevel } from "@/engine/recruitment/scoutingStore";
 import { getScoutedAttributes } from "@/engine/recruitment/ScoutingService";
 import { EntityCollection } from "@/engine/core/EntityCollection";
-import type { Rikishi } from "@/engine/types/rikishi";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import {
+  perceivedTalentSeed,
+  perceivedCandidatePotentialStats,
+  scoutNoiseSpreadForHeya,
+} from "@/engine/recruitment/perceivedTalent";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import {
   resolveAvatar,
@@ -78,6 +83,12 @@ export interface CandidateDigestEntry extends TalentCandidate {
   heightDescriptor?: string;
   weight?: number;
   weightDescriptor?: string;
+  /** Fogged aggregate talent estimate (0–100) for the observing heya —
+   *  the ONLY talent signal the UI may show; the true seed never leaves
+   *  the engine. */
+  perceivedSeed: number;
+  /** Fogged per-stat potential estimates — same noise model, per stat. */
+  perceivedPotentialStats?: Partial<RikishiStats>;
 }
 
 /** Recruitment digest returned by projectRecruitmentUIDigest */
@@ -116,6 +127,10 @@ export function projectRecruitmentUIDigest(
   world: WorldState,
   poolType: "high_school" | "university" | "foreign"
 ): RecruitmentUIDigest {
+  // Hoist the candidate-independent scouting term — every digest entry sees
+  // the candidate slate through the player's single fog lens.
+  const observer = world.playerHeyaId;
+  const noiseSpread = observer ? scoutNoiseSpreadForHeya(world, observer) : undefined;
   const candidates = talentpool.listVisibleCandidates(world, poolType).map((c) => {
     const scoutLevel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
     const scoutedView = talentpool.getScoutedCandidateView(world, c.candidateId);
@@ -131,6 +146,16 @@ export function projectRecruitmentUIDigest(
       scoutInfo: getScoutInfo(scoutLevel),
       hasBias: scoutedView?.hasBias,
       biasStrength: scoutedView?.biasStrength,
+      perceivedSeed: observer ? perceivedTalentSeed(world, observer, c, noiseSpread) : 50,
+      perceivedPotentialStats: observer
+        ? (perceivedCandidatePotentialStats(
+            world,
+            observer,
+            c,
+            ["power", "technique"],
+            noiseSpread
+          ) as Partial<RikishiStats> | undefined)
+        : undefined,
     };
   });
   return { candidates };

@@ -11,7 +11,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import type { PotentialBand } from "@/presenters/engineAccess";
 import { toPotentialBand } from "@/presenters/engineAccess";
 import type { WorldState } from "@/presenters/uiDigest";
-import { talentpool } from "@/presenters/engineAccess";
+import { talentpool, perceivedTalentSeed } from "@/presenters/engineAccess";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { resolveAvatar, candidateStageInput } from "@/presenters/projections/avatarProjections";
@@ -38,7 +38,7 @@ const ProspectRow = React.memo(
   ({
     name,
     archetype,
-    talentSeed,
+    perceivedSeed,
     pool,
     visibilityBand,
     intel,
@@ -47,14 +47,15 @@ const ProspectRow = React.memo(
     candidateId: string;
     name: string;
     archetype: CombatArchetype;
-    talentSeed?: number;
+    /** The stable's scouted estimate (0–100) — never the true seed. */
+    perceivedSeed?: number;
     pool: TalentPoolType;
     visibilityBand: string;
     intel: number;
     avatar?: AvatarRenderData;
   }) => {
     const canShowName = visibilityBand === "public" || intel >= 65;
-    const potential = toPotentialBand(talentSeed);
+    const potential = toPotentialBand(perceivedSeed);
     const potentialInfo = POTENTIAL_LABELS[potential];
     const Icon = POOL_ICONS[pool];
 
@@ -96,7 +97,7 @@ const ProspectList = React.memo(
     world,
     onViewAll,
   }: {
-    topProspects: (TalentCandidate & { pool: TalentPoolType })[];
+    topProspects: (TalentCandidate & { pool: TalentPoolType; perceived: number })[];
     prospectsLength: number;
     world: WorldState;
     onViewAll: () => void;
@@ -112,7 +113,7 @@ const ProspectList = React.memo(
               candidateId={c.candidateId}
               name={c.name}
               archetype={c.archetype}
-              talentSeed={c.talentSeed}
+              perceivedSeed={c.perceived}
               pool={c.pool}
               visibilityBand={c.visibilityBand}
               intel={talentpool.getCandidateScoutingLevel(world, c.candidateId)}
@@ -165,7 +166,7 @@ export function ScoutingWidget() {
     };
     if (!world) return defaultRes;
 
-    const all: (TalentCandidate & { pool: TalentPoolType })[] = [];
+    const all: (TalentCandidate & { pool: TalentPoolType; perceived: number })[] = [];
     const counts: Record<TalentPoolType, number> = {
       high_school: 0,
       university: 0,
@@ -174,12 +175,16 @@ export function ScoutingWidget() {
 
     for (const pool of ["high_school", "university", "foreign"] as TalentPoolType[]) {
       for (const c of talentpool.listVisibleCandidates(world, pool)) {
-        all.push({ ...c, pool });
+        // Fogged lens — the stable's scouted estimate, never the true seed.
+        const perceived = world.playerHeyaId
+          ? perceivedTalentSeed(world, world.playerHeyaId, c)
+          : 50;
+        all.push({ ...c, pool, perceived });
         counts[pool]++;
       }
     }
 
-    all.sort((a, b) => (b.talentSeed ?? 0) - (a.talentSeed ?? 0));
+    all.sort((a, b) => b.perceived - a.perceived);
 
     return {
       prospects: all,

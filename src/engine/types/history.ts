@@ -44,6 +44,10 @@ export interface CareerSnapshot {
   weight: number;
   momentum: number;
 
+  /** Stat sheet at the moment this basho closed — drives CA progression
+   *  charts. Bounded by the 6-entry career history window. */
+  stats?: import("@/engine/types/rikishi").RikishiStats;
+
   /** Cumulative career earnings (¥) at the moment this snapshot was taken. */
   totalEarningsAtBasho?: number;
 

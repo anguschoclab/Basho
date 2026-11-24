@@ -69,7 +69,7 @@ describe("scoreRecruitForOyakata — defensive scores well for innovator", () =>
     const candidate = {
       archetype: "defensive" as CombatArchetype,
       style: "hybrid" as Style,
-      talentSeed: 500,
+      perceivedTalent: 500,
       weightPotentialKg: 120,
       combatProfile: {
         archetype: "oshi",
@@ -80,7 +80,7 @@ describe("scoreRecruitForOyakata — defensive scores well for innovator", () =>
     const speedsterCandidate = {
       archetype: "speedster" as CombatArchetype,
       style: "oshi" as Style,
-      talentSeed: 500,
+      perceivedTalent: 500,
       weightPotentialKg: 120,
       combatProfile: {
         archetype: "oshi",

@@ -104,3 +104,26 @@ export { getHeyaForeignUsage, NATURALIZATION_YEARS } from "@/engine/utils/citize
 export { formatSaveDate } from "@/engine/utils/formatters";
 export { clamp } from "@/engine/utils/math";
 export { sortStandings } from "@/engine/utils/sort";
+// Fog-of-war projections — the ONLY talent-ability channel components may
+// consume. perceivedTalentSeed is the candidate-side estimate; perceivedCA/
+// perceivedPA/star bands are the rikishi-side 0–200 lens (development/caPa).
+export {
+  perceivedTalentSeed,
+  perceivedCandidateStat,
+  perceivedCandidatePotentialStats,
+  scoutNoiseSpreadForHeya,
+} from "@/engine/recruitment/perceivedTalent";
+export {
+  perceivedCA,
+  perceivedPA,
+  paStarBand,
+  caStars,
+  PA_NOISE_MULT,
+} from "@/engine/recruitment/perceivedAbility";
+export {
+  currentAbility,
+  potentialAbility,
+  abilityToStars,
+  TRAINABLE_STAT_KEYS,
+  CA_STAT_WEIGHTS,
+} from "@/engine/development/caPa";

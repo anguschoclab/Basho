@@ -9,6 +9,7 @@ import type { WorldState } from "@/engine/types/world";
 import { SeededRNG } from "@/engine/core/rng";
 import { NarrativeService } from "@/engine/narrative/NarrativeService";
 import { toPotentialBand } from "@/engine/narrative/descriptorBands";
+import { perceivedPA } from "@/engine/recruitment/perceivedAbility";
 import { getCitizenshipStatus, yearsUntilNaturalization } from "@/engine/utils/citizenshipUtils";
 import { resolveRegistryLabel, resolveRegistryLabelJa } from "@/presenters/uiUtilities";
 import type { UIRosterEntry, UIRankDelta } from "@/presenters/rikishi/types";
@@ -77,7 +78,11 @@ export function projectRosterEntry(
     speedBand: NarrativeService.getStatLabelForValue(rng, r.stats.speed),
     balanceBand: NarrativeService.getStatLabelForValue(rng, r.stats.balance),
     momentum: r.momentum,
-    potentialBand: toPotentialBand(r.talentSeed ?? 50),
+    potentialBand: toPotentialBand(
+      // Fogged lens — the player's scouting estimate of PA (0–200 → 0–100),
+      // never the hidden seed. Own roster reads tight; rivals read noisy.
+      world?.playerHeyaId ? perceivedPA(world, world.playerHeyaId, r) / 2 : 50
+    ),
     archetypeLabel: resolveRegistryLabel("archetypes", r.combatProfile?.archetype ?? "hybrid"),
     rankDelta,
     avatar: resolveAvatar({

@@ -47,7 +47,7 @@ export function useRecruitingState(playerHeyaId: string | null) {
     const accessor: Record<string, (c: CandidateDigestEntry) => string | number | undefined> = {
       name: (c) => c.name,
       age: (c) => c.age,
-      potential: (c) => c.talentSeed,
+      potential: (c) => c.perceivedSeed,
       scoutLevel: (c) => c.scoutLevel,
     };
     const fn = accessor[sortKey];

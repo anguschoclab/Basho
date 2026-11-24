@@ -8,6 +8,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import { SeededRNG } from "@/engine/core/rng";
 import { NarrativeService } from "@/engine/narrative/NarrativeService";
+import { perceivedPA } from "@/engine/recruitment/perceivedAbility";
 import { getCareerPhase } from "@/engine/training/TrainingMath";
 import type {
   RikishiStatusDTO,
@@ -87,14 +88,19 @@ export function toDescriptorDTO(
   world?: WorldState
 ): RikishiDescriptorDTO {
   const age = rikishiAge(r, world);
+  // Fogged lens — perceived PA (0–200) rescaled to the legacy 0–100 seed
+  // domain; never the hidden talentSeed. Neutral 50 when no observer exists.
+  const perceivedSeed = world?.playerHeyaId
+    ? perceivedPA(world, world.playerHeyaId, r) / 2
+    : 50;
   return {
     descriptor: toRikishiDescriptor(rng, r, r.descriptor),
-    potentialBand: NarrativeService.getPotentialBand(r.talentSeed ?? 50),
+    potentialBand: NarrativeService.getPotentialBand(perceivedSeed),
     // Engine condition/motivation are 0-100; the descriptor bands are 0-1.
     conditionDescriptor: NarrativeService.getConditionDescriptor(rng, (r.condition ?? 50) / 100)
       .label,
     moraleDescriptor: NarrativeService.getMoraleDescriptor(rng, (r.motivation ?? 50) / 100).label,
-    potentialDescriptor: NarrativeService.getPotentialDescriptor(rng, r.talentSeed ?? 50).label,
+    potentialDescriptor: NarrativeService.getPotentialDescriptor(rng, perceivedSeed).label,
     ageDescriptor: NarrativeService.getAgeLabel(rng, NarrativeService.getAgeBand(age)),
     weightDescriptor: NarrativeService.getWeightLabel(
       rng,

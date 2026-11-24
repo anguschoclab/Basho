@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@tests/unit/engine/utils";
 import { makeNPCWeeklyDecision } from "@/engine/npc/weekly";
+import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";
 import type { AIPlan } from "@/engine/npc/types";
 
 /**
@@ -55,7 +56,7 @@ describe("makeNPCWeeklyDecision — agent context integrity", () => {
     expect(decision.reasoning.some((r) => /999/.test(r))).toBe(false);
   });
 
-  it("evaluates the strongest available talent-pool candidate, not the first key", () => {
+  it("evaluates the strongest available talent-pool candidate through the fog channel", () => {
     const { world } = setupWorld();
     world.talentPool = {
       candidates: {
@@ -65,9 +66,17 @@ describe("makeNPCWeeklyDecision — agent context integrity", () => {
       pools: {},
     } as any;
     const decision = makeNPCWeeklyDecision(world, "h1");
-    expect(decision.reasoning.some((r) => r.includes("Evaluating candidate with talent 95"))).toBe(
-      true
+    // The stable acts on its scouted estimate — deterministic per
+    // (world, heya, candidate) — never the true seed.
+    const perceived = perceivedTalentSeed(
+      world,
+      "h1",
+      world.talentPool.candidates.strong as never
     );
+    expect(perceived).not.toBe(95); // fog applied — estimate ≠ truth
+    expect(
+      decision.reasoning.some((r) => r.includes(`Evaluating candidate with talent ${perceived}`))
+    ).toBe(true);
   });
 
   it("re-applies the plan max_intensity cap after promotion/injury post-passes", () => {

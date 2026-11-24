@@ -13,6 +13,10 @@ import { MONTHLY_BURN_PER_RIKISHI } from "@/constants/engine/economy";
 import { TOP_RIKISHI_COUNT } from "@/constants/engine/npcStrategy";
 import { getHeyaRosterTarget } from "@/engine/generation/RecruitmentController";
 import {
+  perceivedTalentSeed,
+  scoutNoiseSpreadForHeya,
+} from "@/engine/recruitment/perceivedTalent";
+import {
   spawnFinanceAgent,
   spawnGovernanceAgent,
   spawnRecruitmentAgent,
@@ -235,15 +239,17 @@ function runRecruitmentPass(
   const vacancies = heya ? Math.max(0, getHeyaRosterTarget(heya) - rosterSize) : 0;
   if (vacancies <= 0 || !world.talentPool) return noVacancyResult();
 
-  // Evaluate the strongest available candidate, not an arbitrary key.
+  // Evaluate the strongest available candidate through the fog channel —
+  // the stable's scouted estimate (perceivedTalentSeed), never the true seed.
   // Track the record key — RecruitmentAgent resolves candidates[candidateId].
   // Single pass preserves sort-then-first semantics: strict `>` keeps the
-  // first entry among tied seeds, matching stable-sort order.
+  // first entry among tied estimates, matching stable-sort order.
+  const noiseSpread = scoutNoiseSpreadForHeya(world, heyaId);
   let bestCandidateId: string | undefined;
   let bestSeed = -Infinity;
   for (const [id, c] of Object.entries(world.talentPool.candidates)) {
     if (c.availabilityState === "available") {
-      const seed = c.talentSeed ?? 0;
+      const seed = perceivedTalentSeed(world, heyaId, c, noiseSpread);
       if (seed > bestSeed) {
         bestSeed = seed;
         bestCandidateId = id;

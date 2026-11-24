@@ -176,7 +176,9 @@ function evaluateYokozunaPressure(
  * the hoshitori day-by-day star chart from the match schedule) and applies
  * the promotion-tracking field update including the Kihaku isen score.
  */
-function recordBashoPerformance(
+/** Exported for tests — the basho-history writer, incl. the stat snapshot
+ *  that feeds progression charts. */
+export function recordBashoPerformance(
   world: WorldState,
   lastBasho: BashoState,
   rikishi: Rikishi,
@@ -233,6 +235,10 @@ function recordBashoPerformance(
       ];
     });
 
+  // Post-basho stat sheet — shared by the snapshot (progression history)
+  // and the roster update below.
+  const nextStats = { ...rikishi.stats, ...tracked.statsUpdate } as RikishiStats;
+
   const historyEntry = {
     id: `${lastBasho.bashoName}-${world.year}-${id}`,
     bashoId: `${lastBasho.bashoName}-${world.year}`,
@@ -256,6 +262,9 @@ function recordBashoPerformance(
     },
     weight: rikishi.weight,
     momentum: rikishi.momentum,
+    // Ability at the moment this basho closed — feeds CA/PA progression
+    // charts; bounded by the same 6-entry window as the history itself.
+    stats: nextStats,
     dayResults,
   };
   const updatedHistory = [...(rikishi.careerHistory || []), historyEntry];
@@ -306,10 +315,7 @@ function recordBashoPerformance(
     consecutiveBashoFought,
     pressureScore: tracked.pressureScore,
     councilWarnings: tracked.councilWarnings,
-    stats: {
-      ...rikishi.stats,
-      ...tracked.statsUpdate,
-    } as RikishiStats,
+    stats: nextStats,
     careerHistory: updatedHistory.slice(-6),
     careerAbsences: (rikishi.careerAbsences ?? 0) + stats.absences,
     absentFinalDay,

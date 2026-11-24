@@ -9,6 +9,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
 import { getHeya } from "@/engine/core/queries";
 import { formatYen } from "@/lib/engineUtils";
+import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";
 
 export interface RecruitmentAgentContext {
   oyakata: Oyakata;
@@ -52,7 +53,8 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
     };
   }
 
-  const talent = candidate.talentSeed ?? 50;
+  // Fog channel: the stable acts on its scouted estimate, not the true seed.
+  const talent = perceivedTalentSeed(world, oyakata.heyaId, candidate);
   const isElite = talent >= 85;
   const isHigh = talent >= 70;
 

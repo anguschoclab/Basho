@@ -84,6 +84,30 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -207,6 +231,30 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -336,6 +384,30 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -460,6 +532,30 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -545,6 +641,30 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -1313,6 +1433,30 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -1436,6 +1580,30 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -1559,6 +1727,30 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -1642,6 +1834,30 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -1727,6 +1943,30 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -2404,6 +2644,30 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -2527,6 +2791,30 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -2650,6 +2938,30 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -2733,6 +3045,30 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],
@@ -2818,6 +3154,30 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 },
                 "weight": 140,
                 "momentum": 0,
+                "stats": {
+                  "power": 50,
+                  "speed": 50,
+                  "technique": 50,
+                  "balance": 50,
+                  "weight": 140,
+                  "stamina": 100,
+                  "mental": 50,
+                  "adaptability": 50,
+                  "experience": 50,
+                  "aggression": 50,
+                  "achievements": {
+                    "kinboshiEarned": 0,
+                    "ginboshiEarned": 0,
+                    "kinboshiConceded": 0,
+                    "ginboshiConceded": 0,
+                    "mochikyukinPoints": 0,
+                    "specialPrizes": {
+                      "shukunSho": 0,
+                      "kantoSho": 0,
+                      "ginoSho": 0
+                    }
+                  }
+                },
                 "dayResults": []
               }
             ],

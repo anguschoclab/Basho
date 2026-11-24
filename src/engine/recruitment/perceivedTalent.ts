@@ -83,3 +83,51 @@ export function perceivedTalentSeed(
 
   return Math.max(0, Math.min(100, candidate.talentSeed + noise));
 }
+
+/**
+ * Per-stat fogged estimate of a candidate's hidden `potentialStats` — same
+ * deterministic (heya, candidate) noise model, keyed additionally by stat so
+ * each attribute gets its own independent misjudgment. This is what an
+ * "Est. PWR 68±10" scouting line honestly shows: the stable's estimate,
+ * never the true ceiling.
+ */
+export function perceivedCandidateStat(
+  world: WorldState,
+  heyaId: Id,
+  candidate: TalentCandidate,
+  stat: string,
+  spreadOverride?: number
+): number {
+  const spread = spreadOverride ?? scoutNoiseSpreadForHeya(world, heyaId);
+  const rng = rngFromSeed(
+    `scout_${heyaId}_${candidate.candidateId}_stat_${stat}`,
+    "scouting",
+    "estimate"
+  );
+  const noise = (rng.next() * 2 - 1) * spread;
+  const truth =
+    (candidate.potentialStats?.[stat as keyof typeof candidate.potentialStats] as
+      | number
+      | undefined) ?? 0;
+  return Math.max(0, Math.min(100, truth + noise));
+}
+
+/**
+ * Fogged per-stat potential block for UI digests — returns undefined when
+ * the candidate carries no potential projection, so callers never need to
+ * read `.potentialStats` themselves (the only place truth is touched).
+ */
+export function perceivedCandidatePotentialStats(
+  world: WorldState,
+  heyaId: Id,
+  candidate: TalentCandidate,
+  stats: string[],
+  spreadOverride?: number
+): Record<string, number> | undefined {
+  if (!candidate.potentialStats) return undefined;
+  const out: Record<string, number> = {};
+  for (const s of stats) {
+    out[s] = perceivedCandidateStat(world, heyaId, candidate, s, spreadOverride);
+  }
+  return out;
+}

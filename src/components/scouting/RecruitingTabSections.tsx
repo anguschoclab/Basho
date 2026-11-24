@@ -213,10 +213,10 @@ function ProspectChips({ c, state }: { c: CandidateDigestEntry; state: State }) 
             ? `Likely ${c.style ?? "—"}`
             : "Unclear"}
       </Badge>
-      {c.potentialStats && c.scoutLevel >= 50 && (
+      {c.perceivedPotentialStats && c.scoutLevel >= 50 && (
         <Badge variant="outline" className="text-[10px]">
-          Est. PWR {Math.round(c.potentialStats.power)}±10 · TEC{" "}
-          {Math.round(c.potentialStats.technique)}±10
+          Est. PWR {Math.round(c.perceivedPotentialStats.power ?? 0)}±10 · TEC{" "}
+          {Math.round(c.perceivedPotentialStats.technique ?? 0)}±10
         </Badge>
       )}
       {state.signChanceFor && c.availabilityState === "available" && (
@@ -307,9 +307,9 @@ export function CandidateCard({ c, state }: { c: CandidateDigestEntry; state: St
                     </TooltipWrap>
                   </span>
                 )}
-                {c.scoutLevel >= 65 && c.talentSeed && (
+                {c.scoutLevel >= 65 && (
                   <span className="ml-3">
-                    Potential: {POTENTIAL_LABELS[toPotentialBand((c.talentSeed ?? 0) * 100)]}
+                    Potential: {POTENTIAL_LABELS[toPotentialBand(c.perceivedSeed)]}
                   </span>
                 )}
               </div>
