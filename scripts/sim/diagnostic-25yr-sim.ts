@@ -862,6 +862,10 @@ console.log(
 let currentWorld = world;
 let totalErrors = 0;
 let weeklyTickVerified = false;
+// runAutoSim's championCounts/yokozunaVacancy are per-call — accumulate
+// across yearly runs or the printed numbers only describe the last year.
+const cumChampions = new Map<string, { shikona: string; yusho: number }>();
+let cumYokozunaVacantBasho = 0;
 
 for (let yr = 0; yr < YEARS; yr++) {
   const yearErrors: string[] = [];
@@ -877,6 +881,14 @@ for (let yr = 0; yr < YEARS; yr++) {
       observerMode: true,
     });
     currentWorld = result.finalWorld;
+    for (const c of result.chronicle.topChampions) {
+      const prev = cumChampions.get(c.rikishiId);
+      cumChampions.set(c.rikishiId, {
+        shikona: c.shikona,
+        yusho: (prev?.yusho ?? 0) + c.yushoCount,
+      });
+    }
+    cumYokozunaVacantBasho += result.tuningMetrics?.yokozunaVacantBashoCount ?? 0;
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     yearErrors.push(`CRASH: ${msg}`);
@@ -1069,8 +1081,16 @@ if (metrics) {
   console.log(`  Myoseki Saturation:     ${metrics.oyakataMetrics.myosekiSaturation.toFixed(1)}%`);
 
   console.log("\nHistorical Prestige & Parity:");
-  console.log(`  Bashos without Yokozuna: ${metrics.yokozunaVacantBashoCount}`);
-  console.log(`  Unique Basho Winners:    ${metrics.uniqueWinnerCount}`);
+  console.log(
+    `  Bashos without Yokozuna: ${cumYokozunaVacantBasho} cumulative (final-year run: ${metrics.yokozunaVacantBashoCount})`
+  );
+  console.log(
+    `  Unique Basho Winners:    ${cumChampions.size} cumulative (final-year run: ${metrics.uniqueWinnerCount})`
+  );
+  const topCum = [...cumChampions.values()].sort((a, b) => b.yusho - a.yusho).slice(0, 5);
+  if (topCum.length) {
+    console.log(`  Top champions (25y):     ${topCum.map((c) => `${c.shikona} ${c.yusho}`).join(" | ")}`);
+  }
 
   console.log("\nBeya Dominance (Top 5 Stables):");
   metrics.beyaDominance.forEach((b, i) => {
@@ -1092,6 +1112,11 @@ if (metrics) {
     yearSnapshots,
     chronicle: finalResult.chronicle,
     tuningMetrics: metrics,
+    cumulativeMetrics: {
+      uniqueBashoWinners: cumChampions.size,
+      yokozunaVacantBasho: cumYokozunaVacantBasho,
+      champions: Object.fromEntries(cumChampions),
+    },
   };
   writeFileSync(outputPath, JSON.stringify(report, null, 2));
   console.log(`\nDetailed report saved to: ${outputPath}`);

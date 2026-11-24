@@ -180,29 +180,8 @@ function evaluateYokozunaPressure(
  */
 /** Exported for tests — the basho-history writer, incl. the stat snapshot
  *  that feeds progression charts. */
-export function recordBashoPerformance(
-  world: WorldState,
-  lastBasho: BashoState,
-  rikishi: Rikishi,
-  stats: StandingStats,
-  isYusho: boolean,
-  isJunYusho: boolean,
-  rikishiMatches: MatchSchedule[],
-  tracked: {
-    consecutiveStrongOzeki: number;
-    consecutiveMakeKoshi: number;
-    consecutiveKachiKoshi: number;
-    consecutiveKyujo: number;
-    pressureScore: number;
-    councilWarnings: number;
-    statsUpdate: Partial<RikishiStats>;
-  },
-  builder: Builder
-): void {
-  const id = rikishi.id;
-  const history = world.history[world.history.length - 1];
-
-  const dayResults = rikishiMatches
+function buildDayResults(rikishiMatches: MatchSchedule[], id: string) {
+  return rikishiMatches
     .sort((a, b) => a.day - b.day)
     .flatMap((m) => {
       const res = m.result;
@@ -236,6 +215,61 @@ export function recordBashoPerformance(
         },
       ];
     });
+}
+
+function emitIronManMilestone(
+  world: WorldState,
+  lastBasho: BashoState,
+  rikishi: Rikishi,
+  consecutiveBashoFought: number,
+  builder: Builder
+): void {
+  const id = rikishi.id;
+  const milestone = {
+    id: `ironman-${id}-${lastBasho.bashoName}-${world.year}`,
+    type: "iron_man_streak" as const,
+    title: `${consecutiveBashoFought} consecutive basho contested`,
+    description: `${rikishi.shikona} has contested every scheduled bout for ${consecutiveBashoFought} consecutive tournaments — an Iron Man run.`,
+    date: { year: world.year, month: BASHO_CALENDAR[lastBasho.bashoName]?.month ?? 0 },
+  };
+  builder.updateRikishi(id, { milestones: [...(rikishi.milestones ?? []), milestone] });
+  builder.logEvent(
+    "LIFECYCLE_EVENT",
+    "milestone",
+    {
+      status: "iron_man_streak",
+      rikishiId: id,
+      shikona: rikishi.shikona,
+      streak: consecutiveBashoFought,
+      description: milestone.description,
+    },
+    { rikishiId: id, importance: "notable" }
+  );
+}
+
+export function recordBashoPerformance(
+  world: WorldState,
+  lastBasho: BashoState,
+  rikishi: Rikishi,
+  stats: StandingStats,
+  isYusho: boolean,
+  isJunYusho: boolean,
+  rikishiMatches: MatchSchedule[],
+  tracked: {
+    consecutiveStrongOzeki: number;
+    consecutiveMakeKoshi: number;
+    consecutiveKachiKoshi: number;
+    consecutiveKyujo: number;
+    pressureScore: number;
+    councilWarnings: number;
+    statsUpdate: Partial<RikishiStats>;
+  },
+  builder: Builder
+): void {
+  const id = rikishi.id;
+  const history = world.history[world.history.length - 1];
+
+  const dayResults = buildDayResults(rikishiMatches, id);
 
   // Post-basho stat sheet — shared by the snapshot (progression history)
   // and the roster update below.
@@ -287,26 +321,7 @@ export function recordBashoPerformance(
     (stats.absences ?? 0) === 0 ? (rikishi.consecutiveBashoFought ?? 0) + 1 : 0;
   const ironManMilestone = IRON_MAN_MILESTONES.find((m) => consecutiveBashoFought === m);
   if (ironManMilestone) {
-    const milestone = {
-      id: `ironman-${id}-${lastBasho.bashoName}-${world.year}`,
-      type: "iron_man_streak" as const,
-      title: `${consecutiveBashoFought} consecutive basho contested`,
-      description: `${rikishi.shikona} has contested every scheduled bout for ${consecutiveBashoFought} consecutive tournaments — an Iron Man run.`,
-      date: { year: world.year, month: BASHO_CALENDAR[lastBasho.bashoName]?.month ?? 0 },
-    };
-    builder.updateRikishi(id, { milestones: [...(rikishi.milestones ?? []), milestone] });
-    builder.logEvent(
-      "LIFECYCLE_EVENT",
-      "milestone",
-      {
-        status: "iron_man_streak",
-        rikishiId: id,
-        shikona: rikishi.shikona,
-        streak: consecutiveBashoFought,
-        description: milestone.description,
-      },
-      { rikishiId: id, importance: "notable" }
-    );
+    emitIronManMilestone(world, lastBasho, rikishi, consecutiveBashoFought, builder);
   }
 
   // Lifetime career bookkeeping — careerHistory truncates to the last 6
