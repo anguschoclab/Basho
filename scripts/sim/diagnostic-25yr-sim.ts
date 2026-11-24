@@ -751,11 +751,19 @@ function lifecycleAudit(world: WorldState, snaps: YearSnapshot[]): void {
   }
 
   // ── 7. Yokozuna lineage — who ever held the rope ────────────────────────
-  const yokozunaEverAll = [...retiredFull, ...active].filter(
-    (r) => r.careerPeakRank === "yokozuna" || r.rank === "yokozuna"
+  // Scan the full archive (summaries included) — pruned careers only exist
+  // there, so a retiredFull-only scan undercounts.
+  const yokozunaEverAll = [...allRetired, ...active].filter((r) =>
+    isSummary(r) ? r.peakRank === "yokozuna" : r.careerPeakRank === "yokozuna" || r.rank === "yokozuna"
   );
   console.log(`\nYokozuna lineage: ${yokozunaEverAll.length} rikishi ever held the rank`);
   for (const r of yokozunaEverAll.slice(0, 8)) {
+    if (isSummary(r)) {
+      console.log(
+        `    ${r.shikona ?? r.id} — peakCA ${r.peakAbility?.toFixed(0) ?? "?"} | retired | peak Y${r.peakRankYear}`
+      );
+      continue;
+    }
     const yrs = r.careerPeakYear != null ? `peak Y${r.careerPeakYear}` : "—";
     console.log(
       `    ${r.shikona ?? r.id} — CA ${currentAbility(r).toFixed(0)} | ${r.isRetired ? "retired" : "active"} | ${yrs}`

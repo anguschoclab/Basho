@@ -1,7 +1,7 @@
 /** Probe every image-capable model on the key — run: bun scripts/lib/gemini-probe.ts */
 import { readFileSync } from "node:fs";
 
-const key = readFileSync(".env", "utf8").match(/GEMINI_API_KEY\s*=\s*(\S+)/)?.[1];
+const key: string = readFileSync(".env", "utf8").match(/GEMINI_API_KEY\s*=\s*(\S+)/)?.[1] ?? "";
 if (!key) throw new Error("no key");
 console.log("key length:", key.length, "prefix:", key.slice(0, 6) + "…\n");
 
