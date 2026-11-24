@@ -110,6 +110,26 @@ export interface Loan {
 /** Type representing the 5 historical Ichimons. */
 export type IchimonName = "Dewanoumi" | "Nishonoseki" | "Takasago" | "Tokitsukaze" | "Isegahama";
 
+/**
+ * The elected JSA board (riji). Persisted on world.jsaBoard after each
+ * biennial clan-quota election — one entry per seat plus the cosmetic
+ * external directors the real board also seats.
+ */
+export interface JsaBoardDirector {
+  oyakataId: Id;
+  heyaId: Id;
+  ichimon?: IchimonName;
+  isChairman: boolean;
+}
+export interface JsaBoard {
+  directors: JsaBoardDirector[];
+  /** Non-elected seats for outside academics/luminaries (cosmetic). */
+  externalSeats: number;
+  /** Seats won per clan this cycle ("unaffiliated" for clanless stables). */
+  clanSeats: Record<string, number>;
+  electedYear: number;
+}
+
 /** Defines the structure for a faction (Ichimon). */
 export interface Faction {
   id: IchimonName;

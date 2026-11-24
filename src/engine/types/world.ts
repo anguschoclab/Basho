@@ -422,6 +422,13 @@ export interface WorldState {
 
   myosekiMarket?: MyosekiMarket;
 
+  /**
+   * Sitting JSA board of directors — written by the biennial clan-quota
+   * election (runElections) and read by career projections. Absent until
+   * the first election resolves.
+   */
+  jsaBoard?: import("@/engine/types/economy").JsaBoard;
+
   records: WorldRecords;
 
   settings: {

@@ -173,6 +173,8 @@ export interface SerializedWorldState {
   gyojiPool?: WorldState["gyojiPool"];
   shimpanPool?: WorldState["shimpanPool"];
   rikishiCouncil?: WorldState["rikishiCouncil"];
+  /** Sitting JSA board — the clan-quota election result persists. */
+  jsaBoard?: WorldState["jsaBoard"];
 
   // ── Long-horizon career state ───────────────────────────────────────────
   awardLog?: WorldState["awardLog"];
@@ -241,7 +243,14 @@ export const NON_PERSISTED_WORLD_FIELDS: Record<string, string> = {
  * and bump CURRENT_SAVE_VERSION. Prior versions are rejected by
  * MigrationService — there is no migration path (v19: zero back-compat).
  */
-export type SaveVersion = "1.0.0" | "1.1.0" | "1.2.0" | "1.3.0" | "1.4.0" | "1.5.0";
+export type SaveVersion =
+  | "1.0.0"
+  | "1.1.0"
+  | "1.2.0"
+  | "1.3.0"
+  | "1.4.0"
+  | "1.5.0"
+  | "1.6.0";
 
 /** All recognized save versions (oldest first). Used by SaveSlotService and MigrationService. */
 export const KNOWN_SAVE_VERSIONS: readonly SaveVersion[] = [
@@ -251,10 +260,11 @@ export const KNOWN_SAVE_VERSIONS: readonly SaveVersion[] = [
   "1.3.0",
   "1.4.0",
   "1.5.0",
+  "1.6.0",
 ] as const;
 
 /** The version new saves are written with. */
-export const CURRENT_SAVE_VERSION: SaveVersion = "1.5.0";
+export const CURRENT_SAVE_VERSION: SaveVersion = "1.6.0";
 
 /** Defines the structure for save game. */
 export interface SaveGame {

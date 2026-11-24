@@ -147,6 +147,7 @@ function serializeWorld(world: WorldState): SerializedWorldState {
     events: world.events,
     rivalriesState: world.rivalriesState,
     myosekiMarket: world.myosekiMarket,
+    jsaBoard: world.jsaBoard,
     playerHeyaId: world.playerHeyaId,
     currentBanzuke: world.currentBanzuke,
     dayIndexGlobal: world.dayIndexGlobal,
@@ -313,6 +314,7 @@ function deserializeWorld(serialized: SerializedWorldState): WorldState {
     events: s.events || { version: "1.0.0", log: [], dedupe: {} },
     rivalriesState: s.rivalriesState,
     myosekiMarket: s.myosekiMarket,
+    jsaBoard: s.jsaBoard,
 
     ftue: serialized.ftue,
     // Restore era drift rather than resetting it — a loaded save must continue

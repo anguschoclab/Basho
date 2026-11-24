@@ -7,8 +7,14 @@ import {
   SUCCESSION_UNDERPERFORMANCE_BASHO,
 } from "@/constants/engine/succession";
 import { BOARD_COMMITTEE } from "@/constants/engine/committee";
+import { KABU_SEAT_WEIGHT } from "@/constants/engine/economic";
 import { CAREER_MILESTONES } from "@/constants/ui/career";
 import { baseTenure } from "@/engine/legacy/tenure";
+import {
+  apportionClanSeats,
+  clanKeyOf,
+  computeClanElectorate,
+} from "@/engine/governance/elections";
 
 export interface CareerMilestone {
   id: string;
@@ -52,14 +58,33 @@ export interface ManagerCareerProjection {
 
 const ZERO_TENURE = baseTenure(0);
 
-function electionScore(heya: { politicalCapital?: number; reputation?: number }): number {
-  return (heya.politicalCapital ?? 50) + (heya.reputation ?? 50) / 2;
+function electionScore(
+  heya: { politicalCapital?: number; reputation?: number },
+  kabuAtHeya: number
+): number {
+  return (
+    (heya.politicalCapital ?? 50) + (heya.reputation ?? 50) / 2 + kabuAtHeya * KABU_SEAT_WEIGHT
+  );
+}
+
+/** Kabu held at each heya — mirrors runElections' slate weighting. */
+function kabuByHeya(world: WorldState): Map<Id, number> {
+  const counts = new Map<Id, number>();
+  for (const stock of Object.values(world.myosekiMarket?.stocks ?? {})) {
+    if (stock.status !== "held" && stock.status !== "leased") continue;
+    const holder = stock.holderId;
+    const hid =
+      world.oyakata?.get(holder)?.heyaId ?? world.rikishi?.get(holder)?.heyaId;
+    if (hid) counts.set(hid, (counts.get(hid) ?? 0) + 1);
+  }
+  return counts;
 }
 
 /**
  * Surfaces the player's manager career: tenure counters, prestige/stature
- * bands, legacy tier/era, JSA election standing (same score as
- * runElections: politicalCapital + reputation/2), milestone progress, and
+ * bands, legacy tier/era, JSA election standing (mirrors runElections'
+ * clan-quota model: rank inside the stable's own caucus vs its apportioned
+ * seats; chairman read from the persisted board), milestone progress, and
  * the §16.1 succession-trigger counters (post player-stakes fix these
  * apply to the player too).
  */
@@ -68,19 +93,47 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
   const oyakata = heya?.oyakataId ? world.oyakata?.get(heya.oyakataId) : undefined;
   const tenure = { ...ZERO_TENURE, ...oyakata?.tenure };
 
+  const kabu = kabuByHeya(world);
   const scores = new Map<Id, number>();
-  for (const h of world.heyas?.values() ?? []) scores.set(h.id, electionScore(h));
-  const ranked = [...(world.heyas?.keys() ?? [])].sort(
-    (a, b) => (scores.get(b) ?? 0) - (scores.get(a) ?? 0) || (a < b ? -1 : 1)
+  for (const h of world.heyas?.values() ?? []) {
+    scores.set(h.id, electionScore(h, kabu.get(h.id) ?? 0));
+  }
+
+  // Caucus standings: the heya competes inside its own clan for that clan's
+  // apportioned seats (largest-remainder over the clan kabu electorate).
+  const myClan = clanKeyOf(heya?.ichimon);
+  const candidatesByClan = new Map<string, number>();
+  for (const h of world.heyas?.values() ?? []) {
+    const c = clanKeyOf(h.ichimon);
+    candidatesByClan.set(c, (candidatesByClan.get(c) ?? 0) + 1);
+  }
+  const clanSeats = apportionClanSeats(
+    computeClanElectorate(world),
+    candidatesByClan as never,
+    BOARD_COMMITTEE.size
   );
-  const rank = Math.max(1, ranked.indexOf(heyaId) + 1);
-  const myScore = scores.get(heyaId) ?? electionScore(heya ?? {});
-  const boardCutoff = ranked[BOARD_COMMITTEE.size - 1];
-  const fifthScore = boardCutoff !== undefined ? (scores.get(boardCutoff) ?? 0) : null;
-  // Mirrors runElections' slice(0, BOARD_COMMITTEE.size): anyone ranked inside
-  // the board takes a seat, including short fields. A heyaId absent from the
-  // world can't be seated — the old `size >= 1` guard was tautological.
-  const boardSeat = rank <= BOARD_COMMITTEE.size && ranked.includes(heyaId);
+  const clanSlate = [...(world.heyas?.values() ?? [])]
+    .filter((h) => clanKeyOf(h.ichimon) === myClan)
+    .map((h) => h.id)
+    .sort((a, b) => (scores.get(b) ?? 0) - (scores.get(a) ?? 0) || (a < b ? -1 : 1));
+  const mySeats = clanSeats.get(myClan) ?? 0;
+  const rank = Math.max(1, clanSlate.indexOf(heyaId) + 1);
+  const myScore = scores.get(heyaId) ?? electionScore(heya ?? {}, kabu.get(heyaId) ?? 0);
+  const boardSeat = rank <= mySeats && clanSlate.includes(heyaId);
+  const cutoffId = clanSlate[mySeats - 1];
+  const cutoffScore = cutoffId !== undefined ? (scores.get(cutoffId) ?? 0) : null;
+
+  // Chairman: the sitting board's pick if an election has resolved; else the
+  // projected consensus leader (rep + polCap + 2×yearsInCharge, id tiebreak).
+  const chairmanScore = (h: Heya | undefined): number =>
+    (h?.reputation ?? 50) +
+    (h?.politicalCapital ?? 50) +
+    2 * (h?.oyakataId ? world.oyakata?.get(h.oyakataId)?.yearsInCharge ?? 0 : 0);
+  const sittingChair = world.jsaBoard?.directors.find((d) => d.isChairman)?.heyaId;
+  const projectedChair = [...(world.heyas?.values() ?? [])].sort(
+    (a, b) => chairmanScore(b) - chairmanScore(a) || (a.id < b.id ? -1 : 1)
+  )[0]?.id;
+  const chairman = (sittingChair ?? projectedChair) === heyaId;
 
   const values: Record<string, number> = {
     "first-sekitori": tenure.sekitoriProduced,
@@ -88,7 +141,7 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
     "ten-sekitori": tenure.sekitoriProduced,
     "prestige-band": heya?.prestigeBand === "elite" || heya?.prestigeBand === "respected" ? 1 : 0,
     "board-seat": tenure.boardSeatsWon,
-    chairman: rank === 1 ? 1 : 0,
+    chairman: chairman ? 1 : 0,
     "legacy-tier": heya?.legacyTier === "dynasty" || heya?.legacyTier === "legend" ? 1 : 0,
   };
   // Declaration order is presentation-meaningful (career progression), so the
@@ -113,8 +166,8 @@ export function projectManagerCareer(world: WorldState, heyaId: Id): ManagerCare
       score: myScore,
       rank,
       boardSeat,
-      chairman: rank === 1,
-      gapToBoard: boardSeat || fifthScore === null ? null : Math.max(0, fifthScore - myScore),
+      chairman,
+      gapToBoard: boardSeat || cutoffScore === null ? null : Math.max(0, cutoffScore - myScore),
     },
     milestones,
     successionRisk: {

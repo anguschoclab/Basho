@@ -12,10 +12,6 @@ import { bumpTenure } from "@/engine/legacy/tenure";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { getHeya } from "@/engine/core/queries";
 import { findMergerTarget } from "@/engine/economy/mergers";
-import { ELECTION_INCUMBENCY_BONUS } from "@/constants/engine/succession";
-import { KABU_SEAT_WEIGHT } from "@/constants/engine/economic";
-import { BOARD_COMMITTEE } from "@/constants/engine/committee";
-import { conveneCommittee } from "@/engine/committee/committee";
 import {
   SCANDAL_SEVERITY_MULT_LENIENT,
   SCANDAL_SEVERITY_MULT_STANDARD,
@@ -124,94 +120,11 @@ export function reportScandal(
 }
 
 /**
- * Bi-annual JSA Board Elections.
- * Calculates institutional power based on political capital, reputation, and faction influence.
+ * Bi-annual JSA Board Elections — clan-quota model lives in
+ * `../elections.ts`; re-exported here so SimulationRunner, phase06 and the
+ * governance-surface contract keep their import path.
  */
-export function runElections(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("elections");
-  const candidates: Array<{ heyaId: string; score: number; name: string }> = [];
-
-  // WS-7 — electors are weighted by kabu holdings: a heya's elder stock is
-  // what buys board votes. Count stock held (status "held") by the heya's
-  // sitting oyakata; holders of borrowed/vacant stock get nothing.
-  const kabuByHeya = new Map<string, number>();
-  const stocks = Object.values(world.myosekiMarket?.stocks ?? {});
-  for (const stock of stocks) {
-    if (stock.status !== "held" || !stock.holderId) continue;
-    const holder = world.oyakata?.get(stock.holderId);
-    const heyaId = holder?.heyaId;
-    if (heyaId) kabuByHeya.set(heyaId, (kabuByHeya.get(heyaId) ?? 0) + 1);
-  }
-
-  for (const heya of world.heyas.values()) {
-    const influence =
-      (heya.politicalCapital ?? 50) +
-      (heya.reputation ?? 50) / 2 +
-      (kabuByHeya.get(heya.id) ?? 0) * KABU_SEAT_WEIGHT;
-    candidates.push({
-      heyaId: heya.id,
-      score: influence,
-      name: heya.name,
-    });
-  }
-
-  // Board election via the shared committee framework: each heya's influence
-  // score is the case baseline; the committee's decision adopts the tally
-  // (BOARD spec has zero discretion — the mechanical vote is the outcome).
-  // Deterministic id tiebreak on exact-score ties — mirrors
-  // projectManagerCareer's projected standing so the election outcome can't
-  // disagree with the UI projection (V-T2).
-  const decisions = conveneCommittee(
-    BOARD_COMMITTEE,
-    candidates.map((c) => ({
-      subjectId: c.heyaId,
-      baseScore: c.score,
-      merits: 0,
-      demerits: 0,
-      faction: "none",
-    })),
-    rngForWorld(world, "governance", BOARD_COMMITTEE.id)
-  );
-  for (const c of candidates) {
-    const d = decisions.get(c.heyaId);
-    if (d) c.score = d.score;
-  }
-  candidates.sort((a, b) => b.score - a.score || (a.heyaId < b.heyaId ? -1 : 1));
-  const elected = candidates.slice(0, BOARD_COMMITTEE.size);
-
-  for (const candidate of elected) {
-    builder.updateHeya(candidate.heyaId, {
-      governanceStatus: "good_standing", // Board members are elevated to good standing
-      politicalCapital: Math.min(
-        100,
-        (getHeya(world, candidate.heyaId)?.politicalCapital ?? 0) + ELECTION_INCUMBENCY_BONUS
-      ),
-    });
-    bumpTenure(world, builder, candidate.heyaId, { boardSeatsWon: 1 });
-
-    builder.logEvent(
-      "GOVERNANCE_RULING",
-      "discipline",
-      {
-        incident: "election_victory",
-        status: "board_member",
-        reason: "JSA Elder Election",
-        score: Math.floor(candidate.score),
-      },
-      { heyaId: candidate.heyaId, importance: "headline" }
-    );
-  }
-
-  if (elected.length > 0) {
-    builder.logEvent("BASHO_STATUS", "basho", {
-      status: "phase_transition",
-      incident: `The JSA bi-annual board elections have concluded. ${elected[0].name} has been appointed as Chairman.`,
-      shikona: elected[0].name,
-    });
-  }
-
-  return builder.build();
-}
+export { runElections } from "../elections";
 
 /**
  * Returns a CSS color class for a governance status band.

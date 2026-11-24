@@ -150,6 +150,7 @@ export type WritableWorldFields = Pick<
   | "gyojiPool"
   | "shimpanPool"
   | "rikishiCouncil"
+  | "jsaBoard"
   | "boutTactics"
   | "bashoNpcPosture"
   | "currentBanzuke"
