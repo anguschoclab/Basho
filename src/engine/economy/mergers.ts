@@ -173,7 +173,18 @@ function transferRosterAcrossMerger(
   const addedIds: Id[] = [];
   let transferredRikishiIds: Id[] = [];
   let incomingForeign = 0;
-  for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
+  // rikishiIds can desync from rikishi.heyaId (transfers/impact merges) — a
+  // rikishi pointing at the source but missing from its list would keep a
+  // dangling heyaId when the source is deleted, so union both views. The
+  // reverse desync (listed but heyaId claims another heya) is NOT moved —
+  // that rikishi belongs to the other stable and the stale listing dies
+  // with the source.
+  const rosterIds = new Set(getHeyaRoster(world, source.id).map((r) => r.id));
+  for (const r of world.rikishi.values()) {
+    if (r.heyaId === source.id) rosterIds.add(r.id);
+    else rosterIds.delete(r.id);
+  }
+  for (const rId of rosterIds) {
     const rikishi = getRikishi(world, rId);
     if (!rikishi) continue;
 

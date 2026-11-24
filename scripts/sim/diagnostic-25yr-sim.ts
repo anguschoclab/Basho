@@ -77,6 +77,8 @@ interface YearSnapshot {
   historicalTotal: number;
   /** WS6 — heyas holding more than one foreign-slot rikishi (canon §5.1). */
   foreignSlotViolations: string[];
+  /** Actives whose heyaId points at a deleted heya (roster-list desync orphans). */
+  orphanedRikishi: number;
   // ── Realism-calibration metrics (JSA plan WS-1→14) ──────────────────────
   /** WS-1 — share of active heyas holding ≥1 foreign-slot rikishi (~0.69 real). */
   foreignOccupancy: number;
@@ -213,7 +215,10 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   }
 
   // ── Realism-calibration metrics ──────────────────────────────────────────
-  const foreignHeyas = new Set(foreignByHeya.keys());
+  // Intersect with living heyas — rikishi orphaned onto deleted heya ids
+  // (roster-list desync at merger) would push occupancy over 100%; orphans
+  // are tracked separately as their own ERROR gate.
+  const foreignHeyas = new Set([...foreignByHeya.keys()].filter((id) => heyaById.has(id)));
   let foreignTotal = 0;
   let foreignSekitori = 0;
   let foreignLower = 0;
@@ -365,8 +370,10 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   // main loop's integrity pass exists because they do).
   const rosterByHeya: Record<string, number> = {};
   for (const h of heyas) rosterByHeya[h.id] = 0;
+  let orphanedRikishi = 0;
   for (const r of active) {
     if (r.heyaId && r.heyaId in rosterByHeya) rosterByHeya[r.heyaId]++;
+    else if (r.heyaId) orphanedRikishi++; // heyaId points at a deleted heya
   }
   const rosterSizes = Object.values(rosterByHeya).filter((n) => n > 0);
 
@@ -395,6 +402,7 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     historicalTotal: world.historicalRikishi?.size ?? 0,
     foreignSlotViolations,
     foreignOccupancy: heyas.length ? foreignHeyas.size / heyas.length : 0,
+    orphanedRikishi,
     foreignTotal,
     foreignSekitori,
     foreignLower,
@@ -450,6 +458,10 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
     issues.push(`WARN: ${snap.negativeHeyas} heyas insolvent: ${snap.insolventHeyas.join(", ")}`);
   if (snap.foreignSlotViolations.length > 0)
     issues.push(`ERROR: foreign-slot limit violated: ${snap.foreignSlotViolations.join(", ")}`);
+  if (snap.orphanedRikishi > 0)
+    issues.push(
+      `ERROR: ${snap.orphanedRikishi} rikishi point at deleted heyas — roster desync`
+    );
   // WS-1 — real occupancy ~69%; wide band flags both dead and saturated pipelines.
   if (snap.foreignOccupancy < 0.4)
     issues.push(
@@ -856,16 +868,22 @@ function lifecycleAudit(world: WorldState, snaps: YearSnapshot[]): void {
       const start = first.rosterByHeya[id];
       return start != null ? [{ id, start, end: n, delta: n - start }] : [];
     });
-    const risers = [...rows].sort((a, b) => b.delta - a.delta).slice(0, 4);
-    const fallers = [...rows].sort((a, b) => a.delta - b.delta).slice(0, 4);
     console.log(`\nRoster rise & fall (heya present at both ends):`);
     const name = (id: string) => heyaById.get(id)?.name ?? id;
-    console.log(
-      `    Risers: ${risers.map((r) => `${name(r.id)} ${r.start}→${r.end}`).join(", ") || "—"}`
-    );
-    console.log(
-      `    Fallers: ${fallers.map((r) => `${name(r.id)} ${r.start}→${r.end}`).join(", ") || "—"}`
-    );
+    if (rows.length < 2) {
+      // With fewer than 2 survivors the riser/faller lists collapse onto the
+      // same entry — say so instead of double-printing it.
+      console.log(`    only ${rows.length} stable(s) survived both ends — churn dominated`);
+    } else {
+      const risers = [...rows].sort((a, b) => b.delta - a.delta).slice(0, 4);
+      const fallers = [...rows].sort((a, b) => a.delta - b.delta).slice(0, 4);
+      console.log(
+        `    Risers: ${risers.map((r) => `${name(r.id)} ${r.start}→${r.end}`).join(", ") || "—"}`
+      );
+      console.log(
+        `    Fallers: ${fallers.map((r) => `${name(r.id)} ${r.start}→${r.end}`).join(", ") || "—"}`
+      );
+    }
     const empties = Object.entries(lastSnap.rosterByHeya).filter(([, n]) => n === 0);
     if (empties.length)
       console.log(`    Empty stables at end: ${empties.map(([id]) => name(id)).join(", ")}`);
