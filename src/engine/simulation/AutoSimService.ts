@@ -89,7 +89,13 @@ export function runAutoSim(
   let stoppedBy: StopCondition | "completed" = "completed";
 
   const chronicle = ChronicleService.createEmptyReport();
-  const championCounts = new Map<string, number>();
+  // Capture the champion's identity at crown time — finalizeReport resolves
+  // names from the world at year-end, and a champion whose record leaves both
+  // maps (whatever the path) would otherwise print as "Unknown" forever.
+  const championCounts = new Map<
+    string,
+    { yusho: number; shikona: string; bestRank: string }
+  >();
   const cumulativeKimarite: Record<string, number> = {};
   let prevKimariteStats: Record<string, number> = {};
   let yokozunaVacantBashoCount = 0;
@@ -131,10 +137,21 @@ export function runAutoSim(
     prevKimariteStats = { ...bashoKimarite };
 
     if (bashoResult.yushoWinner.id) {
-      championCounts.set(
-        bashoResult.yushoWinner.id,
-        (championCounts.get(bashoResult.yushoWinner.id) || 0) + 1
-      );
+      const winner = bashoResult.yushoWinner;
+      const prev = championCounts.get(winner.id);
+      const winnerRank = getRikishi(currentWorld, winner.id)?.rank ?? "";
+      const prevTier = RANK_HIERARCHY[prev?.bestRank as Rank]?.tier ?? 999;
+      const winnerTier = RANK_HIERARCHY[winnerRank as Rank]?.tier ?? 999;
+      championCounts.set(winner.id, {
+        yusho: (prev?.yusho ?? 0) + 1,
+        // Keep the best name we've ever captured — a basho whose winner
+        // resolved as "Unknown" must not clobber a real earlier name.
+        shikona:
+          winner.shikona && winner.shikona !== "Unknown"
+            ? winner.shikona
+            : prev?.shikona || winner.shikona,
+        bestRank: winnerTier < prevTier ? winnerRank : prev?.bestRank || winnerRank,
+      });
     }
 
     if (config.verbosity !== "minimal") {

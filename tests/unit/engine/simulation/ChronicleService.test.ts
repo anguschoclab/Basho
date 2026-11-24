@@ -109,8 +109,8 @@ describe("ChronicleService.finalizeReport", () => {
       world,
       ChronicleService.createEmptyReport(),
       new Map([
-        ["r-active", 3],
-        ["r-retired", 7],
+        ["r-active", { yusho: 3, shikona: "Alpha", bestRank: "ozeki" }],
+        ["r-retired", { yusho: 7, shikona: "Beta", bestRank: "yokozuna" }],
       ]),
       2020
     );
@@ -128,6 +128,28 @@ describe("ChronicleService.finalizeReport", () => {
       yushoCount: 3,
     });
     expect(report.eraLabels[0]).toContain("Beta");
+  });
+
+  it("falls back to the captured identity when a champion's record is gone", () => {
+    // Regression: a champion whose record leaves both maps must not print
+    // as "Unknown" — the identity captured at crown time carries through.
+    const world = makeMockWorld({ year: 2025 }) as any;
+
+    const report = ChronicleService.finalizeReport(
+      world,
+      ChronicleService.createEmptyReport(),
+      new Map([
+        ["r-gone", { yusho: 5, shikona: "Phantom", bestRank: "ozeki" }],
+      ]),
+      2020
+    );
+
+    expect(report.topChampions[0]).toMatchObject({
+      rikishiId: "r-gone",
+      shikona: "Phantom",
+      bestRank: "ozeki",
+      yushoCount: 5,
+    });
   });
 
   it("leaves greatestRivalries empty when no h2h records exist", () => {

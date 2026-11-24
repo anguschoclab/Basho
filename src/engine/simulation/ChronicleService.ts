@@ -3,6 +3,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { ChronicleReport, ChampionEntry } from "@/engine/types/records";
 import { stableTieBreak } from "@/engine/utils/sort";
 import { getRikishiAnywhere, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
+import { warn } from "@/engine/utils/Logger";
 
 /**
  * Chronicle Service handles historical data aggregation and era detection.
@@ -27,22 +28,31 @@ export const ChronicleService = {
   finalizeReport(
     world: WorldState,
     report: ChronicleReport,
-    championCounts: Map<string, number>,
+    championCounts: Map<string, { yusho: number; shikona: string; bestRank: string }>,
     startYear: number
   ): ChronicleReport {
     const championsList: ChampionEntry[] = [];
 
-    for (const [id, count] of championCounts.entries()) {
+    for (const [id, captured] of championCounts.entries()) {
       const entry = getRikishiAnywhere(world, id);
+      if (!entry) {
+        // A crowned champion absent from both maps is an integrity leak —
+        // surface it (the captured identity keeps the chronicle honest).
+        warn(
+          `Champion ${id} (${captured.shikona || "unnamed"}, ${captured.yusho} yusho) ` +
+            `resolves in neither rikishi nor historicalRikishi at finalize`,
+          "finalizeReport"
+        );
+      }
       championsList.push({
         rikishiId: id,
-        shikona: entry?.shikona || "Unknown",
-        yushoCount: count,
+        shikona: entry?.shikona || captured.shikona || "Unknown",
+        yushoCount: captured.yusho,
         bestRank: entry
           ? isRetiredRikishiSummaryEntry(entry)
             ? entry.peakRank
             : entry.rank
-          : "unknown",
+          : captured.bestRank || "unknown",
       });
     }
 
