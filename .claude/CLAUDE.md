@@ -162,6 +162,31 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 **Lazy loading:** All page components except `MainMenu`, `NewGameWizard`, and `Dashboard` are lazy-loaded via `React.lazy()` + `Suspense` with a spinner fallback. This splits the bundle into per-route chunks.
 **Vendor chunks:** `vite.config.ts` defines manual chunks for `vendor-react`, `vendor-recharts`, `vendor-framer`, `vendor-lucide`.
 
+## Skills (.claude/skills/)
+Invoke the matching skill before starting work — they carry repo-specific traps and canonical paths. Command skills (`/name`) are one-shot actions; domain skills are advisory context.
+
+**Domain skills:**
+| Skill | Use when |
+|-------|----------|
+| `add-engine-command` | Adding a player-triggered gameplay action (worker command path end-to-end) |
+| `ai-agent` | NPC AI / advisor work; running AI test groups incl. the player↔NPC parity invariant |
+| `banzuke-torikumi` | Banzuke publishing, promotion/ozeki logic, division quotas, torikumi pairing rules |
+| `bout-combat` | Bout physics, tactics, kimarite, kinjite/hiwaza/shinitai/yaocho, SIMULATE_BOUT path |
+| `edit-bard-templates` | Editing `engine/bard/domains/*.json` or adding %TOKEN% placeholders |
+| `manage-stable` | Heya finances, sponsors, facilities, governance/welfare, founding, mergers, elections |
+| `scout-recruit` | Scouting, fog-of-war CA/PA, talent pool, foreign limit, NPC bidding, academies |
+| `sim-diagnostics` | Picking the right scripts/ harness for balance/drift/determinism questions |
+| `sumo-transcript` | Mining a real sumo broadcast transcript for PBP/feature seeds |
+| `train-rikishi` | Training profiles, drills, stats growth, injury/recovery, weight journey |
+| `ui-honesty-audit` | Auditing UI for fake/hardcoded values and legibility problems |
+| `verify-implementation` | Before claiming any change "done" — empirical verification discipline |
+| `write-engine-test` | Adding any test (tier placement + meta-gate survival) |
+| `honest-assessment` | Brutally honest, measured codebase/game status checks |
+| `safe-codemod` | Sweeping mechanical edits across many files |
+| `perf-audit` | Engine/UI performance measurement and the perf-gate baseline |
+
+**Command skills:** `analyze-bundle`, `build-app`, `format-code`, `lint-code`, `type-check`, `run-all-tests`, `run-e2e-tests`, `run-electron`, `run-sim` (determinism + autosim + 25-yr diagnostic), `test-coverage`, `test-specific-domain`, `orchestrate-narrative`, `validate-bout-physics`.
+
 ## Known Issues & Gotchas
 1. **`economics.ts`** — `processHeyaFinances()`/`tickWeekEconomics()` were removed (replaced by FinanceCalculator + `tick/phases/monthly/economics/`); `scripts/audit/engine-reviewer.ts` flags any reintroduced call site.
 2. **BardEngine token mismatches** — a `%TOKEN%` is only valid where its context key is supplied by the production `resolve()` call site. `tests/unit/engine/bard/templateTokenIntegrity.test.ts` resolves every production path with real context keys — run it when adding templates.
