@@ -18,6 +18,12 @@ import { join } from "path";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
 import { getExhibitionBashoSchedule } from "@/engine/basho/ExhibitionBashoService";
+import { evaluateFoundingEligibility } from "@/engine/lifecycle/retireeOyakataConversion";
+import { isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
+import {
+  BRANCH_FOUNDING_SANYAKU_BASHO,
+  BRANCH_FOUNDING_MAKUUCHI_BASHO,
+} from "@/constants/engine/economic";
 
 const SEED = "sim-25yr-diagnostic-v1";
 const DEFAULT_YEARS = 25;
@@ -66,6 +72,13 @@ interface YearSnapshot {
   closedHeyaCount: number;
   closureReasons: Record<string, number>;
   branchedHeyaCount: number;
+  /** Founding pipeline — active rikishi already meeting the JSA career bar
+   *  (pipeline depth / future founder bench). */
+  founderBarActive: number;
+  /** This year's retirees meeting the career bar — the year's founder pool. */
+  founderBarRetirees: number;
+  /** Retirees passing every gate (canFound) — actual convertible count. */
+  founderEligible: number;
   /** WS-14 — annual jungyō tour days (~90 pre-2027, ~70s post). */
   jungyoTourDays: number;
   errors: string[];
@@ -158,6 +171,29 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     closureReasons[r] = (closureReasons[r] ?? 0) + 1;
   }
   const branchedHeyaCount = heyas.filter((h) => h.branchedFromHeyaId != null).length;
+
+  // ── Founder pipeline tracking ─────────────────────────────────────────
+  // JSA career bar: peak Y/Ō (current or historical), 12+ san'yaku basho,
+  // or 25+ makuuchi basho. fcandActive = bench depth, fcandRetirees = this
+  // year's founder pool, felig = retirees clearing every gate.
+  const SANYAKU = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
+  const meetsCareerBar = (r: (typeof allRikishi)[number]): boolean => {
+    const hist = r.careerHistory ?? [];
+    const sanyaku = hist.filter((h) => SANYAKU.has(h.rank)).length;
+    const makuuchi = hist.filter((h) => h.division === "makuuchi").length;
+    return (
+      isYokozunaOrOzekiRank(r.rank) ||
+      hist.some((h) => isYokozunaOrOzekiRank(h.rank)) ||
+      sanyaku >= BRANCH_FOUNDING_SANYAKU_BASHO ||
+      makuuchi >= BRANCH_FOUNDING_MAKUUCHI_BASHO
+    );
+  };
+  const founderBarActive = active.filter(meetsCareerBar).length;
+  const thisYearRetirees = allRikishi.filter((r) => r.isRetired && r.retirementYear === world.year);
+  const founderBarRetirees = thisYearRetirees.filter(meetsCareerBar).length;
+  const founderEligible = thisYearRetirees.filter(
+    (r) => evaluateFoundingEligibility(world, r).canFound
+  ).length;
   // WS-14 — tourDays lands on schedule entries post-reform; absent ⇒ 0.
   const jungyoTourDays = getExhibitionBashoSchedule(world.year).reduce(
     (a, t) => a + ((t as { tourDays?: number }).tourDays ?? 0),
@@ -198,6 +234,9 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     closedHeyaCount,
     closureReasons,
     branchedHeyaCount,
+    founderBarActive,
+    founderBarRetirees,
+    founderEligible,
     jungyoTourDays,
     errors: [...errors],
   };
@@ -223,9 +262,13 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
     issues.push(`ERROR: foreign-slot limit violated: ${snap.foreignSlotViolations.join(", ")}`);
   // WS-1 — real occupancy ~69%; wide band flags both dead and saturated pipelines.
   if (snap.foreignOccupancy < 0.4)
-    issues.push(`WARN: foreign occupancy ${(snap.foreignOccupancy * 100).toFixed(0)}% (target ~69%)`);
+    issues.push(
+      `WARN: foreign occupancy ${(snap.foreignOccupancy * 100).toFixed(0)}% (target ~69%)`
+    );
   if (snap.foreignOccupancy > 0.9)
-    issues.push(`WARN: foreign occupancy ${(snap.foreignOccupancy * 100).toFixed(0)}% — pipeline saturated`);
+    issues.push(
+      `WARN: foreign occupancy ${(snap.foreignOccupancy * 100).toFixed(0)}% — pipeline saturated`
+    );
   if (snap.heyaCount < 3) issues.push(`ERROR: Heya count collapsed to ${snap.heyaCount}`);
   if (snap.avgAge > 35) issues.push(`WARN: Avg rikishi age ${snap.avgAge} — roster aging out`);
   if (snap.avgAge < 18) issues.push(`WARN: Avg age ${snap.avgAge} — suspiciously young`);
@@ -338,11 +381,15 @@ for (let yr = 0; yr < YEARS; yr++) {
       `F=${snap.foreignTotal}(sek=${snap.foreignSekitori}/low=${snap.foreignLower}) ` +
       `MN=${(snap.mongolianShare * 100).toFixed(0)}% gf+${snap.grandfatheredForeignSlots} ` +
       `custody=${snap.heyaInCustody} closed=${snap.closedHeyaCount} ` +
-      `[${Object.entries(snap.closureReasons)
-        .sort((a, b) => b[1] - a[1])
-        .map(([r, n]) => `${r}:${n}`)
-        .join("/") || "—"}] ` +
-      `founded=${snap.branchedHeyaCount} jungyo=${snap.jungyoTourDays}d`
+      `[${
+        Object.entries(snap.closureReasons)
+          .sort((a, b) => b[1] - a[1])
+          .map(([r, n]) => `${r}:${n}`)
+          .join("/") || "—"
+      }] ` +
+      `founded=${snap.branchedHeyaCount} ` +
+      `fcand=${snap.founderBarActive}/${snap.founderBarRetirees} felig=${snap.founderEligible} ` +
+      `jungyo=${snap.jungyoTourDays}d`
   );
 
   for (const a of anomalies) console.log(`    ${a}`);

@@ -23,6 +23,7 @@ import {
   BRANCH_FOUNDING_SANYAKU_BASHO,
   BRANCH_FOUNDING_MAKUUCHI_BASHO,
   MERGER_THRESHOLD,
+  HEYA_COUNT_FLOOR,
 } from "@/constants/engine/economic";
 import { FOREIGN_STALL_DIVISIONS, FOREIGN_STALL_BASHO } from "@/constants/engine/recruitment";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -36,23 +37,37 @@ const SANYAKU = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
 function foundingGateBreakdown(
   world: Parameters<typeof evaluateFoundingEligibility>[0],
   r: Rikishi
-): { gate: string } | { gate: "PASS"; effectiveChance: number } {
+): { gate: string; careerEligible: boolean; effectiveChance?: number } {
   const parent = getHeya(world, r.heyaId);
-  if (!parent) return { gate: "no_parent" };
-  if (parent.welfareState?.complianceState === "sanctioned" || (parent.funds ?? 0) <= MERGER_THRESHOLD)
-    return { gate: "parent_unviable" };
-  const solvent = (r.economics?.retirementFund ?? 0) >= FOUNDING_SEED_FUNDS;
+  const careerEligible = (() => {
+    const hist = r.careerHistory ?? [];
+    const sanyaku = hist.filter((h) => SANYAKU.has(h.rank)).length;
+    const makuuchi = hist.filter((h) => h.division === "makuuchi").length;
+    const peak =
+      r.rank === "yokozuna" ||
+      r.rank === "ozeki" ||
+      hist.some((h) => h.rank === "yokozuna" || h.rank === "ozeki");
+    return (
+      peak || sanyaku >= BRANCH_FOUNDING_SANYAKU_BASHO || makuuchi >= BRANCH_FOUNDING_MAKUUCHI_BASHO
+    );
+  })();
+  if (!parent) return { gate: "no_parent", careerEligible };
+  if (
+    parent.welfareState?.complianceState === "sanctioned" ||
+    (parent.funds ?? 0) <= MERGER_THRESHOLD
+  )
+    return { gate: "parent_unviable", careerEligible };
+  // Current solvency model: liquid wealth (cash + retirementFund), parent
+  // sponsor, or JSA underwriting below HEYA_COUNT_FLOOR.
+  const liquid = (r.economics?.retirementFund ?? 0) + (r.economics?.cash ?? 0);
+  const solvent = liquid >= FOUNDING_SEED_FUNDS;
   const sponsor = (parent.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2;
-  if (!solvent && !sponsor) return { gate: "insolvent" };
-  const hist = r.careerHistory ?? [];
-  const sanyaku = hist.filter((h) => SANYAKU.has(h.rank)).length;
-  const makuuchi = hist.filter((h) => h.division === "makuuchi").length;
-  const peak = r.rank === "yokozuna" || r.rank === "ozeki" || hist.some((h) => h.rank === "yokozuna" || h.rank === "ozeki");
-  if (!peak && sanyaku < BRANCH_FOUNDING_SANYAKU_BASHO && makuuchi < BRANCH_FOUNDING_MAKUUCHI_BASHO)
-    return { gate: "career_bar" };
+  const jsaBacked = world.heyas.size < HEYA_COUNT_FLOOR;
+  if (!solvent && !sponsor && !jsaBacked) return { gate: "insolvent", careerEligible };
+  if (!careerEligible) return { gate: "career_bar", careerEligible };
   const elig = evaluateFoundingEligibility(world, r);
-  if (!elig.canFound) return { gate: "headroom_or_misc" };
-  return { gate: "PASS", effectiveChance: elig.effectiveChance };
+  if (!elig.canFound) return { gate: "headroom_or_misc", careerEligible };
+  return { gate: "PASS", effectiveChance: elig.effectiveChance, careerEligible };
 }
 
 async function main() {
@@ -76,14 +91,21 @@ async function main() {
     const newIds = all.filter((r) => !seen.has(r.id));
     for (const r of newIds) seen.add(r.id);
     const foreignDebuts = newIds.filter((r) => countsAsForeign(r, Y));
-    const foreignRetirees = all.filter((r) => r.isRetired && r.retirementYear === Y && countsAsForeign(r, Y));
+    const foreignRetirees = all.filter(
+      (r) => r.isRetired && r.retirementYear === Y && countsAsForeign(r, Y)
+    );
     const stallCulled = foreignRetirees.filter((r) => {
       const h = r.careerHistory ?? [];
-      return h.length > 0 && h.length <= FOREIGN_STALL_BASHO + 1 && h.every((e) => FOREIGN_STALL_DIVISIONS.has(e.division));
+      return (
+        h.length > 0 &&
+        h.length <= FOREIGN_STALL_BASHO + 1 &&
+        h.every((e) => FOREIGN_STALL_DIVISIONS.has(e.division))
+      );
     });
     const foreignActive = all.filter((r) => !r.isRetired && countsAsForeign(r, Y));
     const foreignByDiv = new Map<string, number>();
-    for (const r of foreignActive) foreignByDiv.set(r.division, (foreignByDiv.get(r.division) ?? 0) + 1);
+    for (const r of foreignActive)
+      foreignByDiv.set(r.division, (foreignByDiv.get(r.division) ?? 0) + 1);
 
     // ── B) Yokozuna / ozeki form ─────────────────────────────────────────
     const ozeki = all.filter((r) => !r.isRetired && r.rank === "ozeki");
@@ -95,21 +117,30 @@ async function main() {
     const yushoWinners = all.filter((r) =>
       (r.careerHistory ?? []).some((e) => e.isYusho && e.year === Y)
     );
-    const ozekiYusho = yushoWinners.filter((r) => r.rank === "ozeki" || (r.careerHistory ?? []).at(-1)?.rank === "ozeki");
+    const ozekiYusho = yushoWinners.filter(
+      (r) => r.rank === "ozeki" || (r.careerHistory ?? []).at(-1)?.rank === "ozeki"
+    );
 
     // ── C) Founding eligibility ──────────────────────────────────────────
     const retirees = all.filter((r) => r.isRetired && r.retirementYear === Y);
     const gateCounts = new Map<string, number>();
     const eligible: string[] = [];
-    let maxRetirementFund = 0;
+    let careerEligible = 0;
+    let maxLiquid = 0;
     for (const r of retirees) {
-      maxRetirementFund = Math.max(maxRetirementFund, r.economics?.retirementFund ?? 0);
+      maxLiquid = Math.max(
+        maxLiquid,
+        (r.economics?.retirementFund ?? 0) + (r.economics?.cash ?? 0)
+      );
       const b = foundingGateBreakdown(cur, r);
       gateCounts.set(b.gate, (gateCounts.get(b.gate) ?? 0) + 1);
-      if (b.gate === "PASS" && "effectiveChance" in b)
+      if (b.careerEligible) careerEligible++;
+      if (b.gate === "PASS" && b.effectiveChance !== undefined)
         eligible.push(`${r.shikona ?? r.id}@${b.effectiveChance.toFixed(2)}`);
     }
-    const richParents = Array.from(cur.heyas.values()).filter((h) => (h.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2).length;
+    const richParents = Array.from(cur.heyas.values()).filter(
+      (h) => (h.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2
+    ).length;
 
     console.log(
       `Y${Y} | F: +${foreignDebuts.length} -${foreignRetirees.length}(stall=${stallCulled.length}) act=${foreignActive.length} ` +
@@ -120,7 +151,7 @@ async function main() {
     );
     console.log(
       `      | yushoW=${yushoWinners.length} ozekiYusho=${ozekiYusho.length} | ` +
-        `retirees=${retirees.length} maxRetFund=¥${(maxRetirementFund / 1e6).toFixed(0)}M ` +
+        `retirees=${retirees.length} careerEligible=${careerEligible} maxLiquid=¥${(maxLiquid / 1e6).toFixed(0)}M ` +
         `gates: ${[...gateCounts.entries()].map(([g, n]) => `${g}:${n}`).join(" ")} ` +
         `richParents(≥400M)=${richParents} ELIGIBLE=[${eligible.join(", ") || "none"}]`
     );
