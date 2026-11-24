@@ -27,6 +27,7 @@ import {
   activeDivisionRoster,
   needsScheduleForDay,
 } from "@/engine/calendar/scheduleHelpers";
+import { getActiveRikishi } from "@/engine/core/selectors";
 import {
   CALLUP_CASCADE_ORDER,
   MAEZUMO_MINT_CAP,
@@ -211,23 +212,27 @@ export function scheduleDivisionDay(args: {
 export function planJuryoCallupForMakuuchi(
   world: WorldState,
   basho: BashoState,
-  day: number
+  day: number,
+  rosterByDiv?: Map<Division, Rikishi[]>,
+  busyTodayArg?: Set<string>
 ): { juryoId: string; makuuchiId: string } | null {
   if (!needsScheduleForDay("makuuchi", day) || !needsScheduleForDay("juryo", day)) return null;
 
-  const makuuchiPool = activeDivisionRoster(world, "makuuchi");
+  const makuuchiPool = rosterByDiv?.get("makuuchi") ?? activeDivisionRoster(world, "makuuchi");
   if (makuuchiPool.length < 3 || makuuchiPool.length % 2 === 0) return null;
 
   // Skip anyone already booked today (defensive — callers schedule divisions
   // in one pass, but standalone invocations may follow a partial card).
-  const busyToday = new Set(
-    basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
-  );
+  const busyToday =
+    busyTodayArg ??
+    new Set(
+      basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
+    );
 
   // The JSA calls up the top juryo man — a hurt rikishi isn't promoted into
   // a harder bout, so the pick skips `injured` (he still fights his juryo
   // bout via the normal card, which the competing-injury rules cover).
-  const callup = activeDivisionRoster(world, "juryo")
+  const callup = (rosterByDiv?.get("juryo") ?? activeDivisionRoster(world, "juryo"))
     .filter((r) => !r.injured && !busyToday.has(r.id))
     .sort((a, b) => {
       const byRank = (a.rankNumber ?? 99) - (b.rankNumber ?? 99);
@@ -352,13 +357,13 @@ function matchDayIndex(
 
 /** Pick the hachiban-zumo filler — a lower-division man finishing his 7th. */
 function pickEighthBoutMan(
-  world: WorldState,
   skip: Set<string>,
-  boutCounts: Map<string, number>
+  boutCounts: Map<string, number>,
+  rosterByDiv: Map<Division, Rikishi[]>
 ): Rikishi | undefined {
   const candidates: Rikishi[] = [];
   for (const div of ["makushita", "sandanme", "jonidan", "jonokuchi"] as const) {
-    for (const r of activeDivisionRoster(world, div)) {
+    for (const r of rosterByDiv.get(div) ?? []) {
       if (r.injured || skip.has(r.id)) continue;
       // ≥6 completed: he completes his 7th on today's card, then fights the 8th.
       if ((boutCounts.get(r.id) ?? 0) >= LOWER_DIVISION_BOUT_COUNT - 1) candidates.push(r);
@@ -390,6 +395,16 @@ export function planDivisionCallups(args: {
   // every resolved match per lower-division candidate (~1.5M compares/day),
   // and the participant filter avoids a second pass for busyToday.
   const { busyToday, boutCounts } = matchDayIndex(basho, day);
+  // Single roster pass → per-division index — the cascade otherwise
+  // re-filters the full active list per division + donor scan (~10-15
+  // roster scans/day-plan; same disease as the bout-count rescans).
+  const rosterByDiv = new Map<Division, Rikishi[]>();
+  for (const r of getActiveRikishi(world)) {
+    if (r.isKyujo || r.isMaezumo || r.isEphemeralMaezumo || r.isBanzukeGai) continue;
+    const list = rosterByDiv.get(r.division);
+    if (list) list.push(r);
+    else rosterByDiv.set(r.division, [r]);
+  }
   const excluded = (d: Division) => plan.excludeIds.get(d) ?? new Set<string>();
   const excludedEverywhere = () => {
     const all = new Set<string>();
@@ -397,7 +412,9 @@ export function planDivisionCallups(args: {
     return all;
   };
   const rosterOf = (d: Division) =>
-    activeDivisionRoster(world, d).filter((r) => !excluded(d).has(r.id) && !busyToday.has(r.id));
+    (rosterByDiv.get(d) ?? []).filter(
+      (r) => !excluded(d).has(r.id) && !busyToday.has(r.id)
+    );
   const pushFixed = (d: Division, m: MatchSchedule) => {
     const list = plan.fixedBouts.get(d) ?? [];
     list.push(m);
@@ -418,7 +435,7 @@ export function planDivisionCallups(args: {
     if (D === "makuuchi") {
       const roster = rosterOf(D);
       if (roster.length % 2 === 1 && roster.length >= 3) {
-        const cross = planJuryoCallupForMakuuchi(world, basho, day);
+        const cross = planJuryoCallupForMakuuchi(world, basho, day, rosterByDiv, busyToday);
         if (cross) {
           markExcluded("makuuchi", cross.makuuchiId);
           markExcluded("juryo", cross.juryoId);
@@ -444,7 +461,7 @@ export function planDivisionCallups(args: {
         if (roster.length % 2 === 0) continue;
       }
       const taken = excludedEverywhere();
-      const makushitaPool = activeDivisionRoster(world, "makushita")
+      const makushitaPool = (rosterByDiv.get("makushita") ?? [])
         .filter((r) => !r.injured && !taken.has(r.id) && !busyToday.has(r.id))
         .sort(byTopRank);
       let need = Math.max(oddSlots, roster.length % 2 === 1 ? 1 : 0);
@@ -470,14 +487,22 @@ export function planDivisionCallups(args: {
     for (const lower of lowerDivs) {
       if (callup) break;
       const taken = excludedEverywhere();
-      callup = activeDivisionRoster(world, lower)
+      callup = (rosterByDiv.get(lower) ?? [])
         .filter((r) => !r.injured && !taken.has(r.id) && !busyToday.has(r.id) && !r.isMaezumo)
         .sort(byTopRank)[0];
       if (callup) markExcluded(lower, callup.id);
     }
 
     if (!callup && D === "jonokuchi") {
-      callup = resolveJonokuchiFill(world, basho, day, excludedEverywhere(), plan, boutCounts);
+      callup = resolveJonokuchiFill(
+        world,
+        basho,
+        day,
+        excludedEverywhere(),
+        plan,
+        boutCounts,
+        rosterByDiv
+      );
     }
 
     if (!callup) continue; // documented edge — the odd man sits.
@@ -508,7 +533,8 @@ function resolveJonokuchiFill(
   day: number,
   taken: Set<string>,
   plan: DivisionCallupPlan,
-  boutCounts: Map<string, number>
+  boutCounts: Map<string, number>,
+  rosterByDiv: Map<Division, Rikishi[]>
 ): Rikishi | undefined {
   const existing: Rikishi[] = [];
   let liveMaezumo = 0;
@@ -526,7 +552,7 @@ function resolveJonokuchiFill(
     plan.maezumoToAdd.push(entrant);
     return entrant;
   }
-  if (day === EIGHTH_BOUT_DAY) return pickEighthBoutMan(world, taken, boutCounts);
+  if (day === EIGHTH_BOUT_DAY) return pickEighthBoutMan(taken, boutCounts, rosterByDiv);
   return undefined;
 }
 
