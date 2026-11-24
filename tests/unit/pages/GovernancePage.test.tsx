@@ -218,6 +218,16 @@ function getFactionNames(): string[] {
   });
 }
 
+// The faction-rankings SortMenu shares role="combobox" with the ichimon
+// defection <select> — exclude the labeled native control.
+function getSortTrigger(): HTMLElement {
+  const trigger = screen
+    .getAllByRole("combobox")
+    .find((el) => el.getAttribute("aria-label") !== "Target ichimon for defection");
+  if (!trigger) throw new Error("SortMenu combobox not found");
+  return trigger;
+}
+
 describe("GovernancePage faction sorting", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -233,7 +243,7 @@ describe("GovernancePage faction sorting", () => {
 
   it("renders SortMenu control for faction rankings", () => {
     render(React.createElement(GovernancePage));
-    expect(screen.getByRole("combobox")).toBeTruthy();
+    expect(getSortTrigger()).toBeTruthy();
   });
 
   it("defaults to influence descending (Alpha, Beta, Gamma)", () => {
@@ -244,7 +254,7 @@ describe("GovernancePage faction sorting", () => {
 
   it("sorting by name descending reorders reverse-alphabetically", () => {
     render(React.createElement(GovernancePage));
-    const trigger = screen.getByRole("combobox");
+    const trigger = getSortTrigger();
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Name"));
     const order = getFactionNames();
@@ -254,7 +264,7 @@ describe("GovernancePage faction sorting", () => {
 
   it("persists sort state to localStorage", () => {
     render(React.createElement(GovernancePage));
-    const trigger = screen.getByRole("combobox");
+    const trigger = getSortTrigger();
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Name"));
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);

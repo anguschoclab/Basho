@@ -92,6 +92,7 @@ function PoliticalStanding({ heya }: { heya: Heya }) {
           </div>
           <div className="flex items-center gap-2">
             <select
+              aria-label="Target ichimon for defection"
               className="h-7 rounded border border-border/50 bg-background px-2 text-[11px]"
               value={targetIchimon}
               onChange={(e) => setTargetIchimon(e.target.value as IchimonName)}
