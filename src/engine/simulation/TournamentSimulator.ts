@@ -283,6 +283,10 @@ export function simulateEntireBasho(
     if (!rikishi) continue;
     workingWorld.rikishi.set(id, {
       ...rikishi,
+      // Tsukedashi debutants join the new basho's card — the debut gate
+      // (isMaezumo + maezumoCompleted) lifts at basho start, same as the
+      // interactive path in BashoManager/phase00_preflight.
+      ...(rikishi.isMaezumo && rikishi.maezumoCompleted ? { isMaezumo: false } : {}),
       currentBashoWins: 0,
       currentBashoLosses: 0,
     });

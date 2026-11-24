@@ -32,6 +32,15 @@ export function isEphemeralMaezumoEntrant(r: Rikishi): boolean {
   return r.isEphemeralMaezumo === true || (r.isMaezumo === true && r.id.startsWith("maezumo-"));
 }
 
+/** Tsukedashi credential holders awaiting their first basho. */
+export function pendingTsukedashiDebutants(world: WorldState): Rikishi[] {
+  const out: Rikishi[] = [];
+  for (const r of world.rikishi.values()) {
+    if (r.isMaezumo === true && r.maezumoCompleted === true) out.push(r);
+  }
+  return out;
+}
+
 /** A real, still-unranked shin-deshi or returning banzuke-gai rikishi awaiting maezumo. */
 export function isPendingShinDeshi(r: Rikishi): boolean {
   if (r.isRetired || isEphemeralMaezumoEntrant(r)) return false;
@@ -150,7 +159,30 @@ export function graduateMaezumoRikishi(
   newBanzuke: readonly BanzukeEntry[],
   builder: Builder
 ): BanzukeEntry[] {
-  if (!basho.maezumo || basho.isExhibition) return [];
+  if (basho.isExhibition) return [];
+
+  // Tsukedashi debutants — credential holders awaiting their first printed
+  // slot (`isMaezumo && maezumoCompleted`). They fought no prelims and skip
+  // the jonokuchi floor entirely: the sheet seats them at the credential
+  // rank stamped at materialization (Ms60 / Sd80). Graduates even when the
+  // basho had no maezumo state — a TD-only intake still debuts.
+  const tdEntries: BanzukeEntry[] = [];
+  let tdIdx = 0;
+  for (const r of world.rikishi.values()) {
+    if (r.isMaezumo !== true || r.maezumoCompleted !== true) continue;
+    builder.updateRikishi(r.id, { isMaezumo: false });
+    tdEntries.push({
+      rikishiId: r.id,
+      division: r.division,
+      position: {
+        rank: r.rank,
+        rankNumber: r.rankNumber,
+        side: r.side ?? (tdIdx++ % 2 === 0 ? "east" : "west"),
+      },
+    });
+  }
+
+  if (!basho.maezumo) return tdEntries;
   const tally = tallyMaezumo(basho);
   const grads: Array<{ r: Rikishi; t: MaezumoTally }> = [];
   for (const id of basho.maezumo.entrantIds) {
@@ -166,7 +198,7 @@ export function graduateMaezumoRikishi(
     return a.r.id < b.r.id ? -1 : a.r.id > b.r.id ? 1 : 0;
   });
   const floor = jonokuchiFloor(newBanzuke);
-  return grads.map(({ r }, i) => {
+  const maezumoGrads = grads.map(({ r }, i) => {
     builder.updateRikishi(r.id, {
       isMaezumo: false,
       maezumoCompleted: true,
@@ -183,4 +215,5 @@ export function graduateMaezumoRikishi(
       },
     };
   });
+  return [...tdEntries, ...maezumoGrads];
 }

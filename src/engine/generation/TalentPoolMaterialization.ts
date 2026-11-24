@@ -50,12 +50,17 @@ export function materializeCandidateToRikishiInternal(
 
     if (candidate.tsukedashi) {
       // Tsukedashi debut: qualified amateurs enter the banzuke directly —
-      // Ms60 (makushita) or Sd80 (sandanme), no maezumo.
+      // Ms60 (makushita) or Sd80 (sandanme), no maezumo prelims. The
+      // `isMaezumo && maezumoCompleted` pair marks a credential holder
+      // awaiting debut: excluded from the running card and the prelims,
+      // graduated at the next publish into his TD slot (real debut is
+      // always next basho, never mid-card).
       const isMakushita = candidate.tsukedashi === "makushita";
       rikishi.division = isMakushita ? "makushita" : "sandanme";
       rikishi.rank = rikishi.division;
       rikishi.rankNumber = isMakushita ? MAKUSHITA_TSUKEDASHI_RANK : SANDANME_TSUKEDASHI_RANK;
       rikishi.maezumoCompleted = true;
+      rikishi.isMaezumo = true;
     } else {
       // Apply maezumo assessment to determine initial jonokuchi rankNumber
       const maezumoResult = assessMaezumo(rikishi, world.seed ?? "default");

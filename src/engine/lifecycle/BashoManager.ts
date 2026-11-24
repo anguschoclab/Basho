@@ -14,6 +14,7 @@
  */
 
 import { initializeBasho } from "@/engine/generation/WorldFactory";
+import { pendingTsukedashiDebutants } from "@/engine/basho/maezumoPrelims";
 import { ensureRollingTorikumi } from "@/engine/calendar/schedule";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoName } from "@/engine/types/basho";
@@ -52,13 +53,21 @@ export function buildStartBashoImpact(world: WorldState, bashoName?: BashoName):
   // Initialize new basho state
   const basho = initializeBasho(world, name);
 
-  // §3 JSA rolling torikumi — Days 1 and 2 are announced together pre-basho.
-  const scheduleImpact = ensureRollingTorikumi({ ...world, currentBasho: basho });
-
   // Build impact with world field updates and queued event
   const builder = createImpactBuilder("buildStartBashoImpact")
     .updateWorldField("currentBasho", basho)
-    .updateWorldField("cyclePhase", "active_basho")
+    .updateWorldField("cyclePhase", "active_basho");
+
+  // Tsukedashi debutants join the new basho's card — the debut gate lifts
+  // at basho start; the publish path prints them at their credential slot.
+  for (const r of pendingTsukedashiDebutants(world)) {
+    builder.updateRikishi(r.id, { isMaezumo: false });
+  }
+
+  // §3 JSA rolling torikumi — Days 1 and 2 are announced together pre-basho.
+  const scheduleImpact = ensureRollingTorikumi({ ...world, currentBasho: basho });
+
+  builder
     .logEvent(
       "BASHO_STATUS",
       "basho",

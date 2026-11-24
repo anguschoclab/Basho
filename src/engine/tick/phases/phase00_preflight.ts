@@ -11,6 +11,7 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 import { info } from "@/engine/utils/Logger";
 import { assertNever } from "@/engine/utils/types";
 import { initializeBasho } from "@/engine/generation/WorldFactory";
+import { pendingTsukedashiDebutants } from "@/engine/basho/maezumoPrelims";
 import { resetBashoMediaTracking } from "@/engine/media/MediaService";
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { getInterimWeeks, getNextBasho } from "@/engine/calendar/calendar";
@@ -153,6 +154,12 @@ function checkPhaseTransition(
         const nextPhase: CyclePhase = "active_basho";
         builder.updateWorldField("cyclePhase", nextPhase);
         builder.updateWorldField("currentBasho", basho);
+
+        // Tsukedashi debutants join the new basho's card — the debut gate
+        // lifts at basho start; the publish path prints their TD slot.
+        for (const r of pendingTsukedashiDebutants(world)) {
+          builder.updateRikishi(r.id, { isMaezumo: false });
+        }
 
         if (world.mediaState) {
           const resetMedia = resetBashoMediaTracking(world.mediaState);
