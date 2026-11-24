@@ -112,6 +112,10 @@ describe("StableWidget CareerLine", () => {
       playerCapital: 50,
       others: [["h-strong", 95]],
     });
+    // The rival must also out-score the chairman consensus (rep + polCap +
+    // 2×yearsInCharge) — a bare-capital rival loses the internal pick.
+    const rival = world.heyas.get("h-strong" as never);
+    if (rival) rival.reputation = 95;
     const { getByText } = renderWidget(world);
     expect(getByText(/JSA Board #2/)).toBeTruthy();
   });
