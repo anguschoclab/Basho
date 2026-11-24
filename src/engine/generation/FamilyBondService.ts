@@ -24,6 +24,7 @@ import { convertCandidateToRikishi } from "@/engine/generation/CandidateBuilder"
 import { candidateConsumesForeignSlot } from "@/engine/generation/talentPoolReads";
 import { assessMaezumo } from "@/engine/generation/MaezumoService";
 import { generateShikona } from "@/engine/shikona/generateShikona";
+import { ensureUniqueShikona } from "@/engine/shikona/uniqueness";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { TalentCandidate } from "@/engine/types/talent";
 import type { WorldState } from "@/engine/types/world";
@@ -88,6 +89,16 @@ function mintSibling(
     currentYear: world.year,
     heyaId: siblingHeyaId,
   });
+  const uniqueName = ensureUniqueShikona({
+    world,
+    proposed: sibling.shikona,
+    rng,
+    config: { nationality: sibling.nationality },
+  });
+  if (uniqueName !== sibling.shikona) {
+    sibling.shikona = uniqueName;
+    sibling.name = uniqueName;
+  }
   const maezumo = assessMaezumo(sibling, world.seed ?? "default");
   if (maezumo.rankNumber !== undefined) sibling.rankNumber = maezumo.rankNumber;
   // §3 maezumo — unranked until his preliminary next basho.

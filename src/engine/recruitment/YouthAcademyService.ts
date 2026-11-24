@@ -20,6 +20,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { getHeya } from "@/engine/core/queries";
 import { dedupeIdList, pushUniqueId } from "@/engine/core/idIntegrity";
 import { rngFromSeed } from "@/engine/core/rng";
+import { ensureUniqueShikona } from "@/engine/shikona/uniqueness";
 import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
 import type { Rank, Division } from "@/engine/types/banzuke";
@@ -379,6 +380,16 @@ export function promoteIntake(world: WorldState, heyaId: string, prospectId: str
   // Create a new rikishi from the prospect and add to roster
   const newRikishiId = prospectId;
   const { newRikishi } = buildPromotedRikishi(world, heya, prospect, newRikishiId, heyaId);
+  const uniqueName = ensureUniqueShikona({
+    world,
+    proposed: newRikishi.shikona,
+    rng: rngFromSeed(world.seed, "academy-dedup", newRikishiId),
+    config: { nationality: newRikishi.nationality },
+  });
+  if (uniqueName !== newRikishi.shikona) {
+    newRikishi.shikona = uniqueName;
+    newRikishi.name = uniqueName;
+  }
   // §3 maezumo — academy graduates enter as unranked shin-deshi.
   builder.addRikishi(enrollInMaezumo(newRikishi));
 

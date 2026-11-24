@@ -28,6 +28,10 @@ import {
   RETIREMENT_STAT_CRITICAL_POWER,
   RETIREMENT_STAT_DIMINISHING_POWER,
   RETIREMENT_DEFAULT_POWER,
+  RETIREMENT_STALL_MIN_AGE,
+  RETIREMENT_STALL_DEEP_AGE,
+  RETIREMENT_STALL_PROB,
+  RETIREMENT_STALL_WINDOW_BASHO,
 } from "@/constants/engine/career";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import {
@@ -51,6 +55,12 @@ export function checkRetirement(
 ): string | null {
   const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}::${currentYear}`);
   const age = currentYear - rikishi.birthYear;
+
+  // Lower-division stall attrition — runs ahead of the MIN_AGE gate: a
+  // prospect who never rose and keeps losing is not a live career, so the
+  // under-28 protection only applies once he shows he's going somewhere.
+  const stallReason = checkLowerDivisionStall(rikishi, age, rng);
+  if (stallReason) return stallReason;
 
   // Defensive: block impossible young retirements
   if (age < RETIREMENT_MIN_AGE) {
@@ -161,4 +171,44 @@ export function checkRetirement(
   }
 
   return null;
+}
+
+/** Stall set for 21–23 — bottom two un-salaried divisions only. */
+const STALL_DIVISIONS = new Set(["jonokuchi", "jonidan"]);
+/** Stall set for 24+ — a career sandanme is a washout too. */
+const STALL_DIVISIONS_DEEP = new Set(["jonokuchi", "jonidan", "sandanme"]);
+
+/**
+ * Domestic prospect stall-attrition — the counterpart to the foreign-slot
+ * stall rule above. A rikishi who has never risen past the un-salaried
+ * tiers (lifetime peak, not current slump) and just finished a full season
+ * of non-winning records down there is a washout: the beya cuts him or he
+ * quits — real sumo's ~50%-within-5-years churn, which the blanket under-28
+ * gate was suppressing (25-yr diagnostic: median career 19y, retire age 36).
+ *
+ * Gated on careerPeakDivision so a former makushita man on a slump season
+ * is not mistaken for a stalled prospect, and requires a full recent window
+ * so debutants without a season under them can't trigger.
+ */
+function checkLowerDivisionStall(
+  rikishi: Rikishi,
+  age: number,
+  rng: { bool(p: number): boolean }
+): string | null {
+  if (age < RETIREMENT_STALL_MIN_AGE) return null;
+
+  const stallDivisions = age >= RETIREMENT_STALL_DEEP_AGE ? STALL_DIVISIONS_DEEP : STALL_DIVISIONS;
+  // Never-rose gate — legacy entries without the lifetime counter fall back
+  // to current division (a jonidan regular reads as peak=jonidan, correct).
+  const peakDivision = rikishi.careerPeakDivision ?? rikishi.division;
+  if (!peakDivision || !stallDivisions.has(peakDivision)) return null;
+
+  const recent = (rikishi.careerHistory ?? []).slice(-RETIREMENT_STALL_WINDOW_BASHO);
+  if (recent.length < RETIREMENT_STALL_WINDOW_BASHO) return null;
+  const stalledAllSeason = recent.every(
+    (h) => stallDivisions.has(h.division) && h.wins <= h.losses
+  );
+  if (!stalledAllSeason) return null;
+
+  return rng.bool(RETIREMENT_STALL_PROB) ? "Lower-Division Stagnation" : null;
 }

@@ -41,6 +41,18 @@ const median = (xs: number[]): number => {
   return s[Math.floor(s.length / 2)];
 };
 
+const spread = (xs: number[]): { mean: number; std: number; min: number; max: number } | null => {
+  if (!xs.length) return null;
+  const mean = xs.reduce((a, b) => a + b, 0) / xs.length;
+  const variance = xs.reduce((a, b) => a + (b - mean) ** 2, 0) / xs.length;
+  return {
+    mean: Math.round(mean * 10) / 10,
+    std: Math.round(Math.sqrt(variance) * 10) / 10,
+    min: Math.min(...xs),
+    max: Math.max(...xs),
+  };
+};
+
 // ── Snapshot ────────────────────────────────────────────────────────────────
 
 interface YearSnapshot {
@@ -133,6 +145,10 @@ interface YearSnapshot {
   rosterMedian: number;
   rosterMin: number;
   rosterMax: number;
+  /** Physique spread of this year's debut cohort (debutYear === year) —
+   *  recruit-pool diversity: a collapsed σ means generation is cloning. */
+  intakeHeight: { mean: number; std: number; min: number; max: number } | null;
+  intakeWeight: { mean: number; std: number; min: number; max: number } | null;
   errors: string[];
 }
 
@@ -322,12 +338,20 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   const divisionCounts: Record<string, number> = {};
   let banzukeGai = 0;
   let debutsThisYear = 0;
+  const intakeHeights: number[] = [];
+  const intakeWeights: number[] = [];
   for (const r of active) {
     divisionCounts[r.division] = (divisionCounts[r.division] ?? 0) + 1;
     if (r.isBanzukeGai) banzukeGai++;
-    if (r.debutYear === world.year) debutsThisYear++;
+    if (r.debutYear === world.year) {
+      debutsThisYear++;
+      if (r.stats?.height != null) intakeHeights.push(r.stats.height);
+      if (r.stats?.weight != null) intakeWeights.push(r.stats.weight);
+    }
   }
-  const kadobanOzeki = Object.keys(world.ozekiKadoban ?? {}).length;
+  const kadobanOzeki = Object.values(world.ozekiKadoban ?? {}).filter(
+    (e) => e?.isKadoban === true
+  ).length;
   const ichimonCounts: Record<string, number> = {};
   for (const h of heyas) {
     const clan = h.ichimon ?? "unaffiliated";
@@ -400,6 +424,8 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     kimariteStats,
     rosterByHeya,
     rosterMedian: median(rosterSizes),
+    intakeHeight: spread(intakeHeights),
+    intakeWeight: spread(intakeWeights),
     rosterMin: rosterSizes.length ? Math.min(...rosterSizes) : 0,
     rosterMax: rosterSizes.length ? Math.max(...rosterSizes) : 0,
     errors: [...errors],
@@ -675,6 +701,34 @@ function lifecycleAudit(world: WorldState, snaps: YearSnapshot[]): void {
     console.log(
       `  Height ratio @20-23: prodigy=${median(prod20).toFixed(2)} vs late_bloomer=${median(late20).toFixed(2)} ` +
         `(late bloomers should trail — they keep growing longer)`
+    );
+  }
+  // The differentiation lives at 17-19 — prodigies are done at ~16-18, late
+  // bloomers keep filling toward a ~21 peak (peakAgeOffset +2 on a 4y rise).
+  const prodTeen = matAt("prodigy", 17, 19);
+  const lateTeen = matAt("late_bloomer", 17, 19);
+  if (prodTeen.length && lateTeen.length) {
+    console.log(
+      `  Height ratio @17-19: prodigy=${median(prodTeen).toFixed(2)} vs late_bloomer=${median(lateTeen).toFixed(2)} ` +
+        `(differentiation window — late bloomers should read <1.0)`
+    );
+  }
+
+  // Intake-physique diversity — pooled across every debut cohort: the recruit
+  // pool should hold a healthy σ (not a clone army), roughly real-shaped
+  // (real intake: ~178-186cm / ~110-140kg teens).
+  const cohorts = snaps.filter((s) => s.intakeHeight && s.intakeWeight);
+  if (cohorts.length) {
+    const fmt = (f: (s: (typeof cohorts)[number]) => number | null | undefined) => {
+      const v = cohorts.map(f).filter((x): x is number => x != null);
+      return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1) : "—";
+    };
+    console.log(
+      `  Intake physiques (${cohorts.length} debut cohorts): ` +
+        `h=${fmt((s) => s.intakeHeight?.mean)}±${fmt((s) => s.intakeHeight?.std)}cm ` +
+        `[${fmt((s) => s.intakeHeight?.min)}-${fmt((s) => s.intakeHeight?.max)}] | ` +
+        `w=${fmt((s) => s.intakeWeight?.mean)}±${fmt((s) => s.intakeWeight?.std)}kg ` +
+        `[${fmt((s) => s.intakeWeight?.min)}-${fmt((s) => s.intakeWeight?.max)}]`
     );
   }
 
@@ -965,6 +1019,12 @@ for (let yr = 0; yr < YEARS; yr++) {
       `kadoban=${snap.kadobanOzeki} pend=${snap.pendingDecisions} | ` +
       `board@${snap.jsaBoardElectedYear || "—"} clans ${clans} | ` +
       `kim ${kimDelta || "—"} | ros=${snap.rosterMedian}/${snap.rosterMin}-${snap.rosterMax}`
+  );
+  const ih = snap.intakeHeight;
+  const iw = snap.intakeWeight;
+  console.log(
+    `    in  | debut physiques h=${ih ? `${ih.mean}±${ih.std}cm [${ih.min}-${ih.max}]` : "—"} ` +
+      `w=${iw ? `${iw.mean}±${iw.std}kg [${iw.min}-${iw.max}]` : "—"}`
   );
 
   for (const a of anomalies) console.log(`    ${a}`);

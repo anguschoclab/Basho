@@ -92,6 +92,22 @@ export const RETIREMENT_STAGNANT_AGE = 28;
 export const RETIREMENT_WEAK_AGE = 38;
 export const RETIREMENT_CRITICAL_WEAK_AGE = 30;
 
+// ── Lower-division stall attrition ────────────────────────────────────────────
+// Real sumo churns washouts by their early 20s: ~half of recruits who never
+// leave the un-salaried divisions are gone within ~5-6 years of debut. The
+// MIN_AGE gate above models "no voluntary retirement while a career is still
+// live" — a prospect who has never risen and keeps losing below makushita is
+// not a live career, so stall pressure starts earlier and bypasses the gate.
+
+/** Youngest age at which a never-rose prospect can be pressured out. */
+export const RETIREMENT_STALL_MIN_AGE = 21;
+/** Age at which sandanme joins the stall set (a 3rd-tier lifer is a washout too). */
+export const RETIREMENT_STALL_DEEP_AGE = 24;
+/** Per-check intai pressure once stalled (≈6 checks/yr → ~50% attrition/yr). */
+export const RETIREMENT_STALL_PROB = 0.12;
+/** Full recent season required before a rikishi counts as stalled. */
+export const RETIREMENT_STALL_WINDOW_BASHO = 6;
+
 // ── Retirement injury thresholds ───────────────────────────────────────────────
 
 export const RETIREMENT_INJURY_WEEKS_THRESHOLD = 20;

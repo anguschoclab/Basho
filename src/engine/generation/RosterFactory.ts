@@ -10,6 +10,7 @@ import { Heya } from "@/engine/types/heya";
 import { Oyakata } from "@/engine/types/oyakata";
 import { Rikishi } from "@/engine/types/rikishi";
 import { generateFullRikishi } from "@/engine/generation/CandidateBuilder";
+import { generateShikona } from "@/engine/shikona/generateShikona";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { rollForeignOrigin } from "@/engine/utils/identity";
 import { Division, Rank, Side } from "@/engine/types/banzuke";
@@ -156,6 +157,9 @@ export function createRosters(
   oyakataMap: Map<string, Oyakata>
 ): Map<string, Rikishi> {
   const rikishiMap = new Map<string, Rikishi>();
+  // Shikona collision guard — the batch mints ~600 names from bounded
+  // morpheme pools, so dedupe as we go (see shikona/uniqueness.ts).
+  const takenShikonas = new Set<string>();
   const heyaList = Array.from(heyaMap.values());
   // Membership mirrors for the bulk append loop — pushUniqueId copies the
   // array per call (O(size²) churn); a per-heya Set is O(1) per append.
@@ -253,6 +257,8 @@ export function createRosters(
         heyaPrefix: heya.shikonaPrefix,
       });
 
+      ensureUniqueGenesisShikona(r, takenShikonas, worldRng, rikishiId, config.rank, oyakata, heya);
+
       let assigned = heya;
       const foreignResolution = resolveGenesisForeignSlot({
         r,
@@ -286,6 +292,41 @@ export function createRosters(
   );
 
   return rikishiMap;
+}
+
+/**
+ * Live-name guard: the morpheme pools can mint the same shikona twice
+ * within a genesis batch — re-roll until free so no two rikishi share
+ * a name on day one.
+ */
+function ensureUniqueGenesisShikona(
+  r: Rikishi,
+  takenShikonas: Set<string>,
+  worldRng: SeededRNG,
+  rikishiId: string,
+  rank: Rank,
+  oyakata: Oyakata | undefined,
+  heya: Heya
+): void {
+  for (
+    let dedupAttempt = 0;
+    r.shikona && takenShikonas.has(r.shikona.toLowerCase()) && dedupAttempt < 12;
+    dedupAttempt++
+  ) {
+    const deduped = generateShikona(
+      `${worldRng.seed}::genesis-dedup::${rikishiId}::${dedupAttempt}`,
+      {
+        rng: worldRng,
+        nationality: r.nationality,
+        rank,
+        legacyShikona: oyakata?.formerShikona,
+        heyaPrefix: heya.shikonaPrefix,
+      }
+    );
+    r.shikona = deduped;
+    r.name = deduped;
+  }
+  if (r.shikona) takenShikonas.add(r.shikona.toLowerCase());
 }
 
 /**

@@ -391,7 +391,21 @@ function resolveOzekiStatuses(
     if (r?.wasDemotedFromOzeki) reclaimableOzeki.add(e.rikishiId);
   }
 
-  return { updatedOzekiKadoban, demotedOzeki, reclaimableOzeki };
+  // Prune entries for anyone not currently ranked ozeki — the map tracks
+  // consecutive make-koshi *while holding the rank*, so demoted/retired
+  // rikishi must not carry stale state forward. Otherwise the map grows
+  // forever, and a re-promoted ozeki inherits a phantom make-koshi that
+  // skips his kadoban grace (and every stale entry falsely narrates him
+  // as kadoban in bout commentary).
+  const currentOzekiIds = new Set(
+    currentBanzuke.filter((e) => e.position.rank === "ozeki").map((e) => e.rikishiId)
+  );
+  const prunedOzekiKadoban: OzekiKadobanMap = {};
+  for (const [id, state] of Object.entries(updatedOzekiKadoban)) {
+    if (currentOzekiIds.has(id)) prunedOzekiKadoban[id] = state;
+  }
+
+  return { updatedOzekiKadoban: prunedOzekiKadoban, demotedOzeki, reclaimableOzeki };
 }
 
 /**

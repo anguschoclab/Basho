@@ -707,10 +707,12 @@ function beatConsecutiveKachi(p: PbpPipeline): void {
 
 function beatKadobanMention(p: PbpPipeline): void {
   const { east, preBoutRng, push, west, world } = p;
-  // 3j. Kadoban mention
+  // 3j. Kadoban mention — gate on isKadoban, not entry presence: the map
+  // also holds clean {isKadoban:false} resets and may carry a stale entry
+  // for a rikishi who has since left the rank.
   const kadobanMap = world.ozekiKadoban ?? {};
-  const eastKadoban = kadobanMap[east.id];
-  const westKadoban = kadobanMap[west.id];
+  const eastKadoban = kadobanMap[east.id]?.isKadoban === true;
+  const westKadoban = kadobanMap[west.id]?.isKadoban === true;
   if (eastKadoban || westKadoban) {
     const kadobanRikishi = eastKadoban ? east : west;
     push(

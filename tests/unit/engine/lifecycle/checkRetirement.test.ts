@@ -98,4 +98,91 @@ describe("checkRetirement", () => {
     const result = checkRetirement(rikishi, 2025, "test-seed");
     expect(result).toBeNull();
   });
+
+  it("should retire a never-rose stalled prospect under 28 when the pressure roll fires", () => {
+    // Age 22, lifetime peak jonidan, a full season of losing jonidan records —
+    // the under-28 gate must not shield a washout career.
+    const rikishi = mockRikishi("r-stall", {
+      birthYear: 2003,
+      division: "jonidan",
+      careerPeakDivision: "jonidan",
+      careerHistory: Array.from({ length: 6 }, () => ({
+        division: "jonidan",
+        wins: 2,
+        losses: 5,
+      })) as any,
+    });
+    const mockRng = {
+      next: vi.fn().mockReturnValue(0.9),
+      bool: vi.fn().mockReturnValue(true),
+    };
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
+
+    expect(checkRetirement(rikishi, 2025, "test-seed")).toBe("Lower-Division Stagnation");
+    expect(mockRng.bool).toHaveBeenCalledWith(0.12);
+  });
+
+  it("should not stall-retire a former makushita man on a slump season", () => {
+    // Age 23 stuck in jonidan but careerPeakDivision is makushita — a demoted
+    // veteran in a slump, not a washout: the stall check must pass him over
+    // and the under-28 gate then returns null.
+    const rikishi = mockRikishi("r-slump", {
+      birthYear: 2002,
+      division: "jonidan",
+      careerPeakDivision: "makushita",
+      careerHistory: Array.from({ length: 6 }, () => ({
+        division: "jonidan",
+        wins: 1,
+        losses: 6,
+      })) as any,
+    });
+    const mockRng = {
+      next: vi.fn().mockReturnValue(0.9),
+      bool: vi.fn().mockReturnValue(true),
+    };
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
+
+    expect(checkRetirement(rikishi, 2025, "test-seed")).toBeNull();
+  });
+
+  it("should not stall-retire a stalled prospect under 21", () => {
+    const rikishi = mockRikishi("r-too-young", {
+      birthYear: 2005, // Age 20
+      division: "jonidan",
+      careerPeakDivision: "jonidan",
+      careerHistory: Array.from({ length: 6 }, () => ({
+        division: "jonidan",
+        wins: 0,
+        losses: 7,
+      })) as any,
+    });
+    const mockRng = {
+      next: vi.fn().mockReturnValue(0.9),
+      bool: vi.fn().mockReturnValue(true),
+    };
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
+
+    expect(checkRetirement(rikishi, 2025, "test-seed")).toBeNull();
+  });
+
+  it("should not stall-retire a prospect with a winning recent basho", () => {
+    // One kachi-koshi in the window breaks the stall streak — he is
+    // progressing, not washing out.
+    const rikishi = mockRikishi("r-progressing", {
+      birthYear: 2003,
+      division: "jonidan",
+      careerPeakDivision: "jonidan",
+      careerHistory: [
+        ...Array.from({ length: 5 }, () => ({ division: "jonidan", wins: 2, losses: 5 })),
+        { division: "jonidan", wins: 5, losses: 2 },
+      ] as any,
+    });
+    const mockRng = {
+      next: vi.fn().mockReturnValue(0.9),
+      bool: vi.fn().mockReturnValue(true),
+    };
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
+
+    expect(checkRetirement(rikishi, 2025, "test-seed")).toBeNull();
+  });
 });

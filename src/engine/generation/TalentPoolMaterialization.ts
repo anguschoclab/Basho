@@ -13,6 +13,7 @@ import {
   isCandidateAgeEligible,
 } from "@/engine/generation/talentPoolReads";
 import { mintFamilyBonds } from "@/engine/generation/FamilyBondService";
+import { ensureUniqueShikona } from "@/engine/shikona/uniqueness";
 import {
   MAKUSHITA_TSUKEDASHI_RANK,
   SANDANME_TSUKEDASHI_RANK,
@@ -47,6 +48,20 @@ export function materializeCandidateToRikishiInternal(
   if (!world.rikishi.has(candidate.personId)) {
     const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
     const rikishi = convertCandidateToRikishi({ candidate, rng, currentYear: world.year, heyaId });
+
+    // Live-name guard: a candidate name colliding with an active or retired
+    // rikishi re-rolls before the entity lands — duplicate shikona corrupt
+    // lineage surfaces (chronicle, retirement feeds, founder lineage).
+    const uniqueName = ensureUniqueShikona({
+      world,
+      proposed: rikishi.shikona,
+      rng,
+      config: { nationality: rikishi.nationality },
+    });
+    if (uniqueName !== rikishi.shikona) {
+      rikishi.shikona = uniqueName;
+      rikishi.name = uniqueName;
+    }
 
     if (candidate.tsukedashi) {
       // Tsukedashi debut: qualified amateurs enter the banzuke directly —
