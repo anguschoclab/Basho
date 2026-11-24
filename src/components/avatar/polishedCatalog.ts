@@ -4,11 +4,13 @@
  * Resolves runtime {identity, stage} pairs to pre-rendered "polished" avatar
  * PNGs — the Gemini HD pixel-art pass over the procedural 24×24 render.
  *
- * Coverage is the feature-matrix catalog in polishedManifest.json (regenerate
- * via `bun scripts/lib/gen-polished-manifest.ts` after editing the spec in
- * scripts/lib/avatar-sheet.ts or re-running the polish pass). Entities whose
- * resolved signature isn't cataloged return undefined — callers fall back to
- * the procedural SVG from composeAvatar.
+ * Resolution order:
+ *   1. entityManifest.json — per-entity portraits keyed by seed
+ *   2. exact feature signature → a cataloged feature-matrix cell
+ *   3. nearest signature within a weighted distance threshold — reuses the
+ *      closest polished cell, so new entities get polished art built from
+ *      the existing asset palette without any regeneration
+ *   4. undefined → caller falls back to the procedural SVG from composeAvatar
  */
 
 import type { AvatarIdentity, AvatarStage } from "@/engine/types/avatar";
@@ -86,8 +88,39 @@ const STAGE_FIELDS = [
 const cache = new Map<string, string | null>();
 
 /**
- * Resolve an entity's {identity, stage} to a polished asset URL when its full
- * signature matches a cataloged cell; undefined otherwise.
+ * Stage fields that carry gameplay signal — a borrowed polished cell must
+ * agree on these (division hairstyle, attire, accessories) so the portrait
+ * never lies about what the entity is or is wearing.
+ */
+const REQUIRED_STAGE_FIELDS = [
+  "role",
+  "attire",
+  "hairstyle",
+  "glasses",
+  "bandage",
+  "tsuna",
+] as const;
+
+/**
+ * Count of mismatched non-required fields — tiebreak when several cataloged
+ * cells satisfy the required stage fields; picks the most face-similar cell.
+ */
+function minorDistance(
+  entry: ManifestEntry,
+  idRec: Record<string, unknown>,
+  stRec: Record<string, unknown>
+): number {
+  let d = 0;
+  for (const f of ID_FIELDS) if (entry.identity[f] !== idRec[f]) d++;
+  for (const f of STAGE_FIELDS) if (entry.stage[f] !== stRec[f]) d++;
+  return d;
+}
+
+/**
+ * Resolve an entity's {identity, stage} to a polished asset URL: exact seed →
+ * exact signature → closest cell sharing the gameplay-signaled stage fields
+ * (the polished palette becomes the avatar's look; minor facial features may
+ * be borrowed) → undefined for procedural fallback.
  */
 export function resolvePolishedAvatar(
   identity: AvatarIdentity,
@@ -109,16 +142,17 @@ export function resolvePolishedAvatar(
   const cached = cache.get(ck);
   if (cached !== undefined) return cached ?? undefined;
 
-  let hit: string | null = null;
+  let best: { key: string; d: number } | null = null;
   for (const e of ENTRIES) {
-    if (
-      ID_FIELDS.every((f) => e.identity[f] === idRec[f]) &&
-      STAGE_FIELDS.every((f) => e.stage[f] === stRec[f])
-    ) {
-      hit = URL_BY_KEY[e.key] ?? null;
+    if (!REQUIRED_STAGE_FIELDS.every((f) => e.stage[f] === stRec[f])) continue;
+    const d = minorDistance(e, idRec, stRec);
+    if (d === 0) {
+      best = { key: e.key, d: 0 };
       break;
     }
+    if (!best || d < best.d) best = { key: e.key, d };
   }
+  const hit = best ? (URL_BY_KEY[best.key] ?? null) : null;
   cache.set(ck, hit);
   return hit ?? undefined;
 }
