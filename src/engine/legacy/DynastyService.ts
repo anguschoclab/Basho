@@ -39,6 +39,7 @@ import {
   INHERIT_MAKUUCHI_BASHO,
   INHERIT_SEKITORI_BASHO,
   LOAN_ISSUANCE_THRESHOLD,
+  MERGER_THRESHOLD,
 } from "@/constants/engine/economic";
 
 import type { RetiredRikishiSummary } from "@/engine/types/history";
@@ -729,6 +730,9 @@ function triggerSuccessionWithGeneric(
  *
  * Dying means any of:
  * - persistently sanctioned (>= SUCCESSION_CLOSURE_SANCTION_WEEKS in state),
+ * - terminally insolvent (funds <= MERGER_THRESHOLD — the same line the
+ *   post-basho insolvency review uses, so "bankrupt" means dying through
+ *   either door; the JSA does not appoint caretaker elders to corpses),
  * - prestigeBand collapsed ("struggling") AND roster too thin to sustain
  *   keiko (<= SUCCESSION_COLLAPSE_MAX_ROSTER) — a functioning roster always
  *   attracts a caretaker elder in real JSA practice, so prestige collapse
@@ -751,6 +755,7 @@ function closeIfHeirlessAndDying(world: WorldState, heya: Heya, builder: ImpactB
     (heya.welfareState?.weeksInState ?? 0) >= SUCCESSION_CLOSURE_SANCTION_WEEKS;
   const dying =
     persistentlySanctioned ||
+    (heya.funds ?? 0) <= MERGER_THRESHOLD ||
     (heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
       rosterSize <= SUCCESSION_COLLAPSE_MAX_ROSTER) ||
     rosterSize <= SUCCESSION_CLOSURE_MAX_ROSTER;

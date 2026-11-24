@@ -8,10 +8,7 @@
  * liquid wealth elite NPC retirees self-fund foundings from.
  */
 import { describe, it, expect } from "vitest";
-import {
-  payMonthlyEndorsements,
-  applyBashoPatronage,
-} from "@/engine/economy/OutsideIncomeService";
+import { payMonthlyEndorsements, applyBashoPatronage } from "@/engine/economy/OutsideIncomeService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, mockRikishi } from "@tests/unit/engine/utils";
 import {
@@ -85,7 +82,7 @@ describe("applyBashoPatronage", () => {
       marketability: 80,
       economics: econ(0),
     });
-    const world = makeMockWorld({ year: 2026, currentBashoName: "Hatsu" });
+    const world = makeMockWorld({ year: 2026, currentBashoName: "hatsu" });
     world.rikishi.set("y1", yoko);
     world.rikishi.set("m1", mae);
     world.activeRikishiIds.add("y1").add("m1");
@@ -108,7 +105,7 @@ describe("applyBashoPatronage", () => {
           economics: econ(0),
         })
       );
-      w.currentBashoName = "Haru";
+      w.currentBashoName = "haru";
       return w;
     };
     const a = resolveImpacts(mk(), [applyBashoPatronage(mk())]);

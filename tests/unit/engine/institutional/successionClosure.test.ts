@@ -15,7 +15,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Heya } from "@/engine/types/heya";
 import { SUCCESSION_CLOSURE_SANCTION_WEEKS } from "@/constants/engine/succession";
-import { HEYA_FLOOR } from "@/constants/engine/economic";
+import { HEYA_FLOOR, MERGER_THRESHOLD } from "@/constants/engine/economic";
 
 const TRAITS = { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 };
 
@@ -219,6 +219,35 @@ describe("succession closure — dying stable folds instead of trustee", () => {
 
     expect(next.heyas.has("h-thin")).toBe(false);
     expect(next.closedHeyas?.get("h-thin")).toBeDefined();
+  });
+
+  it("closes a terminally insolvent stable at 65 even with a full roster — no caretakers for corpses", () => {
+    // Roster 20 clears every roster threshold; only the debt makes it
+    // dying. Same MERGER_THRESHOLD line as the post-basho insolvency
+    // review: "bankrupt" means dying through whichever door opens first.
+    const { world } = buildWorld({ dyingId: "h-bankrupt", rosterSize: 20 });
+    world.heyas.set("h-bankrupt", {
+      ...world.heyas.get("h-bankrupt")!,
+      funds: MERGER_THRESHOLD - 1,
+    });
+
+    const next = resolveImpacts(world, [DynastyService.tickSuccessionCheck(world)]);
+
+    expect(next.heyas.has("h-bankrupt")).toBe(false);
+    expect(next.closedHeyas?.get("h-bankrupt")).toBeDefined();
+  });
+
+  it("keeps a merely-tight stable alive under a trustee — debt above the line is not death", () => {
+    const { world } = buildWorld({ dyingId: "h-tight", rosterSize: 20 });
+    world.heyas.set("h-tight", {
+      ...world.heyas.get("h-tight")!,
+      funds: MERGER_THRESHOLD + 1,
+    });
+
+    const next = resolveImpacts(world, [DynastyService.tickSuccessionCheck(world)]);
+
+    expect(next.heyas.has("h-tight")).toBe(true);
+    expect(next.heyas.get("h-tight")?.oyakataId).toContain("oyakata_trustee_");
   });
 
   it("never closes the player heya (dynasty frame)", () => {

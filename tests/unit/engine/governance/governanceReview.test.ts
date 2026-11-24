@@ -95,9 +95,24 @@ describe("governanceReview", () => {
     });
 
     it("should execute insolvency merger for NPC stables with extreme debt", () => {
+      // Already carrying a benefactor loan = "beyond saving": no further
+      // rescue is issued, queued equity stays terminal, the merger fires.
       const poorHeya = makeMockHeya("heya-poor", {
         funds: MERGER_THRESHOLD - 1000,
         runwayBand: "desperate",
+        activeLoans: [
+          {
+            id: "LN-existing",
+            type: "benefactor",
+            principal: 1000000,
+            interestRate: 0.06,
+            remainingBalance: 1060000,
+            providerName: "Anonymous Benefactor",
+            monthlyPayment: 30000,
+            issuedAtYear: 1,
+            issuedAtMonth: 1,
+          },
+        ],
       });
       // Add rikishi to avoid triggering low-roster merger logic simultaneously
       world.rikishi.set("r-m1", mockRikishi("r-m1", { heyaId: "heya-poor" }));
@@ -144,6 +159,127 @@ describe("governanceReview", () => {
           (e) => e.type === "GOVERNANCE_RULING" && e.data.incident === "insolvency_merger"
         )
       ).toBe(true);
+    });
+
+    it("merges a terminal-debt heya even when cashflow reports a secure band", () => {
+      // The zombie-stable case from the 25-yr diagnostic: funds pinned at
+      // DEBT_LIMIT but monthlyBurn <= 0 → runwayMonths sentinel →
+      // runwayBand "secure" → the old desperate-gate skipped the whole
+      // insolvency review forever. Terminal equity alone must now reach
+      // the merger check.
+      const zombie = makeMockHeya("h-zombie", {
+        funds: MERGER_THRESHOLD - 500_000,
+        runwayBand: "secure", // cashflow-neutral: income covers a thin roster
+      });
+      for (const rid of ["z1", "z2", "z3", "z4"]) {
+        world.rikishi.set(rid, mockRikishi(rid, { heyaId: "h-zombie" }));
+      }
+      world.heyas.set("h-zombie", zombie);
+
+      world.playerHeyaId = "h-player";
+      for (let i = 0; i < 10; i++) {
+        const id = `f-fill-${i}`;
+        world.heyas.set(id, makeMockHeya(id, { rikishiIds: [`ff${i}1`, `ff${i}2`, `ff${i}3`] }));
+        for (const rid of [`ff${i}1`, `ff${i}2`, `ff${i}3`]) {
+          world.rikishi.set(rid, mockRikishi(rid, { heyaId: id }));
+        }
+      }
+
+      const impact = runGovernanceReview(world);
+
+      const events = impact.events || [];
+      expect(
+        events.some(
+          (e) => e.type === "GOVERNANCE_RULING" && e.data.incident === "insolvency_merger"
+        )
+      ).toBe(true);
+    });
+
+    it("does not stack a second merger when terminal debt and roster collapse coincide", () => {
+      // Terminal debt + roster <= 1 used to queue two executeMerger impacts
+      // for the same source — the roster could scatter between targets.
+      const corpse = makeMockHeya("h-corpse", {
+        funds: MERGER_THRESHOLD - 1000,
+        runwayBand: "desperate",
+        rikishiIds: ["only-1"],
+      });
+      world.rikishi.set("only-1", mockRikishi("only-1", { heyaId: "h-corpse" }));
+      world.heyas.set("h-corpse", corpse);
+      world.playerHeyaId = "h-player";
+      for (let i = 0; i < 10; i++) {
+        const id = `g-fill-${i}`;
+        world.heyas.set(id, makeMockHeya(id, { rikishiIds: [`gf${i}1`, `gf${i}2`, `gf${i}3`] }));
+        for (const rid of [`gf${i}1`, `gf${i}2`, `gf${i}3`]) {
+          world.rikishi.set(rid, mockRikishi(rid, { heyaId: id }));
+        }
+      }
+
+      const impact = runGovernanceReview(world);
+      const mergerEvents = (impact.events || []).filter(
+        (e) => e.type === "GOVERNANCE_RULING" && e.data.incident === "stable_merger"
+      );
+      expect(mergerEvents.length).toBe(1);
+    });
+
+    it("terminal debt ticks insolvencyEvents even with no loan issued", () => {
+      // Cashflow-neutral zombie: no loan is issued (ladder stays gated on
+      // desperate) but the board must still lose confidence eventually —
+      // the counter feeds the forced-succession trigger that is the player
+      // heya's only exit from terminal debt.
+      const zombie = makeMockHeya("h-zombie2", {
+        funds: MERGER_THRESHOLD - 500_000,
+        runwayBand: "secure",
+        oyakataId: "oy-z",
+      });
+      world.oyakata.set("oy-z", {
+        id: "oy-z",
+        heyaId: "h-zombie2",
+        name: "Zed",
+        tenure: { insolvencyEvents: 0 },
+      } as never);
+      for (const rid of ["z21", "z22", "z23", "z24"]) {
+        world.rikishi.set(rid, mockRikishi(rid, { heyaId: "h-zombie2" }));
+      }
+      world.heyas.set("h-zombie2", zombie);
+      world.playerHeyaId = "h-zombie2"; // player-guarded → no merger
+      for (let i = 0; i < 10; i++) {
+        const id = `h-fill-${i}`;
+        world.heyas.set(id, makeMockHeya(id, { rikishiIds: [`hf${i}1`] }));
+        world.rikishi.set(`hf${i}1`, mockRikishi(`hf${i}1`, { heyaId: id }));
+      }
+
+      const impact = runGovernanceReview(world);
+      const newWorld = resolveImpacts(world, [impact]);
+
+      expect(newWorld.heyas.has("h-zombie2")).toBe(true);
+      expect(newWorld.oyakata.get("oy-z")?.tenure?.insolvencyEvents).toBe(1);
+    });
+
+    it("extends ichimon bailout gifts to the player heya", () => {
+      const player = makeMockHeya("h-player", {
+        funds: -1000,
+        runwayBand: "desperate",
+        ichimon: "Dewanoumi",
+        rikishiIds: ["pp1", "pp2", "pp3"],
+      });
+      const patron = makeMockHeya("h-patron", {
+        funds: 500000000,
+        ichimon: "Dewanoumi",
+        rikishiIds: ["pt1", "pt2", "pt3"],
+      });
+      for (const h of [player, patron]) {
+        world.heyas.set(h.id, h);
+        for (const rid of h.rikishiIds ?? []) {
+          world.rikishi.set(rid, mockRikishi(rid, { heyaId: h.id }));
+        }
+      }
+      world.playerHeyaId = "h-player";
+
+      const impact = runGovernanceReview(world);
+      const newWorld = resolveImpacts(world, [impact]);
+
+      expect(newWorld.heyas.get("h-player")!.funds).toBe(-1000 + FACTION_BAILOUT_AMOUNT);
+      expect(newWorld.heyas.get("h-patron")!.funds).toBe(500000000 - FACTION_BAILOUT_AMOUNT);
     });
 
     it("should trigger prestige erosion for sanctioned stables", () => {

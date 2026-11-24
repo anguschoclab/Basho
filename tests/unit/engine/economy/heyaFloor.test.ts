@@ -40,12 +40,29 @@ describe("heya floor — prevent runaway collapse", () => {
   it("allows mergers when heya count is above HEYA_FLOOR", () => {
     const world = makeMockWorld();
 
-    // Create HEYA_FLOOR + 2 heyas
+    // Create HEYA_FLOOR + 2 heyas — the debt heya already carries a
+    // benefactor loan ("beyond saving": no further rescue is issued, so
+    // its queued equity stays terminal and the merger fires).
     for (let i = 0; i < HEYA_FLOOR + 2; i++) {
       const isDebt = i === 0;
       const heya = makeMockHeya(`heya-${i}`, {
         funds: isDebt ? -20_000_000 : 10_000_000,
         runwayBand: isDebt ? "desperate" : "secure",
+        activeLoans: isDebt
+          ? [
+              {
+                id: "LN-existing",
+                type: "benefactor",
+                principal: 1000000,
+                interestRate: 0.06,
+                remainingBalance: 1060000,
+                providerName: "Anonymous Benefactor",
+                monthlyPayment: 30000,
+                issuedAtYear: 1,
+                issuedAtMonth: 1,
+              },
+            ]
+          : undefined,
         rikishiIds: [`r${i}-1`, `r${i}-2`, `r${i}-3`],
       });
       world.heyas.set(`heya-${i}`, heya);

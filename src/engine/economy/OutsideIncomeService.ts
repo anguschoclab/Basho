@@ -73,8 +73,8 @@ export function payMonthlyEndorsements(world: WorldState): StateImpact {
     builder.updateRikishi(rikishiId, {
       economics: {
         ...economics,
-        cash: economics.cash + monthly,
-        totalEarnings: economics.totalEarnings + monthly,
+        cash: (economics.cash ?? 0) + monthly,
+        totalEarnings: (economics.totalEarnings ?? 0) + monthly,
         careerEndorsements: (economics.careerEndorsements ?? 0) + monthly,
       },
     });
@@ -110,8 +110,8 @@ export function applyBashoPatronage(world: WorldState): StateImpact {
     builder.updateRikishi(rikishiId, {
       economics: {
         ...economics,
-        cash: economics.cash + gift,
-        totalEarnings: economics.totalEarnings + gift,
+        cash: (economics.cash ?? 0) + gift,
+        totalEarnings: (economics.totalEarnings ?? 0) + gift,
         careerPatronage: (economics.careerPatronage ?? 0) + gift,
       },
     });

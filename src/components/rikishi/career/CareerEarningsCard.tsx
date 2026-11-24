@@ -210,7 +210,7 @@ function IncomeMixBar({ economics }: { economics: CareerEconomics }) {
           {outsidePct}% outside JSA
         </div>
       </div>
-      <div className="flex h-3 w-full overflow-hidden rounded-sm bg-muted/40">
+      <div className="flex h-3 w-full overflow-hidden rounded-xs bg-muted/40">
         {segments.map(
           (s) =>
             s.value > 0 && (

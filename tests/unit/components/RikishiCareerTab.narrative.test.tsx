@@ -321,6 +321,8 @@ const sampleEconomics = {
   kinboshiCount: 2,
   popularity: 75,
   currentBashoEarnings: 21000,
+  careerEndorsements: 120000,
+  careerPatronage: 40000,
 };
 
 const sampleEarningsProgressionData = [

@@ -189,8 +189,13 @@ describe("kinboshi pipeline — basho conclusion", () => {
     const concluded = resolveImpacts(afterBout, [impact]);
     const cashAfter = concluded.rikishi.get("r-east")!.economics?.cash ?? 0;
 
-    // A 1-win maegashira earns no yusho/sansho/teate — any cash delta would be
-    // the deleted ¥40k stipend resurfacing.
-    expect(cashAfter).toBe(cashBefore);
+    // A 1-win maegashira earns no yusho/sansho/teate — the deleted ¥40k
+    // kinboshi stipend must not resurface. Post-basho patronage gifts
+    // (applyBashoPatronage) DO land here legitimately: maegashira base
+    // ¥400k × starFactor [0.3–1.3] × jitter [0.85–1.15] → ¥102k–¥598k.
+    const delta = cashAfter - cashBefore;
+    expect(delta).not.toBe(40_000);
+    expect(delta).toBeGreaterThanOrEqual(102_000);
+    expect(delta).toBeLessThanOrEqual(598_000);
   });
 });

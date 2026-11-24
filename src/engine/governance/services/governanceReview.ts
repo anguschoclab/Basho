@@ -17,6 +17,7 @@ import { getHeyaRoster, getActiveRikishi, getRikishi } from "@/engine/core/queri
 import { PRESTIGE_ORDER, bandIndex } from "@/engine/history/prestige";
 import { findMergerTarget, executeMerger } from "@/engine/economy/mergers";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { bumpTenure } from "@/engine/legacy/tenure";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import {
   LOAN_ISSUANCE_THRESHOLD,
@@ -32,45 +33,73 @@ import {
 /**
  * Financial insolvency check: scandal report, bailout loans,
  * faction-solidarity gifts, and insolvency-triggered mergers.
+ *
+ * Two entry gates: `distressed` (negative funds + desperate runway) arms
+ * the rescue ladder — scandal optics, loans, ichimon gifts. `terminalDebt`
+ * (funds below MERGER_THRESHOLD) additionally reaches the merger check
+ * regardless of runwayBand: runway is a *cashflow* measure (infinite when
+ * burn ≤ 0), so an equity-dead but cashflow-neutral stable would otherwise
+ * show "secure" and sit at DEBT_LIMIT forever. Below the line the stable
+ * is institutionally dead; whether a rescue queued this review actually
+ * lifted it back above decides the fold.
+ *
+ * @returns true when a merger was queued (caller skips the heya's
+ *   remaining review steps — further evaluations would run on stale state).
  */
 function reviewFinancialInsolvency(
   world: WorldState,
   heya: Heya,
   benefactorsByIchimon: Map<string, Heya[]>,
   builder: ImpactBuilder
-): void {
-  if (heya.funds < 0 && heya.runwayBand === "desperate") {
-    // Queue heya update for riskIndicators
-    builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: true } });
+): boolean {
+  const insolvent = heya.funds < 0;
+  const distressed = insolvent && heya.runwayBand === "desperate";
+  const terminalDebt = heya.funds < MERGER_THRESHOLD;
 
-    const scandalImpact = governance.reportScandal(
-      world,
-      heya.id,
-      "minor",
-      "Financial insolvency at basho end"
-    );
-    builder.merge(scandalImpact);
+  if (!distressed && !terminalDebt) {
+    if (heya.funds > 0 && heya.runwayBand !== "desperate") {
+      // Queue heya update to clear financial risk indicator
+      builder.updateHeya(heya.id, {
+        riskIndicators: { ...heya.riskIndicators, financial: false },
+      });
+    }
+    return false;
+  }
 
-    // Queue event instead of calling EventBus directly
-    builder.logEvent(
-      "GOVERNANCE_RULING",
-      "narrative",
-      {
-        incident: "financial_insolvency",
-        reason: "Stable funds below zero at basho end.",
-        money: heya.funds,
-        status: heya.runwayBand,
-      },
-      { heyaId: heya.id, importance: "headline" }
-    );
+  // Queue heya update for riskIndicators
+  builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: true } });
 
+  const scandalImpact = governance.reportScandal(
+    world,
+    heya.id,
+    "minor",
+    "Financial insolvency at basho end"
+  );
+  builder.merge(scandalImpact);
+
+  // Queue event instead of calling EventBus directly
+  builder.logEvent(
+    "GOVERNANCE_RULING",
+    "narrative",
+    {
+      incident: "financial_insolvency",
+      reason: "Stable funds below zero at basho end.",
+      money: heya.funds,
+      status: heya.runwayBand,
+    },
+    { heyaId: heya.id, importance: "headline" }
+  );
+
+  if (distressed) {
     // === Loans/benefactors escalation (Constitution §4.4) ===
     if (heya.funds < LOAN_ISSUANCE_THRESHOLD) {
       builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
     }
 
-    // v1.7 Faction Solidarity (Traditional Bailouts)
-    if (heya.ichimon && heya.id !== world.playerHeyaId) {
+    // v1.7 Faction Solidarity (Traditional Bailouts) — ichimon support
+    // crosses the player/NPC line; a struggling player stable draws on
+    // clan solidarity exactly like an NPC's.
+    if (heya.ichimon) {
       // Find a wealthy faction-mate to provide a gift
       const potentialBenefactors = benefactorsByIchimon.get(heya.ichimon) || [];
       const benefactor = potentialBenefactors.find((h) => h.id !== heya.id);
@@ -108,33 +137,45 @@ function reviewFinancialInsolvency(
         );
       }
     }
-    // === Insolvency-triggered merger for NPC stables with no rescue available ===
-    // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
-    if (
-      heya.funds < MERGER_THRESHOLD &&
-      heya.id !== world.playerHeyaId &&
-      world.heyas.size > HEYA_FLOOR
-    ) {
-      const targetId = findMergerTarget(world, heya.id);
-      if (targetId) {
-        builder.logEvent(
-          "GOVERNANCE_RULING",
-          "narrative",
-          {
-            incident: "insolvency_merger",
-            reason: "extreme_debt",
-            money: heya.funds,
-          },
-          { heyaId: heya.id, importance: "headline" }
-        );
-        // Queue merger impact
-        builder.merge(executeMerger(world, heya.id, targetId, "financial_insolvency"));
-      }
-    }
-  } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
-    // Queue heya update to clear financial risk indicator
-    builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: false } });
   }
+
+  // === Insolvency-triggered merger for NPC stables with no working rescue ===
+  // Terminal equity alone is the trigger — evaluated on the *queued* funds
+  // so a loan/gift that genuinely lifted the stable above the line earns
+  // its stay this cycle. Blocked when at or below HEYA_FLOOR to prevent
+  // runaway collapse; the player heya instead escalates through the
+  // forced-succession path (insolvencyEvents x3 while still drowning).
+  // Terminal debt itself counts as an insolvency event — the counter
+  // otherwise only ticks on issued loans, which a cashflow-neutral heya
+  // never draws, so a debt-floored stable could sit below the line forever
+  // without the board ever losing confidence in its master.
+  if (terminalDebt) {
+    bumpTenure(world, builder, heya.id, { insolvencyEvents: 1 });
+  }
+  const queuedEquity = builder.build().entities?.heyaUpdates?.get(heya.id)?.funds ?? heya.funds;
+  if (
+    queuedEquity < MERGER_THRESHOLD &&
+    heya.id !== world.playerHeyaId &&
+    world.heyas.size > HEYA_FLOOR
+  ) {
+    const targetId = findMergerTarget(world, heya.id);
+    if (targetId) {
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "narrative",
+        {
+          incident: "insolvency_merger",
+          reason: "extreme_debt",
+          money: heya.funds,
+        },
+        { heyaId: heya.id, importance: "headline" }
+      );
+      // Queue merger impact
+      builder.merge(executeMerger(world, heya.id, targetId, "financial_insolvency"));
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -143,7 +184,7 @@ function reviewFinancialInsolvency(
  * are forced to merge even if financially solvent.
  * Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
  */
-function reviewNonFinancialMerger(world: WorldState, heya: Heya, builder: ImpactBuilder): void {
+function reviewNonFinancialMerger(world: WorldState, heya: Heya, builder: ImpactBuilder): boolean {
   if (
     heya.id !== world.playerHeyaId &&
     world.heyas.size > HEYA_FLOOR &&
@@ -165,8 +206,10 @@ function reviewNonFinancialMerger(world: WorldState, heya: Heya, builder: Impact
         { heyaId: heya.id, importance: "headline" }
       );
       builder.merge(executeMerger(world, heya.id, targetId, "chronic_underperformance"));
+      return true;
     }
   }
+  return false;
 }
 
 /**
@@ -211,7 +254,7 @@ function reviewWelfareSanctions(heya: Heya, builder: ImpactBuilder): void {
  * Merger/closure pressure for extremely small stables (roster < 3).
  * NPC stables at roster ≤ 1 merge; player stables get a warning only.
  */
-function reviewRosterCollapse(world: WorldState, heya: Heya, builder: ImpactBuilder): void {
+function reviewRosterCollapse(world: WorldState, heya: Heya, builder: ImpactBuilder): boolean {
   const rosterSize = getHeyaRoster(world, heya.id).length;
   if (rosterSize < 3) {
     if (heya.id !== world.playerHeyaId) {
@@ -254,6 +297,7 @@ function reviewRosterCollapse(world: WorldState, heya: Heya, builder: ImpactBuil
         const targetId = findMergerTarget(world, heya.id);
         if (targetId) {
           builder.merge(executeMerger(world, heya.id, targetId, "critically_low_roster"));
+          return true;
         }
       }
     } else {
@@ -270,6 +314,7 @@ function reviewRosterCollapse(world: WorldState, heya: Heya, builder: ImpactBuil
       );
     }
   }
+  return false;
 }
 
 /**
@@ -315,8 +360,14 @@ export function runGovernanceReview(world: WorldState): StateImpact {
   for (const heya of stableSort(world.heyas.values(), (x) => x.id)) {
     const scandalScore = heya.scandalScore ?? 0;
 
-    reviewFinancialInsolvency(world, heya, benefactorsByIchimon, builder);
-    reviewNonFinancialMerger(world, heya, builder);
+    // A queued merger deletes this heya — running further review steps on
+    // its stale state can stack a second executeMerger (roster collapse and
+    // terminal debt often coincide), scattering the roster between targets.
+    const merged =
+      reviewFinancialInsolvency(world, heya, benefactorsByIchimon, builder) ||
+      reviewNonFinancialMerger(world, heya, builder);
+    if (merged) continue;
+
     reviewWelfareSanctions(heya, builder);
 
     // === Council scandal reaction ===
@@ -332,7 +383,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
       );
     }
 
-    reviewRosterCollapse(world, heya, builder);
+    if (reviewRosterCollapse(world, heya, builder)) continue;
     reviewOyakataSuccession(world, heya, builder);
 
     // === Post-basho scandal score decay reward for clean basho ===
