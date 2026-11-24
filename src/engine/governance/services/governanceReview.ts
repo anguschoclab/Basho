@@ -104,7 +104,19 @@ function reviewFinancialInsolvency(
       const potentialBenefactors = benefactorsByIchimon.get(heya.ichimon) || [];
       const benefactor = potentialBenefactors.find((h) => h.id !== heya.id);
 
-      if (benefactor) {
+      // The clan only pours money into a stable the gift can actually save.
+      // Read the queued equity — a bailout loan merged above may already have
+      // lifted it to solvency (gift unnecessary), and a stable too deep for
+      // the gift to reach >= 0 is a lost cause the clan writes off (the
+      // terminal-debt merger below does its job). Without the solvency bar
+      // the gift perpetually floated debt-floored stables just above
+      // MERGER_THRESHOLD — the 25-yr diagnostic's zombie stables.
+      const queuedFundsForGate =
+        builder.build().entities?.heyaUpdates?.get(heya.id)?.funds ?? heya.funds;
+      const giftRestoresSolvency =
+        queuedFundsForGate < 0 && queuedFundsForGate + FACTION_BAILOUT_AMOUNT >= 0;
+
+      if (benefactor && giftRestoresSolvency) {
         const giftAmount = FACTION_BAILOUT_AMOUNT;
         // Charge the benefactor per gift drawn. Read the queued funds — the
         // same pattern as the heya-side credit below — so each debit composes

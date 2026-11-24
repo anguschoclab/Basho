@@ -74,6 +74,30 @@ describe("reachable ceiling — generated busts", () => {
     expect(eliteBusts).toBeGreaterThan(20); // ~12% of 400 elite rolls
     expect(weakBusts).toBe(0);
   });
+
+  it("elite-ceiling draws roll the bust chance even when the PA roll lands below the elite mean", () => {
+    // The 25-yr diagnostic's 0% elite-bust rate: the gate keyed on the ROLLED
+    // paMean, so an elite-tier ceiling draw that rolled below 65 escaped the
+    // roll entirely (over half the maegashira tail — its mean IS 64). The
+    // "elite talent" the design busts is the drawn ceiling tier, not a lucky
+    // roll: `eliteCeiling` marks that draw directly.
+    let busts = 0;
+    const world = MockFactory.createWorld({ seed: "elite-ceiling-bust" });
+    const profile = { statModifiers: {} } as any;
+    for (let i = 0; i < 400; i++) {
+      const rng = rngForWorld(world, "gen", `ceil-bust-${i}`);
+      const pkg = rollPotential({
+        rng,
+        rank: "jonokuchi", // ordinary PA band — paMean can never reach 65
+        eliteCeiling: true,
+        profile,
+        developmentProfile: "standard",
+        nationality: "Japan",
+      });
+      if ((pkg as any).bustFraction != null && (pkg as any).bustFraction < 1) busts++;
+    }
+    expect(busts).toBeGreaterThan(20); // ~12% of 400 elite-ceiling rolls
+  });
 });
 
 describe("reachable ceiling — injury derailment", () => {

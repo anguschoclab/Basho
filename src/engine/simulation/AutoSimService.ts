@@ -6,6 +6,7 @@ import { getBashoNumber } from "@/engine/calendar/calendar";
 import { enterPostBasho, enterInterim } from "@/engine/tick/tickDaily";
 import { advanceWithGates } from "@/engine/tick/advanceWithGates";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { runPostBashoInstitutionalSteps } from "@/engine/core/SimulationRunner";
 import { INTERIM_DURATION_DAYS } from "@/constants/engine/recruitmentExtended";
 import { simulateEntireBasho } from "@/engine/simulation/TournamentSimulator";
 import { ChronicleService } from "@/engine/simulation/ChronicleService";
@@ -172,6 +173,14 @@ export function runAutoSim(
       bashoResult.promotions = [...bashoResult.promotions, ...publishedPromotions];
       bashoResult.demotions = [...(bashoResult.demotions ?? []), ...publishedDemotions];
     }
+
+    // Post-basho institutional review — the headless loop bypasses endBasho,
+    // so prestige decay, the insolvency/merger ladder, AI meta drift, and
+    // sponsor/koenkai churn would otherwise never fire (the 25-yr
+    // diagnostic's zombie stables + 30x fund inflation). Placed after the
+    // banzuke publish so runAIMetaDrift sees this basho's history record,
+    // matching the interactive order (concludeBashoCompetition → resolution).
+    currentWorld = runPostBashoInstitutionalSteps(currentWorld);
 
     for (const condition of config.stopConditions) {
       if (checkStopCondition(condition, bashoResult, currentWorld, config)) {

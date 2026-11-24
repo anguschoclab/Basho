@@ -148,8 +148,15 @@ export function rollPotential(args: {
   profile: CombatProfile;
   developmentProfile: DevelopmentProfile;
   nationality?: string;
+  /**
+   * True when this package was drawn from an elite ceiling tier (see
+   * rollCeilingRank) — bust eligibility keys on the drawn tier, not the
+   * rolled paMean: a ceiling draw that rolls below BUST_ELITE_PA_MEAN is
+   * still elite talent and still carries the wonderkid-flop chance.
+   */
+  eliteCeiling?: boolean;
 }): PotentialPackage {
-  const { rng, rank, profile, developmentProfile, nationality } = args;
+  const { rng, rank, profile, developmentProfile, nationality, eliteCeiling } = args;
   const preset = PROFILE_PRESETS[developmentProfile];
   const paCfg = PA_BY_RANK[rank];
 
@@ -219,15 +226,18 @@ export function rollPotential(args: {
     SIZE_POTENTIAL.weightKg.max
   );
 
-  // Bust roll — only elite-PA candidates can "bust" (a low-PA recruit was
-  // never supposed to make it). ~12% of elite talent carries a hidden
-  // bustFraction that truncates the reachable ceiling to 35-65% of PA;
-  // scouts still see the full PA — you only learn he busted in retrospect.
+  // Bust roll — only elite-talent candidates can "bust" (a low-PA recruit
+  // was never supposed to make it). Elite means either an elite ceiling
+  // draw (eliteCeiling) or a fat-tail roll reaching the elite paMean —
+  // gating on paMean alone let over half the elite tail escape the roll.
+  // ~12% of elite talent carries a hidden bustFraction that truncates the
+  // reachable ceiling to 35-65% of PA; scouts still see the full PA — you
+  // only learn he busted in retrospect.
   const paMean =
     (paStats.power + paStats.technique + paStats.speed + paStats.stamina +
       paStats.mental + paStats.adaptability + paStats.balance + paStats.aggression) / 8;
   const bustFraction =
-    paMean >= BUST_ELITE_PA_MEAN && rng.next() < BUST_CHANCE
+    (eliteCeiling === true || paMean >= BUST_ELITE_PA_MEAN) && rng.next() < BUST_CHANCE
       ? BUST_FRACTION_MIN + rng.next() * (BUST_FRACTION_MAX - BUST_FRACTION_MIN)
       : undefined;
 

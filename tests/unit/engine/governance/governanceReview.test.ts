@@ -255,6 +255,148 @@ describe("governanceReview", () => {
       expect(newWorld.oyakata.get("oy-z")?.tenure?.insolvencyEvents).toBe(1);
     });
 
+    it("declines the ichimon gift when it cannot restore solvency — the terminal stable proceeds to merger", () => {
+      // The 25-yr diagnostic's zombie stables: a debt-floored heya (loan
+      // ladder exhausted — benefactor loan held) draws a ¥10M gift that lifts
+      // it to -5.5M — still insolvent, still sinking, but above the -15M
+      // merger line. The clan must write off a stable the gift cannot save.
+      const zombie = makeMockHeya("h-zombie", {
+        funds: MERGER_THRESHOLD - 500_000,
+        runwayBand: "desperate",
+        ichimon: "Dewanoumi",
+        activeLoans: [
+          {
+            id: "LN-benefactor",
+            type: "benefactor",
+            principal: 1000000,
+            interestRate: 0.06,
+            remainingBalance: 1060000,
+            providerName: "Anonymous Benefactor",
+            monthlyPayment: 30000,
+            issuedAtYear: 1,
+            issuedAtMonth: 1,
+          },
+        ],
+      });
+      for (const rid of ["z1", "z2", "z3"]) {
+        world.rikishi.set(rid, mockRikishi(rid, { heyaId: "h-zombie" }));
+      }
+      world.heyas.set("h-zombie", zombie);
+
+      const patron = makeMockHeya("h-patron", {
+        funds: 500_000_000,
+        ichimon: "Dewanoumi",
+        prestigeBand: "respected" as never,
+        rikishiIds: ["pt1", "pt2", "pt3"],
+      });
+      world.heyas.set("h-patron", patron);
+      for (const rid of patron.rikishiIds ?? []) {
+        world.rikishi.set(rid, mockRikishi(rid, { heyaId: "h-patron" }));
+      }
+      world.playerHeyaId = "h-player";
+      world.heyas.set("h-player", makeMockHeya("h-player", { rikishiIds: ["pp1"] }));
+      for (let i = 0; i < 9; i++) {
+        const id = `w-fill-${i}`;
+        world.heyas.set(id, makeMockHeya(id, { rikishiIds: [`wf${i}1`, `wf${i}2`] }));
+        for (const rid of [`wf${i}1`, `wf${i}2`]) {
+          world.rikishi.set(rid, mockRikishi(rid, { heyaId: id }));
+        }
+      }
+
+      const impact = runGovernanceReview(world);
+      const events = impact.events || [];
+
+      // No gift thrown at a lost cause — the patron keeps its money.
+      expect(
+        events.some((e) => e.data?.incident === "ichimon_bailout")
+      ).toBe(false);
+      // Terminal debt reaches the merger check unrescued.
+      expect(
+        events.some(
+          (e) => e.type === "GOVERNANCE_RULING" && e.data.incident === "insolvency_merger"
+        )
+      ).toBe(true);
+    });
+
+    it("still fires the ichimon gift when it restores the stable to solvency", () => {
+      // Rescue preserved for a savable stable: benefactor loan held (ladder
+      // exhausted) but ¥10M clears the debt — the clan genuinely saves it.
+      const drowning = makeMockHeya("h-drowning", {
+        funds: -8_000_000,
+        runwayBand: "desperate",
+        ichimon: "Dewanoumi",
+        activeLoans: [
+          {
+            id: "LN-benefactor",
+            type: "benefactor",
+            principal: 1000000,
+            interestRate: 0.06,
+            remainingBalance: 1060000,
+            providerName: "Anonymous Benefactor",
+            monthlyPayment: 30000,
+            issuedAtYear: 1,
+            issuedAtMonth: 1,
+          },
+        ],
+      });
+      for (const rid of ["d1", "d2", "d3"]) {
+        world.rikishi.set(rid, mockRikishi(rid, { heyaId: "h-drowning" }));
+      }
+      world.heyas.set("h-drowning", drowning);
+
+      const patron = makeMockHeya("h-patron2", {
+        funds: 500_000_000,
+        ichimon: "Dewanoumi",
+        rikishiIds: ["pu1", "pu2", "pu3"],
+      });
+      world.heyas.set("h-patron2", patron);
+      for (const rid of patron.rikishiIds ?? []) {
+        world.rikishi.set(rid, mockRikishi(rid, { heyaId: "h-patron2" }));
+      }
+      world.playerHeyaId = "h-player2";
+
+      const impact = runGovernanceReview(world);
+      const newWorld = resolveImpacts(world, [impact]);
+
+      expect(newWorld.heyas.get("h-drowning")!.funds).toBe(-8_000_000 + FACTION_BAILOUT_AMOUNT);
+      expect(newWorld.heyas.get("h-patron2")!.funds).toBe(500_000_000 - FACTION_BAILOUT_AMOUNT);
+    });
+
+    it("skips the ichimon gift when an earlier rescue already restored solvency", () => {
+      // Loan lands first in the same review: -6M + (6M deficit + ¥10M buffer)
+      // = +10M queued — a gift on top would be ¥10M of the patron's money
+      // spent on a stable that no longer needs it.
+      const needy = makeMockHeya("h-needy", {
+        funds: -6_000_000,
+        runwayBand: "desperate",
+        ichimon: "Dewanoumi",
+      });
+      for (const rid of ["n1", "n2", "n3"]) {
+        world.rikishi.set(rid, mockRikishi(rid, { heyaId: "h-needy" }));
+      }
+      world.heyas.set("h-needy", needy);
+
+      const patron = makeMockHeya("h-patron3", {
+        funds: 500_000_000,
+        ichimon: "Dewanoumi",
+        rikishiIds: ["px1", "px2", "px3"],
+      });
+      world.heyas.set("h-patron3", patron);
+      for (const rid of patron.rikishiIds ?? []) {
+        world.rikishi.set(rid, mockRikishi(rid, { heyaId: "h-patron3" }));
+      }
+      world.playerHeyaId = "h-player3";
+
+      const impact = runGovernanceReview(world);
+      const newWorld = resolveImpacts(world, [impact]);
+      const events = impact.events || [];
+
+      expect(events.some((e) => e.data?.incident === "ichimon_bailout")).toBe(false);
+      expect(newWorld.heyas.get("h-patron3")!.funds).toBe(500_000_000);
+      // The loan rescue did land.
+      expect(newWorld.heyas.get("h-needy")!.funds).toBeGreaterThan(0);
+    });
+
     it("extends ichimon bailout gifts to the player heya", () => {
       const player = makeMockHeya("h-player", {
         funds: -1000,

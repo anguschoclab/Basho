@@ -74,3 +74,35 @@ export function runPostBashoResolution(world: WorldState): WorldState {
   // Return the final world so callers can use it immutably
   return finalWorld;
 }
+
+/**
+ * The institution-facing slice of post-basho resolution: prestige decay,
+ * governance review (the insolvency → loan → merger ladder), AI meta drift,
+ * sponsor churn, and koenkai band correction.
+ *
+ * The interactive path runs these inside runPostBashoResolution at endBasho.
+ * AutoSim's basho loop bypasses endBasho entirely, so it calls this directly
+ * after its banzuke publish — the publish injects the basho's history record
+ * that runAIMetaDrift reads, matching the interactive order where
+ * concludeBashoCompetition writes it first. Without this step headless
+ * worlds never see mergers, sponsor churn, or prestige drift (25-yr
+ * diagnostic: debt-floored zombie stables, sponsor income saturating to
+ * ~¥300M/yr/stable).
+ *
+ * Retirements, elections, records, and media are deliberately excluded —
+ * the tick pipeline already covers them in both paths.
+ */
+export function runPostBashoInstitutionalSteps(world: WorldState): WorldState {
+  const rng = rngForWorld(
+    world,
+    "postBasho",
+    `sponsorChurn_${world.year}_${world.currentBasho?.bashoName ?? world.week}`
+  );
+  return sequenceImpacts(world, [
+    (w) => runPrestigeDecay(w),
+    (w) => runGovernanceReview(w),
+    (w) => runAIMetaDrift(w),
+    (w) => processSponsorChurn(w, rng),
+    (w) => adjustKoenkaiBandToPrestige(w),
+  ]).world;
+}

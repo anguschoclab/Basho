@@ -191,11 +191,16 @@ export function generateCandidate(args: {
   // first — debut rank and potential ceiling are not the same thing. The
   // thin elite tail supplies sanyaku-calibre material (measured 0 ≥72 PA
   // in 400 under the flat jonokuchi roll).
+  const ceilingRank = rollCeilingRank(rng);
   const paPkg = rollPotential({
     rng,
-    rank: rollCeilingRank(rng),
+    rank: ceilingRank,
     profile,
     developmentProfile: devProfileForRoll,
+    // The drawn ceiling tier is the "elite talent" marker for the bust roll —
+    // gating on the rolled paMean alone let elite draws that landed below
+    // BUST_ELITE_PA_MEAN escape the wonderkid-flop chance entirely.
+    eliteCeiling: ceilingRank !== "jonokuchi",
   });
 
   // Apply Prodigy bonus to stat ceilings
