@@ -58,3 +58,69 @@ describe("per-rikishi diet (P3)", () => {
     expect(contrib(none)).toBe(0);
   });
 });
+
+describe("expected-injury floor", () => {
+  it("a lone injury inside the roster allowance produces no welfare delta", () => {
+    // Regression: without the floor ANY injured rikishi produced +risk/week
+    // and healthy drift only fired at literally zero injuries, so every
+    // stable ratcheted to the sanction threshold (25-yr run: 16/18 heyas
+    // sanctioned → recruitment freeze → population collapse).
+    const ids = Array.from({ length: 16 }, (_, i) => `r${i}`);
+    const heya = MockFactory.createHeya("h1", {
+      funds: 10_000_000,
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
+    });
+    const rikishi = ids.map((id, i) => {
+      const r = MockFactory.createRikishi(id, { heyaId: "h1" });
+      if (i === 0) r.injured = true;
+      return r;
+    });
+    heya.rikishiIds = ids;
+    heya.welfareState = {
+      welfareRisk: 0,
+      morale: 50,
+      complianceState: "compliant",
+      weeksInState: 0,
+    };
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", heya]]),
+      rikishi: new Map(rikishi.map((r) => [r.id, r])),
+      activeRikishiIds: new Set(ids),
+    });
+
+    const { delta } = calculateWeeklyWelfareDelta(world, heya, heya.welfareState!);
+    expect(delta).toBeLessThanOrEqual(0);
+  });
+
+  it("pressure beyond the allowance still accrues risk", () => {
+    const ids = Array.from({ length: 16 }, (_, i) => `r${i}`);
+    const heya = MockFactory.createHeya("h1", {
+      funds: 10_000_000,
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
+    });
+    const rikishi = ids.map((id, i) => {
+      const r = MockFactory.createRikishi(id, { heyaId: "h1" });
+      // 3 serious injuries = pressure 24, far above the 2-injury allowance
+      if (i < 3) {
+        r.injured = true;
+        r.injuryStatus = { isInjured: true, severity: "serious" } as never;
+      }
+      return r;
+    });
+    heya.rikishiIds = ids;
+    heya.welfareState = {
+      welfareRisk: 0,
+      morale: 50,
+      complianceState: "compliant",
+      weeksInState: 0,
+    };
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", heya]]),
+      rikishi: new Map(rikishi.map((r) => [r.id, r])),
+      activeRikishiIds: new Set(ids),
+    });
+
+    const { delta } = calculateWeeklyWelfareDelta(world, heya, heya.welfareState!);
+    expect(delta).toBeGreaterThan(0);
+  });
+});

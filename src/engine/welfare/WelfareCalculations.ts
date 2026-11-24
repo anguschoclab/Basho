@@ -98,7 +98,21 @@ export function calculateWeeklyWelfareDelta(
   state: WelfareState
 ): { delta: number; reasons: string[] } {
   const reasons: string[] = [];
-  const { pressure, seriousCount, negligenceCount } = computeInjuryPressure(world, heya);
+  const { pressure: rawPressure, seriousCount, negligenceCount } = computeInjuryPressure(
+    world,
+    heya
+  );
+
+  // Expected-injury floor: a stable always carries some knocks — one
+  // minor-injury-equivalent per ~8 men is background noise, not a welfare
+  // issue. Without the floor ANY injury produced +risk/week, and since the
+  // healthy drift only fires at literally zero injuries, every stable
+  // ratcheted to the sanction threshold within a few years (25-yr
+  // diagnostic: 16/18 heyas sanctioned → recruitment allocator skipped
+  // them → population collapse).
+  const rosterSize = EntityCollection.getHeyaRoster(world, heya.id).length;
+  const allowance = Math.floor(rosterSize / 8) * INJURY_PRESSURE_MINOR;
+  const pressure = Math.max(0, rawPressure - allowance);
 
   let delta = clamp(Math.round(pressure / WELFARE_PRESSURE_DIVISOR), 0, WELFARE_DELTA_MAX);
   if (seriousCount > 0) {
