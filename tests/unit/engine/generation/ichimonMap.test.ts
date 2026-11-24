@@ -37,17 +37,36 @@ describe("genesis ichimon alignment", () => {
     // Each of these is a fixed real-world clan alignment, not a coin flip.
     expect(byName.get("Kokonoe")).toBe("Takasago");
     expect(byName.get("Hakkaku")).toBe("Takasago");
+    expect(byName.get("Nishikido")).toBe("Takasago");
     expect(byName.get("Sakaigawa")).toBe("Dewanoumi");
     expect(byName.get("Tamanoi")).toBe("Dewanoumi");
     expect(byName.get("Futagoyama")).toBe("Dewanoumi");
+    expect(byName.get("Ikazuchi")).toBe("Dewanoumi");
+    expect(byName.get("Otowayama")).toBe("Dewanoumi");
     expect(byName.get("Ajigawa")).toBe("Isegahama");
     expect(byName.get("Asakayama")).toBe("Isegahama");
-    expect(byName.get("Miyagino")).toBe("Isegahama");
-    expect(byName.get("Minato")).toBe("Tokitsukaze");
+    expect(byName.get("Asahiyama")).toBe("Isegahama");
+    expect(byName.get("Oshima")).toBe("Isegahama");
+    expect(byName.get("Oitekaze")).toBe("Tokitsukaze");
+    expect(byName.get("Isenoumi")).toBe("Tokitsukaze");
     expect(byName.get("Arashio")).toBe("Tokitsukaze");
+    expect(byName.get("Shikoroyama")).toBe("Tokitsukaze");
     expect(byName.get("Sadogatake")).toBe("Nishonoseki");
     expect(byName.get("Takadagawa")).toBe("Nishonoseki");
     expect(byName.get("Shibatayama")).toBe("Nishonoseki");
+    expect(byName.get("Minato")).toBe("Nishonoseki");
+    expect(byName.get("Kataonami")).toBe("Nishonoseki");
+    expect(byName.get("Hanaregoma")).toBe("Nishonoseki");
+    expect(byName.get("Nakamura")).toBe("Nishonoseki");
+    expect(byName.get("Onomatsu")).toBe("Nishonoseki");
+    expect(byName.get("Takekuma")).toBe("Nishonoseki");
+    expect(byName.get("Tokiwayama")).toBe("Nishonoseki");
+    expect(byName.get("Minatogawa")).toBe("Nishonoseki");
+    expect(byName.get("Nishiiwa")).toBe("Nishonoseki");
+    expect(byName.get("Oshiogawa")).toBe("Nishonoseki");
+    expect(byName.get("Hidenoyama")).toBe("Nishonoseki");
+    expect(byName.get("Naruto")).toBe("Nishonoseki");
+    expect(byName.get("Tagonoura")).toBe("Nishonoseki");
   });
 
   it("namesake stables sit inside their own clan", () => {

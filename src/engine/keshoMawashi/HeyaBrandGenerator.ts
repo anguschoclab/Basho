@@ -41,7 +41,7 @@ const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: CrestMoti
     colors: ["#FF4500", "#FFFFFF", "#FFD700"],
     motifs: ["dragon", "waves", "rising_sun"],
   },
-  Minezaki: { colors: ["#556B2F", "#FFFFFF", "#DAA520"], motifs: ["pine", "mountain", "temple"] },
+  Hanaregoma: { colors: ["#800080", "#FFFFFF", "#FFD700"], motifs: ["tiger", "waves", "temple"] },
   Tamanoi: { colors: ["#4682B4", "#FFFFFF", "#B8860B"], motifs: ["waves", "crane", "dragon"] },
   Isenoumi: {
     colors: ["#000080", "#FFFFFF", "#FFD700"],
@@ -54,15 +54,13 @@ const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: CrestMoti
     colors: ["#696969", "#FFFFFF", "#FFD700"],
     motifs: ["mountain", "pine", "temple"],
   },
-  Michinoku: { colors: ["#2E8B57", "#FFFFFF", "#FFD700"], motifs: ["dragon", "bamboo", "waves"] },
-  Miyagino: {
-    colors: ["#4169E1", "#FFFFFF", "#FFD700"],
-    motifs: ["phoenix", "rising_sun", "sakura"],
-  },
-  Oigami: {
-    colors: ["#DC143C", "#FFFFFF", "#FFD700"],
-    motifs: ["lightning", "lightning", "dragon"],
-  },
+  Minatogawa: { colors: ["#4169E1", "#FFFFFF", "#C0C0C0"], motifs: ["waves", "temple", "crane"] },
+  Nakamura: { colors: ["#B8860B", "#FFFFFF", "#1E3A5F"], motifs: ["tiger", "mountain", "pine"] },
+  Nishiiwa: { colors: ["#556B2F", "#FFFFFF", "#DAA520"], motifs: ["mountain", "pine", "tiger"] },
+  Onomatsu: { colors: ["#8B4513", "#FFFFFF", "#FFD700"], motifs: ["pine", "temple", "dragon"] },
+  Oshiogawa: { colors: ["#4682B4", "#FFFFFF", "#B0C4DE"], motifs: ["waves", "carp", "temple"] },
+  Takekuma: { colors: ["#DC143C", "#FFFFFF", "#1E3A5F"], motifs: ["dragon", "tiger", "waves"] },
+  Tokiwayama: { colors: ["#008B8B", "#FFFFFF", "#FFD700"], motifs: ["bamboo", "temple", "crane"] },
   Tagonoura: { colors: ["#006400", "#FFFFFF", "#DAA520"], motifs: ["pine", "mountain", "crane"] },
   Naruto: { colors: ["#FF6347", "#FFFFFF", "#000080"], motifs: ["waves", "dragon", "carp"] },
   Arashio: { colors: ["#4682B4", "#FFFFFF", "#B0C4DE"], motifs: ["waves", "dragon", "lightning"] },
@@ -70,15 +68,15 @@ const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: CrestMoti
     colors: ["#8B4513", "#FFD700", "#FFFFFF"],
     motifs: ["mountain", "rising_sun", "temple"],
   },
-  Nakagawa: { colors: ["#1E90FF", "#FFFFFF", "#FFD700"], motifs: ["dragon", "waves", "crane"] },
+  Ikazuchi: { colors: ["#1E90FF", "#FFFFFF", "#FFD700"], motifs: ["lightning", "waves", "crane"] },
   Shikihide: {
     colors: ["#9370DB", "#FFFFFF", "#FFD700"],
     motifs: ["sakura", "dragon", "sakura"],
   },
   Yamahibiki: { colors: ["#2F4F4F", "#FFFFFF", "#C0C0C0"], motifs: ["mountain", "dragon", "pine"] },
-  Irumagawa: { colors: ["#4169E1", "#FFFFFF", "#87CEEB"], motifs: ["dragon", "dragon", "crane"] },
-  Hanahago: { colors: ["#FF69B4", "#FFFFFF", "#FFD700"], motifs: ["sakura", "sakura", "dragon"] },
-  Shirane: { colors: ["#708090", "#FFFFFF", "#C0C0C0"], motifs: ["mountain", "dragon", "pine"] },
+  Otowayama: { colors: ["#708090", "#FFFFFF", "#DAA520"], motifs: ["mountain", "tiger", "pine"] },
+  Asahiyama: { colors: ["#FFD700", "#8B0000", "#FFFFFF"], motifs: ["rising_sun", "mountain", "dragon"] },
+  Oshima: { colors: ["#000080", "#FFD700", "#FFFFFF"], motifs: ["waves", "tiger", "dragon"] },
   Futagoyama: {
     colors: ["#228B22", "#FFFFFF", "#FFD700"],
     motifs: ["mountain", "dragon", "dragon"],
@@ -88,24 +86,17 @@ const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: CrestMoti
     colors: ["#B22222", "#FFFFFF", "#FFD700"],
     motifs: ["waterfall", "temple", "dragon"],
   },
-  Magaki: { colors: ["#006400", "#FFFFFF", "#DAA520"], motifs: ["dragon", "temple", "pine"] },
-  Katsushika: { colors: ["#4A0080", "#FFFFFF", "#FFD700"], motifs: ["dragon", "dragon", "waves"] },
-  Oshogatsu: {
-    colors: ["#CC0000", "#FFD700", "#FFFFFF"],
-    motifs: ["dragon", "dragon", "pine"],
+  Oitekaze: { colors: ["#CC0000", "#FFFFFF", "#1E3A5F"], motifs: ["lightning", "waves", "tiger"] },
+  Nishikido: { colors: ["#4B0082", "#FFFFFF", "#FFD700"], motifs: ["dragon", "bamboo", "waves"] },
+  Hidenoyama: {
+    colors: ["#2F4F4F", "#FFD700", "#FFFFFF"],
+    motifs: ["mountain", "pine", "dragon"],
   },
-  Chiganoura: { colors: ["#008B8B", "#FFFFFF", "#FFD700"], motifs: ["dragon", "waves", "carp"] },
   Minato: { colors: ["#000080", "#FFFFFF", "#FFD700"], motifs: ["dragon", "carp", "waves"] },
   Shikoroyama: {
     colors: ["#556B2F", "#FFFFFF", "#DAA520"],
     motifs: ["dragon", "mountain", "dragon"],
   },
-  Kagamiyama: {
-    colors: ["#1E90FF", "#FFFFFF", "#C0C0C0"],
-    motifs: ["dragon", "mountain", "dragon"],
-  },
-  Hanakago: { colors: ["#FF1493", "#FFFFFF", "#FFD700"], motifs: ["sakura", "dragon", "sakura"] },
-  Oguruma: { colors: ["#8B4513", "#FFD700", "#FFFFFF"], motifs: ["dragon", "dragon", "temple"] },
 };
 
 /** Default colors for heyas without specific traditions */

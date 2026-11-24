@@ -161,52 +161,63 @@ export function createStables(worldRng: SeededRNG): {
   const heyaMap = new Map<string, Heya>();
   const oyakataMap = new Map<string, Oyakata>();
 
+  // The real 45 active stables (JSA, 2026 season), ordered by stature so
+  // the index-derived tier bands land on the right rooms — list position
+  // drives statureBand, which in turn weights the prestige roster pull
+  // (band^2+4) and prestige/reputation/funds in createHeyaWithOyakata.
   const HEYA_NAMES = [
-    "Dewanoumi",
-    "Nishonoseki",
-    "Takasago",
-    "Tokitsukaze",
+    // legendary (tier < 0.1) — the powerhouse rooms
     "Isegahama",
+    "Takasago",
     "Sakaigawa",
-    "Kasugano",
-    "Kokonoe",
-    "Kise",
-    "Musashigawa",
-    "Kataonami",
-    "Onoe",
-    "Tatsunami",
-    "Minezaki",
     "Tamanoi",
-    "Isenoumi",
-    "Ajigawa",
+    "Nishonoseki",
+    // powerful (tier < 0.25)
+    "Oitekaze",
+    "Kokonoe",
+    "Takadagawa",
+    "Kise",
+    "Futagoyama",
+    "Dewanoumi",
+    // established (tier < 0.5) — incl. Hakkaku: small roster but the
+    // chairman's stable carries real institutional weight
+    "Kasugano",
+    "Musashigawa",
     "Sadogatake",
-    "Hakkaku",
+    "Tatsunami",
     "Shibatayama",
-    "Michinoku",
-    "Miyagino",
-    "Oigami",
+    "Asakayama",
     "Tagonoura",
     "Naruto",
-    "Arashio",
-    "Asakayama",
-    "Nakagawa",
+    "Hakkaku",
+    "Ajigawa",
+    "Fujishima",
+    // rebuilding (tier < 0.7)
+    "Tokitsukaze",
+    "Onoe",
+    "Kataonami",
     "Shikihide",
     "Yamahibiki",
-    "Irumagawa",
-    "Hanahago",
-    "Shirane",
-    "Futagoyama",
-    "Fujishima",
-    "Takadagawa",
-    "Magaki",
-    "Katsushika",
-    "Oshogatsu",
-    "Chiganoura",
+    "Otowayama",
+    "Ikazuchi",
+    "Hanaregoma",
+    "Hidenoyama",
+    // fragile (tier < 0.85)
     "Minato",
+    "Minatogawa",
+    "Nishiiwa",
+    "Onomatsu",
+    "Oshiogawa",
+    "Arashio",
+    "Isenoumi",
+    // new (rest) — recent foundings and the smallest rooms
+    "Nakamura",
+    "Takekuma",
+    "Tokiwayama",
+    "Oshima",
+    "Asahiyama",
+    "Nishikido",
     "Shikoroyama",
-    "Kagamiyama",
-    "Hanakago",
-    "Oguruma",
   ];
 
   HEYA_NAMES.forEach((name, i) => {

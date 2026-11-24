@@ -7,7 +7,7 @@ for (const heya of world.heyas.values()) {
   const ids = heya.rikishiIds ?? [];
   sizes.push(ids.length);
   sekitori[heya.name] = ids.filter((id) => {
-    const d = world.rikishi.get(id)?.rank?.division ?? world.rikishi.get(id)?.division;
+    const d = world.rikishi.get(id)?.division;
     return d === "makuuchi" || d === "juryo";
   }).length;
 }
