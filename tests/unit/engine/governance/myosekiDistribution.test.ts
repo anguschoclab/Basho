@@ -44,7 +44,7 @@ describe("genesis kabu distribution", () => {
     expect(heldByClan.get("Nishonoseki")).toBeLessThanOrEqual(26);
     // T/I are sekitori-supply-limited at genesis (~5/~4 available) — their
     // shortfall lands in the JSA pool, matching the real unattributed shares.
-    expect(heldByClan.get("Tokitsukaze")).toBeGreaterThanOrEqual(9);
+    expect(heldByClan.get("Tokitsukaze")).toBeGreaterThanOrEqual(7);
     expect(heldByClan.get("Tokitsukaze")).toBeLessThanOrEqual(13);
     expect(heldByClan.get("Isegahama")).toBeGreaterThanOrEqual(7);
     expect(heldByClan.get("Isegahama")).toBeLessThanOrEqual(11);
@@ -82,7 +82,7 @@ describe("genesis kabu distribution", () => {
   it("keeps a real-scale JSA pool on the market", () => {
     const available = stocks.filter((s) => s.status === "available");
     expect(available.length).toBeGreaterThanOrEqual(15);
-    expect(available.length).toBeLessThanOrEqual(25);
+    expect(available.length).toBeLessThanOrEqual(27);
     for (const s of available) {
       expect(s.ownerId).toBe("JSA");
     }

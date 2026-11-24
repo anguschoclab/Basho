@@ -12,7 +12,12 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
-import { rollWeeklyInjury } from "@/engine/health/InjuryService";
+import {
+  rollWeeklyInjury,
+  SERIOUS_INJURY_DERAIL_MIN,
+  SERIOUS_INJURY_DERAIL_MAX,
+  SERIOUS_INJURY_DERAIL_FLOOR,
+} from "@/engine/health/InjuryService";
 import { tickRikishiRecovery } from "@/engine/health/RecoveryService";
 import { RNGRegistry } from "@/engine/core/RNGRegistry";
 import { getHeyaStaffBonuses } from "@/engine/economy/staff";
@@ -145,6 +150,19 @@ function processInjuryRoll(
       weeksToHeal: result.weeksOut,
     };
     r.injury = r.injuryStatus;
+
+    // Career derailment — serious injuries permanently shave the reachable
+    // ceiling, compounding on recurrence (same mechanic as in-bout).
+    if (result.severity === "serious" && r.potential) {
+      const prior = r.potential.injuryDerailment ?? 1.0;
+      const loss =
+        SERIOUS_INJURY_DERAIL_MIN +
+        seededRng.next() * (SERIOUS_INJURY_DERAIL_MAX - SERIOUS_INJURY_DERAIL_MIN);
+      r.potential = {
+        ...r.potential,
+        injuryDerailment: Math.max(SERIOUS_INJURY_DERAIL_FLOOR, prior * (1 - loss)),
+      };
+    }
 
     builder.logEvent(
       "LIFECYCLE_EVENT",
