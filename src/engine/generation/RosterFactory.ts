@@ -6,7 +6,6 @@
  */
 
 import { SeededRNG } from "@/engine/core/rng";
-import { pushUniqueId } from "@/engine/core/idIntegrity";
 import { Heya } from "@/engine/types/heya";
 import { Oyakata } from "@/engine/types/oyakata";
 import { Rikishi } from "@/engine/types/rikishi";
@@ -158,6 +157,23 @@ export function createRosters(
 ): Map<string, Rikishi> {
   const rikishiMap = new Map<string, Rikishi>();
   const heyaList = Array.from(heyaMap.values());
+  // Membership mirrors for the bulk append loop — pushUniqueId copies the
+  // array per call (O(size²) churn); a per-heya Set is O(1) per append.
+  const membership = new Map<string, Set<string>>();
+  const members = (h: Heya): Set<string> => {
+    let s = membership.get(h.id);
+    if (!s) {
+      s = new Set(h.rikishiIds ?? []);
+      membership.set(h.id, s);
+    }
+    return s;
+  };
+  const appendRikishi = (h: Heya, id: string) => {
+    const s = members(h);
+    if (s.has(id)) return;
+    s.add(id);
+    (h.rikishiIds ??= []).push(id);
+  };
   // §5.1 — at most one foreign-slot rikishi per beya at ANY time, including
   // world generation. Track occupancy as rosters are filled.
   const foreignOccupied = new Set<string>();
@@ -252,7 +268,7 @@ export function createRosters(
       assigned = foreignResolution.assigned;
 
       r.heyaId = assigned.id;
-      assigned.rikishiIds = pushUniqueId(assigned.rikishiIds || [], r.id);
+      appendRikishi(assigned, r.id);
       rikishiMap.set(r.id, r);
     }
   });

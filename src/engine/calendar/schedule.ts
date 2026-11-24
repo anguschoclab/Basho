@@ -325,19 +325,29 @@ function mintMaezumoEntrant(world: WorldState, basho: BashoState, index: number)
 }
 
 /**
- * One-pass map of resolved bouts per rikishi this basho. Replaces the old
- * per-rikishi match rescan — the hachiban-zumo scan asks the same question
- * for every lower-division candidate, so the map costs O(matches) once
- * instead of O(rikishi × matches) per day.
+ * One pass over `basho.matches` yielding both per-day participant sets and
+ * resolved-bout counts per rikishi. Replaces the old per-rikishi match
+ * rescan — the hachiban-zumo scan asks the same question for every
+ * lower-division candidate, so the index costs O(matches) once instead of
+ * O(rikishi × matches) per day.
  */
-function completedBoutCounts(basho: BashoState): Map<string, number> {
-  const counts = new Map<string, number>();
+function matchDayIndex(
+  basho: BashoState,
+  day: number
+): { busyToday: Set<string>; boutCounts: Map<string, number> } {
+  const busyToday = new Set<string>();
+  const boutCounts = new Map<string, number>();
   for (const m of basho.matches) {
-    if (!m.result) continue;
-    counts.set(m.eastRikishiId, (counts.get(m.eastRikishiId) ?? 0) + 1);
-    counts.set(m.westRikishiId, (counts.get(m.westRikishiId) ?? 0) + 1);
+    if (m.day === day) {
+      busyToday.add(m.eastRikishiId);
+      busyToday.add(m.westRikishiId);
+    }
+    if (m.result) {
+      boutCounts.set(m.eastRikishiId, (boutCounts.get(m.eastRikishiId) ?? 0) + 1);
+      boutCounts.set(m.westRikishiId, (boutCounts.get(m.westRikishiId) ?? 0) + 1);
+    }
   }
-  return counts;
+  return { busyToday, boutCounts };
 }
 
 /** Pick the hachiban-zumo filler — a lower-division man finishing his 7th. */
@@ -376,12 +386,10 @@ export function planDivisionCallups(args: {
   const scheduledSet = new Set<Division>(args.divisions ?? [...CALLUP_CASCADE_ORDER]);
   const order = CALLUP_CASCADE_ORDER.filter((d) => scheduledSet.has(d)) as Division[];
 
-  const busyToday = new Set(
-    basho.matches.filter((m) => m.day === day).flatMap((m) => [m.eastRikishiId, m.westRikishiId])
-  );
   // Single O(matches) pass — the hachiban-zumo scan would otherwise re-scan
-  // every resolved match per lower-division candidate (~1.5M compares/day).
-  const boutCounts = completedBoutCounts(basho);
+  // every resolved match per lower-division candidate (~1.5M compares/day),
+  // and the participant filter avoids a second pass for busyToday.
+  const { busyToday, boutCounts } = matchDayIndex(basho, day);
   const excluded = (d: Division) => plan.excludeIds.get(d) ?? new Set<string>();
   const excludedEverywhere = () => {
     const all = new Set<string>();
