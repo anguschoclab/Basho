@@ -25,6 +25,25 @@ import {
 } from "@/constants/engine/recruitment";
 
 /**
+ * Diagnostic counters for the NPC intake funnel — read/diffed by sim probes
+ * (probe-deferred-issues.ts) to decompose foreign-signing attrition into
+ * pool-visibility, age/slot gates, bid volume, and auction wins. Cumulative;
+ * probes snapshot per year. Keys:
+ *   `f_*` — organic path (fillVacanciesForNPC)
+ *   `b_*` — bidding path (fillVacanciesForNPCWithBidding)
+ *   `<p>_vis`   visible+available candidates seen per pool
+ *   `<p>_hid`   pool candidates not yet visible (undiscovered)
+ *   `*_skip_age` age-gate skips · `*_skip_slot` §5.4 slot-gate skips
+ *   `b_bid_*`   bids placed (count + `b_amt_*` yen-sum per class)
+ *   `*_win_*`   signings by class (foreign slot-consuming / dual / domestic)
+ *   `b_void_*`  winning bids voided at resolution (age / slot / vacancy)
+ */
+export const INTAKE_DIAG: Record<string, number> = {};
+function diag(key: string, n = 1): void {
+  INTAKE_DIAG[key] = (INTAKE_DIAG[key] ?? 0) + n;
+}
+
+/**
  * Re-issues the accumulated rikishiIds roster after a materialization. The
  * per-call write inside `materializeCandidateToRikishiInternal` reads the
  * pre-impact heya, so without this the second+ recruit in one batch
@@ -58,6 +77,16 @@ export function fillVacanciesForNPC(
 
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `npc_fill_${world.week}`);
 
+  // Pool funnel snapshot (once per call — visibility is world-state, not
+  // per-heya): which candidates can even enter the funnel.
+  for (const pt of ["high_school", "university", "foreign"] as const) {
+    const pool = tp.pools[pt];
+    for (const cId of pool.candidatesVisible) {
+      if (tp.candidates[cId]?.availabilityState === "available") diag(`f_vis_${pt}`);
+    }
+    diag(`f_hid_${pt}`, pool.candidatesHidden.length);
+  }
+
   const sortedHeyas = Object.keys(targetHeyas).sort((a, b) => {
     const heyaA = getHeya(world, a);
     const heyaB = getHeya(world, b);
@@ -90,9 +119,15 @@ export function fillVacanciesForNPC(
           const c = currentCandidates[cId];
           if (!c || c.availabilityState !== "available") continue;
           // Age gate (V20-E15): over-age candidates can't legally debut.
-          if (!isCandidateAgeEligible(world, c)) continue;
+          if (!isCandidateAgeEligible(world, c)) {
+            if (pt === "foreign") diag("f_skip_age");
+            continue;
+          }
           // Slot occupied → only dual citizens may still appear (§5.4).
-          if (hasForeigner && candidateConsumesForeignSlot(c)) continue;
+          if (hasForeigner && candidateConsumesForeignSlot(c)) {
+            diag("f_skip_slot");
+            continue;
+          }
           availableCandidates.push(cId);
         }
       }
@@ -125,7 +160,14 @@ export function fillVacanciesForNPC(
         const bestCandidate = candidatesWithScores[pickIdx];
         const cId = bestCandidate.cId;
         const c = bestCandidate.c;
-        if (candidateConsumesForeignSlot(c)) hasForeigner = true;
+        if (candidateConsumesForeignSlot(c)) {
+          hasForeigner = true;
+          diag("f_win_foreign");
+        } else if (c.dualCitizen) {
+          diag("f_win_dual");
+        } else {
+          diag("f_win_domestic");
+        }
 
         const updatedCandidate = {
           ...c,
@@ -201,8 +243,10 @@ export function fillVacanciesForNPCWithBidding(
       const c = tp.candidates[cId];
       if (c && c.availabilityState === "available") {
         allVisibleCandidates.push(c);
+        diag(`b_vis_${poolType}`);
       }
     }
+    diag(`b_hid_${poolType}`, pool.candidatesHidden.length);
   }
 
   const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }> = [];
@@ -248,9 +292,15 @@ export function fillVacanciesForNPCWithBidding(
     for (const candidate of allVisibleCandidates) {
       // §5.4 hard gate: slot occupied → slot-consuming candidates are invisible.
       // Dual citizens are exempt and may always appear.
-      if (slotOccupied && candidateConsumesForeignSlot(candidate)) continue;
+      if (slotOccupied && candidateConsumesForeignSlot(candidate)) {
+        diag("b_skip_slot");
+        continue;
+      }
       // Age gate (V20-E15): NPCs can't bid on over-age candidates.
-      if (!isCandidateAgeEligible(world, candidate)) continue;
+      if (!isCandidateAgeEligible(world, candidate)) {
+        if (candidate.poolType === "foreign") diag("b_skip_age");
+        continue;
+      }
       const bidAmount = computeNpcBid(
         world,
         heya,
@@ -261,6 +311,13 @@ export function fillVacanciesForNPCWithBidding(
         recruitmentStrat,
         noiseSpread
       );
+      const bidClass = candidateConsumesForeignSlot(candidate)
+        ? "foreign"
+        : candidate.dualCitizen
+          ? "dual"
+          : "domestic";
+      diag(`b_bid_${bidClass}`);
+      diag(`b_amt_${bidClass}`, bidAmount);
       bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
     }
   }
@@ -357,21 +414,33 @@ function assignWinningBids(
   let currentPools = { ...tp.pools };
 
   for (const bid of bids) {
-    if (assignedCandidates.has(bid.candidateId)) continue;
+    if (assignedCandidates.has(bid.candidateId)) {
+      diag("b_void_assigned");
+      continue;
+    }
     const heyaSlotsUsed = assignedHeyaSlots.get(bid.heyaId) ?? 0;
     const heyaVacancies = targetHeyas[bid.heyaId] ?? 0;
-    if (heyaSlotsUsed >= heyaVacancies) continue;
+    if (heyaSlotsUsed >= heyaVacancies) {
+      diag("b_void_vacancy");
+      continue;
+    }
 
     const candidate = currentCandidates[bid.candidateId];
     if (!candidate) continue;
     // Last-line age gate: a candidate who aged past eligibility mid-process
     // can no longer legally sign — void the bid.
-    if (!isCandidateAgeEligible(world, candidate)) continue;
+    if (!isCandidateAgeEligible(world, candidate)) {
+      if (candidate.poolType === "foreign") diag("b_void_age");
+      continue;
+    }
 
     // §5.4 batch enforcement: a slot-consuming foreigner won earlier in this
     // same resolution consumes the heya's slot — later foreign wins are void.
     const consumesSlot = candidateConsumesForeignSlot(candidate);
-    if (consumesSlot && foreignOccupied.get(bid.heyaId)) continue;
+    if (consumesSlot && foreignOccupied.get(bid.heyaId)) {
+      diag("b_void_slot");
+      continue;
+    }
 
     currentCandidates[bid.candidateId] = {
       ...candidate,
@@ -431,7 +500,14 @@ function assignWinningBids(
 
     assignedCandidates.add(bid.candidateId);
     assignedHeyaSlots.set(bid.heyaId, heyaSlotsUsed + 1);
-    if (consumesSlot) foreignOccupied.set(bid.heyaId, true);
+    if (consumesSlot) {
+      foreignOccupied.set(bid.heyaId, true);
+      diag("b_win_foreign");
+    } else if (candidate.dualCitizen) {
+      diag("b_win_dual");
+    } else {
+      diag("b_win_domestic");
+    }
   }
 
   return { nextCandidates: currentCandidates, nextPools: currentPools };

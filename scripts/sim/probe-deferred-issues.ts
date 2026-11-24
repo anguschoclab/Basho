@@ -16,6 +16,7 @@
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
 import { evaluateFoundingEligibility } from "@/engine/lifecycle/retireeOyakataConversion";
+import { INTAKE_DIAG } from "@/engine/generation/TalentPoolNPCRecruitment";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { getHeya } from "@/engine/core/queries";
 import {
@@ -77,6 +78,7 @@ async function main() {
   const seen = new Set<string>(Array.from(cur.rikishi.keys()));
 
   for (let yr = 0; yr < YEARS; yr++) {
+    const diagBefore = { ...INTAKE_DIAG };
     const res = runAutoSim(cur, {
       duration: { type: "years", count: 1 },
       stopConditions: [],
@@ -163,9 +165,23 @@ async function main() {
       (h) => (h.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2
     ).length;
 
+    // Intake funnel diff for this year (b_ = bidding path, f_ = organic).
+    const dd: Record<string, number> = {};
+    for (const [k, v] of Object.entries(INTAKE_DIAG)) {
+      const d = v - (diagBefore[k] ?? 0);
+      if (d !== 0) dd[k] = d;
+    }
+    const avgBid = (cls: string) =>
+      dd[`b_bid_${cls}`] ? Math.round((dd[`b_amt_${cls}`] ?? 0) / dd[`b_bid_${cls}`] / 1000) : 0;
     console.log(
       `Y${Y} | F: +${foreignDebuts.length} -${foreignRetirees.length}(stall=${stallCulled.length}) act=${foreignActive.length} ` +
         `[${[...foreignByDiv.entries()].map(([d, n]) => `${d.slice(0, 2)}:${n}`).join(" ")}]`
+    );
+    console.log(
+      `      | pool f-vis=${dd.b_vis_foreign ?? 0}/${dd.b_hid_foreign ?? 0}hid ` +
+        `skips: slot=${dd.b_skip_slot ?? 0} age=${dd.b_skip_age ?? 0} void(age=${dd.b_void_age ?? 0} slot=${dd.b_void_slot ?? 0} dup=${dd.b_void_assigned ?? 0}) | ` +
+        `bids f=${dd.b_bid_foreign ?? 0}@¥${avgBid("foreign")}k dual=${dd.b_bid_dual ?? 0}@¥${avgBid("dual")}k dom=${dd.b_bid_domestic ?? 0}@¥${avgBid("domestic")}k | ` +
+        `wins f=${dd.b_win_foreign ?? 0}+${dd.f_win_foreign ?? 0} dual=${dd.b_win_dual ?? 0}+${dd.f_win_dual ?? 0} dom=${dd.b_win_domestic ?? 0}+${dd.f_win_domestic ?? 0}`
     );
     console.log(
       `      | O=${ozeki.length} vacStreak=${cur.yokozunaVacancyStreak ?? 0} ozekiForm: ${ozekiForm.join(" ") || "—"}`
