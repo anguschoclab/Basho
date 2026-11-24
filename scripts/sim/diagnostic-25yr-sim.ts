@@ -89,6 +89,10 @@ interface YearSnapshot {
   founderBarRetirees: number;
   /** Retirees passing every gate (canFound) — actual convertible count. */
   founderEligible: number;
+  /** Active rikishi who would pass the FULL founding gate today (career bar
+   *  + solvency/sponsor + headroom) — the live founder bench. The gate reads
+   *  lifetime counters + liquid wealth; nothing in it requires retirement. */
+  founderEligibleActives: number;
   /** WS-14 — annual jungyō tour days (~90 pre-2027, ~70s post). */
   jungyoTourDays: number;
   // ── Development-spectrum tracking (busts/derailment/maturation) ──────────
@@ -251,6 +255,11 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   const founderEligible = thisYearRetirees.filter(
     (r) => !("yearlyAggregates" in r) && evaluateFoundingEligibility(world, r).canFound
   ).length;
+  // The founder bench — actives who clear every gate right now. evaluate*
+  // only reads career counters + economics, so it evaluates actives fine.
+  const founderEligibleActives = active.filter(
+    (r) => evaluateFoundingEligibility(world, r).canFound
+  ).length;
   // WS-14 — tourDays lands on schedule entries post-reform; absent ⇒ 0.
   const jungyoTourDays = getExhibitionBashoSchedule(world.year).reduce(
     (a, t) => a + ((t as { tourDays?: number }).tourDays ?? 0),
@@ -320,6 +329,7 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     founderBarActive,
     founderBarRetirees,
     founderEligible,
+    founderEligibleActives,
     jungyoTourDays,
     profileCounts,
     derailedActive,
@@ -381,7 +391,7 @@ const SANYAKU_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
 const SEKITORI_DIVS = new Set(["makuuchi", "juryo"]);
 const PROFILES = ["prodigy", "standard", "late_bloomer", "journeyman", "early_peaker"] as const;
 
-function lifecycleAudit(world: WorldState): void {
+function lifecycleAudit(world: WorldState, snaps: YearSnapshot[]): void {
   const all = Array.from(world.rikishi.values());
   const active = all.filter((r) => !r.isRetired);
   const retiredFull = all.filter((r) => r.isRetired);
@@ -575,7 +585,7 @@ function lifecycleAudit(world: WorldState): void {
     );
   }
 
-  // ── 6. Heya founding & survival ─────────────────────────────────────────
+  // ── 6. Heya founding & survival + founder-eligibility funnel ────────────
   const heyas = Array.from(world.heyas.values());
   const branches = heyas.filter((h) => h.branchedFromHeyaId != null);
   const closed = world.closedHeyas ? Array.from(world.closedHeyas.values()) : [];
@@ -583,11 +593,31 @@ function lifecycleAudit(world: WorldState): void {
   const earlyDeaths = closedBranches.filter(
     (h) => h.foundedYear != null && h.closedAtYear - h.foundedYear <= 3
   );
+  // Founder-eligibility funnel across the whole sim (per-year tallies):
+  // career-bar retirees → fully-eligible retirees → actual foundings.
+  const sumBar = snaps.reduce((a, s) => a + s.founderBarRetirees, 0);
+  const sumElig = snaps.reduce((a, s) => a + s.founderEligible, 0);
+  const foundings = branches.length + closedBranches.length;
+  // The live bench — actives eligible right now, best odds first.
+  const bench = active
+    .map((r) => ({ r, e: evaluateFoundingEligibility(world, r) }))
+    .filter((x) => x.e.canFound)
+    .sort((a, b) => b.e.effectiveChance - a.e.effectiveChance);
   console.log(`\nHeya founding & survival:`);
   console.log(
     `  Active: ${heyas.length} (branches: ${branches.length}) | closed: ${closed.length} ` +
       `(branches: ${closedBranches.length}, died ≤3y after founding: ${earlyDeaths.length})`
   );
+  console.log(
+    `  Founder funnel (25y): ${sumBar} career-bar retirees → ${sumElig} fully eligible ` +
+      `→ ${foundings} foundings | eligible active bench now: ${bench.length}`
+  );
+  for (const { r, e } of bench.slice(0, 6)) {
+    const src = e.jsaBacked ? "JSA" : e.parentSponsors ? "parent" : "self";
+    console.log(
+      `    ${r.shikona ?? r.id} (${r.rank}) — chance ${e.effectiveChance.toFixed(2)} via ${src}`
+    );
+  }
   if (closedBranches.length) {
     const spans = closedBranches.flatMap((h) =>
       h.foundedYear != null ? [h.closedAtYear - h.foundedYear] : []
@@ -712,7 +742,7 @@ for (let yr = 0; yr < YEARS; yr++) {
           .join("/") || "—"
       }] ` +
       `founded=${snap.branchedHeyaCount} ` +
-      `fcand=${snap.founderBarActive}/${snap.founderBarRetirees} felig=${snap.founderEligible} ` +
+      `fcand=${snap.founderBarActive}/${snap.founderBarRetirees} felig=${snap.founderEligible}+${snap.founderEligibleActives}act ` +
       `jungyo=${snap.jungyoTourDays}d`
   );
   // Dev-spectrum line: profile mix + derailment/bust counts + maturation.
@@ -787,7 +817,7 @@ console.log(`\nWeekly tick verified: ${weeklyTickVerified ? "✓ YES" : "✗ NO 
 
 // Lifecycle & development audit — one pass over the final world before the
 // extra tuning year mutates anything.
-lifecycleAudit(currentWorld);
+lifecycleAudit(currentWorld, yearSnapshots);
 
 // ── Tuning Summary (from last year's result) ────────────────────────────────
 
