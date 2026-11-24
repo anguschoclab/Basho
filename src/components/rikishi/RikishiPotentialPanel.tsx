@@ -13,9 +13,10 @@ import { TrendingUp } from "lucide-react";
 import { NarrativeService } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
 import { toStatBand } from "@/presenters/engineAccess";
-import { perceivedCA, perceivedPA, caStars, paStarBand } from "@/presenters/engineAccess";
+import { perceivedCA, perceivedPA } from "@/presenters/engineAccess";
+import { abilityToStars, paPotentialBand } from "@/presenters/engineAccess";
 import type { WorldState } from "@/presenters/uiDigest";
-import { STAT_LABELS as STAT_BAND_LABELS } from "@/constants/ui/labels";
+import { POTENTIAL_LABELS, STAT_LABELS as STAT_BAND_LABELS } from "@/constants/ui/labels";
 
 interface Props {
   rikishi: Rikishi;
@@ -46,7 +47,7 @@ export function RikishiPotentialPanel({ rikishi, isOwned, world, observerHeyaId 
   const ability = world && observerHeyaId
     ? {
         ca: perceivedCA(world, observerHeyaId, rikishi),
-        paBand: paStarBand(perceivedPA(world, observerHeyaId, rikishi)),
+        paBand: paPotentialBand(perceivedPA(world, observerHeyaId, rikishi)),
       }
     : null;
 
@@ -66,9 +67,9 @@ export function RikishiPotentialPanel({ rikishi, isOwned, world, observerHeyaId 
               {ability.ca}
               <span className="text-[10px] text-muted-foreground font-mono"> / 200</span>
               <span className="ml-2 text-gold" title="Current ability rating">
-                {"★".repeat(caStars(ability.ca))}
+                {"★".repeat(abilityToStars(ability.ca))}
                 <span className="text-muted-foreground/40">
-                  {"☆".repeat(5 - caStars(ability.ca))}
+                  {"☆".repeat(5 - abilityToStars(ability.ca))}
                 </span>
               </span>
             </p>
@@ -78,7 +79,7 @@ export function RikishiPotentialPanel({ rikishi, isOwned, world, observerHeyaId 
               Potential
             </p>
             <p className="text-sm font-display font-black text-gold">
-              {STAT_BAND_LABELS[ability.paBand] ?? ability.paBand}
+              {POTENTIAL_LABELS[ability.paBand] ?? ability.paBand}
             </p>
           </div>
         </div>

@@ -31,7 +31,6 @@ function makePursuitWorld(vacancyCase: "one" | "two"): WorldState {
     const c = MockFactory.createCandidate(cid as Id, {
       candidateId: cid as Id,
       nationality: "Japan",
-      poolType: "high_school",
       talentSeed: 98,
       reputationSeed: 98,
     });
@@ -42,7 +41,6 @@ function makePursuitWorld(vacancyCase: "one" | "two"): WorldState {
   const gaijin = MockFactory.createCandidate("gaijin" as Id, {
     candidateId: "gaijin" as Id,
     nationality: "Mongolia",
-    poolType: "foreign",
     talentSeed: 20,
     reputationSeed: 20,
   });

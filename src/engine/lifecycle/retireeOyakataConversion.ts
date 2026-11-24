@@ -502,7 +502,7 @@ export function maybeFoundStable(
       branchedFromHeyaId: eligibility.parentHeyaId,
       followerCount: followerIds.length,
       seededDeshiCount: seeded.length,
-      jsaBacked: eligibility.reason === "jsa_backed",
+      jsaBacked: eligibility.jsaBacked,
     },
     { heyaId: result.heya.id, rikishiId: retiree.id, importance: "headline" }
   );

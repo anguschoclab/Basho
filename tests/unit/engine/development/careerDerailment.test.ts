@@ -7,7 +7,7 @@ import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import { mockRikishi } from "@tests/unit/engine/utils";
 import { rngForWorld } from "@/engine/core/rng";
 import type { WorldState } from "@/engine/types/world";
-import type { BoutResult } from "@/engine/types/bout";
+import type { BoutResult } from "@/engine/types/basho";
 
 /**
  * Busts and derailment — real sumo has both failure modes:

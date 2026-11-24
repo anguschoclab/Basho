@@ -38,7 +38,7 @@ export const RECOVERY_MULTIPLIERS: Record<
 };
 
 // 3. FOCUS BIAS MATRIX
-export type TrainingAttribute = Exclude<keyof RikishiStats, "achievements" | "specialPrizes">;
+export type TrainingAttribute = Exclude<keyof RikishiStats, "achievements" | "specialPrizes" | "height">;
 
 export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<TrainingAttribute, number>> = {
   power: {

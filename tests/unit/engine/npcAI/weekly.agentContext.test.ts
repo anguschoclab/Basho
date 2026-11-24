@@ -71,7 +71,7 @@ describe("makeNPCWeeklyDecision — agent context integrity", () => {
     const perceived = perceivedTalentSeed(
       world,
       "h1",
-      world.talentPool.candidates.strong as never
+      world.talentPool!.candidates.strong as never
     );
     expect(perceived).not.toBe(95); // fog applied — estimate ≠ truth
     expect(

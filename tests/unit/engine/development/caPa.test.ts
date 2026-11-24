@@ -65,7 +65,7 @@ describe("currentAbility", () => {
   it("is monotonic in every weighted stat", () => {
     for (const key of TRAINABLE_STAT_KEYS) {
       const base = stats(50);
-      const bumped = { ...base, [key]: base[key as keyof RikishiStats] + 20 } as RikishiStats;
+      const bumped = { ...base, [key]: base[key] + 20 } as RikishiStats;
       expect(
         currentAbility(mockRikishi("r", { stats: bumped })),
         `${key} bump should raise CA`

@@ -78,6 +78,9 @@ export interface RikishiStats {
   balance: number;
   aggression: number;
   experience: number;
+  /** Body height in cm — populated at generation and grown by WeightJourney;
+   *  optional because legacy saves and mocks may omit it. */
+  height?: number;
   specialPrizes?: RikishiAchievements["specialPrizes"];
   achievements?: RikishiAchievements; // Career milestone record, not a trainable stat
 }

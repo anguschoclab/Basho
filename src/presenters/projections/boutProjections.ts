@@ -25,7 +25,7 @@ import {
   scoutNoiseSpreadForHeya,
 } from "@/engine/recruitment/perceivedTalent";
 import { perceivedCA, perceivedPA } from "@/engine/recruitment/perceivedAbility";
-import { caStars, paStarBand } from "@/engine/development/caPa";
+import { abilityToStars, paPotentialBand } from "@/engine/development/caPa";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import {
   resolveAvatar,
@@ -211,8 +211,8 @@ export function projectOpponentScoutingUIDigest(
       scoutedAttrs: attrs,
       heyaName: heya?.name ?? "Unknown Stable",
       perceivedCa: ca,
-      caStarRating: caStars(ca),
-      paBand: playerHeyaId ? paStarBand(perceivedPA(world, playerHeyaId, r)) : "average",
+      caStarRating: abilityToStars(ca),
+      paBand: playerHeyaId ? paPotentialBand(perceivedPA(world, playerHeyaId, r)) : "average",
     });
   }
 

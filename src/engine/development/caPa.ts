@@ -19,6 +19,7 @@
  * lens for every observer.
  */
 import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import { POTENTIAL_BANDS, type PotentialBand } from "@/engine/narrative/NarrativeBands";
 
 /** The 8 trainable stats — weight and experience excluded by design. */
 export const TRAINABLE_STAT_KEYS = [
@@ -96,4 +97,19 @@ export function potentialAbility(r: Rikishi): number {
 export function abilityToStars(ability: number): number {
   const clamped = Math.max(0, Math.min(200, ability));
   return Math.round((clamped / 20)) / 2;
+}
+
+/**
+ * 0–200 PA → PotentialBand. PA is on the 0–200 scale while POTENTIAL_BANDS is
+ * calibrated for the 0–100 talentSeed — halving maps them onto the same bands
+ * (PA 100 ≈ "average", PA ≥176 ≈ "generational"). Value-level counterpart of
+ * perceivedAbility.paStarBand (which resolves perceived PA first and returns
+ * a StarBand range, not a PotentialBand).
+ */
+export function paPotentialBand(ability: number): PotentialBand {
+  const v = clamp200(ability) / 2;
+  for (const { band, min, max } of POTENTIAL_BANDS) {
+    if (v >= min && v < max) return band;
+  }
+  return "generational";
 }

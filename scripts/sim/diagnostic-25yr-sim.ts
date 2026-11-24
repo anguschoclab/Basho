@@ -503,17 +503,28 @@ function lifecycleAudit(world: WorldState, snaps: YearSnapshot[]): void {
   console.log(`${"═".repeat(70)}`);
 
   // ── 1. Career outcomes — every retirement incl. archived summaries ──────
-  const careerLen = (r: { retirementYear: number; debutYear?: number; yearlyAggregates?: { year: number }[] }) =>
-    r.debutYear ? Math.max(1, r.retirementYear - r.debutYear) : (r.yearlyAggregates?.length ?? 0);
-  const allRetired = [...retiredFull, ...summaries];
+  // Full Rikishi and RetiredRikishiSummary use different field names for the
+  // same concepts (careerPeak* vs peak*); narrow on the isSummary marker.
+  const isSummary = (r: Rikishi | RetiredRikishiSummary): r is RetiredRikishiSummary =>
+    (r as RetiredRikishiSummary).isSummary === true;
+  const retiredYearOf = (r: Rikishi | RetiredRikishiSummary): number =>
+    isSummary(r) ? r.retirementYear : (r.retirementYear ?? Y);
+  const careerLen = (r: Rikishi | RetiredRikishiSummary): number =>
+    r.debutYear ? Math.max(1, retiredYearOf(r) - r.debutYear)
+      : isSummary(r) ? r.yearlyAggregates.length : r.careerHistory.length;
+  const allRetired: (Rikishi | RetiredRikishiSummary)[] = [...retiredFull, ...summaries];
+  const peakDivOf = (r: Rikishi | RetiredRikishiSummary) =>
+    isSummary(r) ? r.peakDivision : peakDiv(r);
+  const peakRankOf = (r: Rikishi | RetiredRikishiSummary) =>
+    isSummary(r) ? r.peakRank : (r.careerPeakRank ?? r.rank);
   const lens = allRetired.map(careerLen).filter((n) => n > 0);
   const retireAges = allRetired
-    .map((r) => r.retirementYear - r.birthYear)
+    .map((r) => retiredYearOf(r) - r.birthYear)
     .filter((n) => n > 0 && n < 60);
-  const sekitori = allRetired.filter((r) => SEKITORI_DIVS.has(r.peakDivision));
-  const makuuchi = allRetired.filter((r) => r.peakDivision === "makuuchi");
-  const sanyaku = allRetired.filter((r) => SANYAKU_RANKS.has(r.peakRank));
-  const yokozunaEver = allRetired.filter((r) => r.peakRank === "yokozuna");
+  const sekitori = allRetired.filter((r) => SEKITORI_DIVS.has(peakDivOf(r)));
+  const makuuchi = allRetired.filter((r) => peakDivOf(r) === "makuuchi");
+  const sanyaku = allRetired.filter((r) => SANYAKU_RANKS.has(peakRankOf(r)));
+  const yokozunaEver = allRetired.filter((r) => peakRankOf(r) === "yokozuna");
 
   const realizations: number[] = [];
   for (const r of retiredFull) {
@@ -522,6 +533,7 @@ function lifecycleAudit(world: WorldState, snaps: YearSnapshot[]): void {
     if (pa > 0) realizations.push(Math.min(1, peakCA(r) / pa));
   }
   for (const s of summaries) {
+    if (!isSummary(s)) continue;
     if (s.peakAbility != null && s.potentialAbility != null && s.potentialAbility > 0) {
       realizations.push(Math.min(1, s.peakAbility / s.potentialAbility));
     }

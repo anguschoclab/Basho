@@ -50,7 +50,7 @@ const STAT_KEYS = [
   "aggression",
 ] as const;
 const caOf = (r: Rikishi): number =>
-  STAT_KEYS.reduce((s, k) => s + ((r.stats as Record<string, number> | undefined)?.[k] ?? 0), 0) /
+  STAT_KEYS.reduce((s, k) => s + ((r.stats as unknown as Record<string, number> | undefined)?.[k] ?? 0), 0) /
   STAT_KEYS.length;
 const paOf = (r: Rikishi): number =>
   (STAT_KEYS.reduce(
@@ -244,7 +244,7 @@ async function main() {
     // ozeki/sekiwake), plus yusho concentration across the career set.
     const ranked = [...makuuchi].sort((a, b) => {
       const order = (r: Rikishi) =>
-        ({ yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3, maegashira: 4 })[
+        ({ yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3, maegashira: 4 } as Record<string, number>)[
           r.rank ?? "maegashira"
         ] ?? 4;
       return order(a) - order(b) || (a.rankNumber ?? 99) - (b.rankNumber ?? 99);

@@ -125,6 +125,7 @@ export {
   currentAbility,
   potentialAbility,
   abilityToStars,
+  paPotentialBand,
   TRAINABLE_STAT_KEYS,
   CA_STAT_WEIGHTS,
 } from "@/engine/development/caPa";

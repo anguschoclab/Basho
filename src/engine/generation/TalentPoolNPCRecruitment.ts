@@ -299,7 +299,7 @@ export function fillVacanciesForNPCWithBidding(
       }
       // Age gate (V20-E15): NPCs can't bid on over-age candidates.
       if (!isCandidateAgeEligible(world, candidate)) {
-        if (candidate.poolType === "foreign") diag("b_skip_age");
+        if (isForeign({ nationality: candidate.nationality })) diag("b_skip_age");
         continue;
       }
       const consumesSlot = candidateConsumesForeignSlot(candidate);
@@ -449,7 +449,7 @@ function assignWinningBids(
     // Last-line age gate: a candidate who aged past eligibility mid-process
     // can no longer legally sign — void the bid.
     if (!isCandidateAgeEligible(world, candidate)) {
-      if (candidate.poolType === "foreign") diag("b_void_age");
+      if (isForeign({ nationality: candidate.nationality })) diag("b_void_age");
       continue;
     }
 

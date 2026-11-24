@@ -731,7 +731,7 @@ describe("maybeFoundStable — orphan and sanctioned foundings", () => {
     const world = makeMockWorld({
       year: 2025,
       heyas,
-      closedHeyas: new Map([["ghost", ghost]]),
+      closedHeyas: new Map([["ghost", { ...ghost, closedAtYear: 2024 }]]),
       oyakata: new Map(),
       rikishi: new Map(),
     });
