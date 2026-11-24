@@ -158,6 +158,11 @@ export interface RetiredRikishiSummary {
   retirementReason: string;
   isRetired: true;
 
+  /** Highest CA (0–200) reached over the career — for the "reached potential" verdict. */
+  peakAbility?: number;
+  /** PA ceiling (0–200) the career was measured against. */
+  potentialAbility?: number;
+
   // Per-year aggregates
   yearlyAggregates: CareerYearAggregate[];
 

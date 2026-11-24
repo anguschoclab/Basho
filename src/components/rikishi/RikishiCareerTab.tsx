@@ -35,7 +35,10 @@ interface RikishiCareerTabProps {
     wins: number;
     losses: number;
     winRate: number;
+    ca?: number;
   }>;
+  /** Observer's perceived PA ceiling (0–200) for the chart marker. */
+  paCeiling?: number;
   notableBouts?: NotableBoutEntry[];
   narrativeHighlights?: NarrativeHighlight[];
   promotionHistory?: PromotionHistoryEntry[];
@@ -52,6 +55,7 @@ export function RikishiCareerTab({
   history,
   milestones,
   careerProgressionData,
+  paCeiling,
   notableBouts,
   narrativeHighlights,
   promotionHistory,
@@ -62,7 +66,7 @@ export function RikishiCareerTab({
   return (
     <div className="space-y-8">
       {/* Career Progression Chart */}
-      <CareerProgressionChart data={careerProgressionData} />
+      <CareerProgressionChart data={careerProgressionData} paCeiling={paCeiling} />
 
       {/* Career Earnings */}
       <CareerEarningsCard earningsProgressionData={earningsProgressionData} economics={economics} />

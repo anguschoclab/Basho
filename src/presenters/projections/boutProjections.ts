@@ -24,6 +24,8 @@ import {
   perceivedCandidatePotentialStats,
   scoutNoiseSpreadForHeya,
 } from "@/engine/recruitment/perceivedTalent";
+import { perceivedCA, perceivedPA } from "@/engine/recruitment/perceivedAbility";
+import { caStars, paStarBand } from "@/engine/development/caPa";
 import type { AvatarRenderData } from "@/engine/types/avatar";
 import {
   resolveAvatar,
@@ -182,6 +184,10 @@ export function projectOpponentScoutingUIDigest(
       scoutingInvestment: string;
       scoutedAttrs: Record<string, ScoutedAttr>;
       heyaName: string;
+      /** Perceived 0–200 ratings through the player's fog lens. */
+      perceivedCa: number;
+      caStarRating: number;
+      paBand: string;
     }
   > = [];
   const seed = world.seed || "default";
@@ -194,6 +200,7 @@ export function projectOpponentScoutingUIDigest(
     const scoutLevel = getScoutingLevel(world, r.id);
     const attrs = getScoutedAttributes(scouted, seed) as unknown as Record<string, ScoutedAttr>;
     const heya = world.heyas.get(r.heyaId);
+    const ca = playerHeyaId ? perceivedCA(world, playerHeyaId, r) : 100;
 
     list.push({
       ...projectRikishi(r, world),
@@ -203,6 +210,9 @@ export function projectOpponentScoutingUIDigest(
       scoutingInvestment: scouted.scoutingInvestment,
       scoutedAttrs: attrs,
       heyaName: heya?.name ?? "Unknown Stable",
+      perceivedCa: ca,
+      caStarRating: caStars(ca),
+      paBand: playerHeyaId ? paStarBand(perceivedPA(world, playerHeyaId, r)) : "average",
     });
   }
 

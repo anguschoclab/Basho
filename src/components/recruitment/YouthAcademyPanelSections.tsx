@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, ArrowUpCircle, Coins, UserPlus, CheckCircle } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { Sparkline } from "@/components/ui/Sparkline";
 import {
   resolveAvatar,
   academyStaffStageInput,
@@ -173,6 +174,16 @@ export function ProspectsSection({
             <span className="font-medium">{p.shikona}</span>
             <span className="text-muted-foreground ml-2">Age {p.age}</span>
             <span className="text-muted-foreground ml-2">{p.region}</span>
+            {/* Development trajectory — weekly ability readings from the
+                academy's developmentHistory (rolling 52). */}
+            {(p.developmentHistory?.length ?? 0) > 1 && (
+              <Sparkline
+                data={p.developmentHistory.map((h) => h.ability)}
+                width={56}
+                height={16}
+                className="ml-2"
+              />
+            )}
           </div>
           <div className="flex items-center gap-2 tabular-nums">
             <Badge variant="outline" className="text-[10px]">

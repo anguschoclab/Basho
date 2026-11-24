@@ -7,6 +7,7 @@
 import { useMemo } from "react";
 import type { CareerSnapshot } from "@/engine/types/history";
 import type { UIRikishi } from "@/presenters/uiModels";
+import { currentAbility } from "@/presenters/engineAccess";
 
 export function useCareerProgressionData(history: CareerSnapshot[] | undefined) {
   return useMemo(() => {
@@ -35,6 +36,9 @@ export function useCareerProgressionData(history: CareerSnapshot[] | undefined) 
           snap.wins + snap.losses > 0
             ? Math.round((snap.wins / (snap.wins + snap.losses)) * 100)
             : 0,
+        // CA trajectory (0–200) — only for snapshots that carry the stat
+        // sheet; older entries leave a gap in the line.
+        ca: snap.stats ? currentAbility({ stats: snap.stats }) : undefined,
       }));
   }, [history]);
 }

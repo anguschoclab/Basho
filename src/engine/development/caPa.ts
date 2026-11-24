@@ -53,8 +53,10 @@ function weightedMean(stats: Partial<RikishiStats> | undefined): number {
 
 const clamp200 = (v: number) => Math.max(0, Math.min(200, v));
 
-/** Current Ability — weighted mean of the trainable stats scaled to 0–200. */
-export function currentAbility(r: Rikishi): number {
+/** Current Ability — weighted mean of the trainable stats scaled to 0–200.
+ *  Accepts any stat-sheet carrier: a live Rikishi or a CareerSnapshot's
+ *  stored `stats` block (for progression charts). */
+export function currentAbility(r: { stats?: RikishiStats }): number {
   return Math.round(clamp200(weightedMean(r.stats) * 2));
 }
 

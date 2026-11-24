@@ -445,9 +445,9 @@ export function maybeFoundStable(
   // JSA-seeded deshi: no living parent released followers (orphan or a
   // stripped roster) — the association assigns the founder a small maezumo
   // class so the new stable doesn't open empty.
+  const seeded: string[] = [];
   if (followerIds.length === 0) {
     const deshiCount = 2 + Math.floor(rng.next() * 2);
-    const seeded: string[] = [];
     for (let i = 0; i < deshiCount; i++) {
       const r = generateFullRikishi({
         id: `${result.heya.id}-deshi-${i}`,
@@ -490,6 +490,9 @@ export function maybeFoundStable(
       heyaName: result.heya.name,
       ichimon: result.heya.ichimon,
       branchedFromHeyaId: eligibility.parentHeyaId,
+      followerCount: followerIds.length,
+      seededDeshiCount: seeded.length,
+      jsaBacked: eligibility.reason === "jsa_backed",
     },
     { heyaId: result.heya.id, rikishiId: retiree.id, importance: "headline" }
   );

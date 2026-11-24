@@ -17,14 +17,17 @@ import type { Rikishi } from "@/engine/types/index";
 import { RIVALRY_HEAT_HIGH_THRESHOLD } from "@/constants/ui/animation";
 import type { UIRivalEntry } from "@/presenters/rikishi/types";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
+import type { WorldState } from "@/presenters/uiDigest";
 
 interface RikishiCombatTabProps {
   rikishi: UIRikishi;
   rawRikishi: Rikishi;
   isOwned?: boolean;
+  world?: WorldState;
+  playerHeyaId?: string | null;
 }
 
-export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: RikishiCombatTabProps) {
+export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false, world, playerHeyaId }: RikishiCombatTabProps) {
   const { rows: kimariteRows, totalWins } = useKimariteDistributionData(rikishi);
   return (
     <div className="space-y-8">
@@ -97,7 +100,12 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
       <KimariteDistributionChart rows={kimariteRows} totalWins={totalWins} />
 
       {/* Potential / CA vs PA panel — owned rikishi only */}
-      <RikishiPotentialPanel rikishi={rawRikishi} isOwned={isOwned} />
+      <RikishiPotentialPanel
+        rikishi={rawRikishi}
+        isOwned={isOwned}
+        world={world}
+        observerHeyaId={playerHeyaId}
+      />
 
       {/* Known Rivals Section (C5) */}
       <div className="space-y-6 pt-4 border-t border-border/50">

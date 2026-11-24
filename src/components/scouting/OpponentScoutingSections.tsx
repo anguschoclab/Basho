@@ -112,6 +112,17 @@ export function OpponentCard({
               / {r.weight}kg <span className="opacity-60">({r.weightDescriptor})</span>
             </div>
 
+            {/* Perceived ability — CA ★ and PA band through the fog */}
+            <div className="flex items-center gap-3 mt-1.5 text-xs">
+              <span className="text-gold tracking-tight" title={`Perceived ability ${r.perceivedCa ?? 0}/200`}>
+                {"★".repeat(r.caStarRating ?? 0)}
+                <span className="text-muted-foreground/40">{"☆".repeat(5 - (r.caStarRating ?? 0))}</span>
+              </span>
+              <span className="text-muted-foreground uppercase tracking-widest text-[10px] font-bold">
+                Ceiling: {(r.paBand ?? "average").replaceAll("_", " ")}
+              </span>
+            </div>
+
             {/* Scouted attributes — narrative only */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-3 text-xs">
               <AttrChip label="Power" attr={r.scoutedAttrs.power} />

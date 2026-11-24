@@ -44,6 +44,10 @@ interface RecruitSigningDialogProps {
     weight?: number;
     visibilityBand?: string;
     avatar?: AvatarRenderData;
+    /** Fogged seed estimate (0–100) from the player's scouting lens. */
+    perceivedSeed?: number;
+    /** Scouting familiarity level 0–3 — gates how trustworthy the ★s are. */
+    scoutLevel?: number;
   } | null;
   playerHeyaName?: string;
   rosterSize?: number;
@@ -128,6 +132,34 @@ export function RecruitSigningDialog({
                 )}
                 {candidate.nationality && <Badge variant="outline">{candidate.nationality}</Badge>}
               </div>
+
+              {/* Scout-estimated ceiling — ★s on the 0–200 equivalent scale,
+                  confidence widens with scouting familiarity. */}
+              {candidate.visibilityBand !== "hidden" &&
+                candidate.perceivedSeed !== undefined && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gold tracking-tight">
+                      {"★".repeat(
+                        Math.max(0, Math.min(5, Math.round((candidate.perceivedSeed / 100) * 5)))
+                      )}
+                      <span className="text-muted-foreground/40">
+                        {"☆".repeat(
+                          5 -
+                            Math.max(
+                              0,
+                              Math.min(5, Math.round((candidate.perceivedSeed / 100) * 5))
+                            )
+                        )}
+                      </span>
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Scout estimate
+                      {candidate.scoutLevel !== undefined && candidate.scoutLevel < 2
+                        ? " (low confidence)"
+                        : ""}
+                    </span>
+                  </div>
+                )}
 
               {/* Offer Controls */}
               <div className="space-y-4 pt-4 border-t border-border/50">

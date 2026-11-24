@@ -13,11 +13,16 @@ import { TrendingUp } from "lucide-react";
 import { NarrativeService } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
 import { toStatBand } from "@/presenters/engineAccess";
+import { perceivedCA, perceivedPA, caStars, paStarBand } from "@/presenters/engineAccess";
+import type { WorldState } from "@/presenters/uiDigest";
 import { STAT_LABELS as STAT_BAND_LABELS } from "@/constants/ui/labels";
 
 interface Props {
   rikishi: Rikishi;
   isOwned: boolean;
+  /** When provided, the header shows the observer's perceived CA / PA ★. */
+  world?: WorldState;
+  observerHeyaId?: string | null;
 }
 
 const STAT_LABELS: Array<[NumericStat, string]> = [
@@ -30,18 +35,54 @@ const STAT_LABELS: Array<[NumericStat, string]> = [
   ["adaptability", "Adaptability"],
 ];
 
-export function RikishiPotentialPanel({ rikishi, isOwned }: Props) {
+export function RikishiPotentialPanel({ rikishi, isOwned, world, observerHeyaId }: Props) {
   if (!rikishi.potential) return null;
   if (!isOwned) return null; // Opposing rikishi: use scouting views
 
   const pa = rikishi.potential;
   const ceiling = pa.ceilingFraction;
+  // 0–200 headline ratings through the observer's fog lens — own-roster
+  // reads are near-truth by the fog model.
+  const ability = world && observerHeyaId
+    ? {
+        ca: perceivedCA(world, observerHeyaId, rikishi),
+        paBand: paStarBand(perceivedPA(world, observerHeyaId, rikishi)),
+      }
+    : null;
 
   return (
     <div className="space-y-4">
       <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
         <TrendingUp className="h-5 w-5 text-primary" /> Potential
       </h3>
+
+      {ability && (
+        <div className="flex items-center justify-between bg-muted/20 border border-border/40 rounded-lg px-4 py-3">
+          <div className="space-y-0.5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              Current Ability
+            </p>
+            <p className="text-sm font-display font-black">
+              {ability.ca}
+              <span className="text-[10px] text-muted-foreground font-mono"> / 200</span>
+              <span className="ml-2 text-gold" title="Current ability rating">
+                {"★".repeat(caStars(ability.ca))}
+                <span className="text-muted-foreground/40">
+                  {"☆".repeat(5 - caStars(ability.ca))}
+                </span>
+              </span>
+            </p>
+          </div>
+          <div className="space-y-0.5 text-right">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              Potential
+            </p>
+            <p className="text-sm font-display font-black text-gold">
+              {STAT_BAND_LABELS[ability.paBand] ?? ability.paBand}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="bg-muted/30 border-2 border-border/50 rounded-lg p-6 space-y-3">
         {STAT_LABELS.map(([paKey, label]) => {

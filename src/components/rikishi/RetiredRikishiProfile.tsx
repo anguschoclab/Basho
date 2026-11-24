@@ -96,6 +96,31 @@ export function RetiredRikishiProfile({
               {heya ? <StableName id={heya.id} name={heya.name} /> : "—"}
               {summary.retirementReason ? ` · ${summary.retirementReason}` : ""}
             </div>
+            {/* Career-vs-potential verdict — archived peak CA against the PA
+                ceiling recorded at summarization. */}
+            {summary.peakAbility !== undefined && summary.potentialAbility !== undefined && (
+              <div className="text-xs text-muted-foreground">
+                Potential:{" "}
+                <span
+                  className={
+                    summary.peakAbility >= summary.potentialAbility * 0.9
+                      ? "text-gold font-bold"
+                      : summary.peakAbility >= summary.potentialAbility * 0.7
+                        ? "text-foreground"
+                        : "text-muted-foreground italic"
+                  }
+                >
+                  {summary.peakAbility >= summary.potentialAbility * 0.9
+                    ? "Fulfilled"
+                    : summary.peakAbility >= summary.potentialAbility * 0.7
+                      ? "Nearly reached"
+                      : "Unfulfilled"}
+                </span>{" "}
+                <span className="font-mono text-[10px]">
+                  ({summary.peakAbility}/{summary.potentialAbility})
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

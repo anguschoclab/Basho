@@ -9,6 +9,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { RetiredRikishiSummary, CareerYearAggregate } from "@/engine/types/history";
 import type { Rank, Division } from "@/engine/types/banzuke";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { currentAbility, potentialAbility } from "@/engine/development/caPa";
 
 /**
  * Build a compact RetiredRikishiSummary from a full Rikishi.
@@ -116,6 +117,17 @@ export function buildRetiredRikishiSummary(rikishi: Rikishi): RetiredRikishiSumm
     retirementYear: rikishi.retirementYear ?? 0,
     retirementReason: rikishi.retirementReason ?? "Unknown",
     isRetired: true,
+
+    // Potential verdict — post-career so fog no longer applies; the peak is
+    // the best CA captured by the per-basho stat snapshots (fallback: the
+    // retiring sheet itself).
+    peakAbility: Math.max(
+      ...careerHistory
+        .filter((s): s is typeof s & { stats: NonNullable<typeof s.stats> } => !!s.stats)
+        .map((s) => currentAbility({ stats: s.stats })),
+      currentAbility(rikishi)
+    ),
+    potentialAbility: rikishi.potential ? potentialAbility(rikishi) : undefined,
 
     yearlyAggregates,
 

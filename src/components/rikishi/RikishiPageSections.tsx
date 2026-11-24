@@ -22,6 +22,7 @@ import { RikishiKeshoMawashi } from "@/components/rikishi/RikishiKeshoMawashi";
 import { RikishiGlobalCup } from "@/components/rikishi/RikishiGlobalCup";
 import { IntaiCeremony } from "@/components/ceremony/IntaiCeremony";
 import { getHeya } from "@/presenters/worldAccess";
+import { perceivedPA } from "@/presenters/engineAccess";
 import { Trash2 } from "lucide-react";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/rikishi/index";
@@ -185,6 +186,9 @@ export function RikishiProfileBody({
   const isOwned = rikishi.heyaId === playerHeyaId;
   const history = rikishi.careerHistory;
   const careHeya = isOwned && !readOnly && playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
+  // The observer's PA estimate for the progression chart's ceiling marker —
+  // own roster reads tight, opponent reads through the fog.
+  const paCeiling = playerHeyaId ? perceivedPA(world, playerHeyaId, rawRikishi) : undefined;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-700">
@@ -230,7 +234,7 @@ export function RikishiProfileBody({
             value="combat"
             className="space-y-8 animate-in fade-in slide-in-from-left-2 duration-300"
           >
-            <RikishiCombatTab rikishi={rikishi} rawRikishi={rawRikishi} isOwned={isOwned} />
+            <RikishiCombatTab rikishi={rikishi} rawRikishi={rawRikishi} isOwned={isOwned} world={world} playerHeyaId={playerHeyaId} />
           </TabsContent>
 
           <TabsContent
@@ -241,6 +245,7 @@ export function RikishiProfileBody({
               history={history as CareerSnapshot[]}
               milestones={rikishi.milestones as Milestone[]}
               careerProgressionData={careerProgressionData}
+              paCeiling={paCeiling}
               notableBouts={rawRikishi.almanacRecord?.notableBouts}
               // narrativeHighlights intentionally unwired: its entries echo the
               // milestone timeline and notable-bout rows already on this tab.
