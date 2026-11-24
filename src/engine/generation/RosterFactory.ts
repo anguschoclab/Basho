@@ -149,19 +149,37 @@ export function createRosters(
 
       const rikishiId = worldRng.uuid("RK");
 
+      const STABLE_TIER_VALUE: Record<string, number> = {
+        legendary: 5,
+        powerful: 4,
+        established: 3,
+        rebuilding: 2,
+        fragile: 1,
+        new: 0,
+      };
+
       const eligibleStables = heyaByTier.filter((h) => {
-        const stableTier =
-          { legendary: 5, powerful: 4, established: 3, rebuilding: 2, fragile: 1, new: 0 }[
-            h.statureBand
-          ] ?? 0;
+        const stableTier = STABLE_TIER_VALUE[h.statureBand] ?? 0;
         return (
           stableTier >= config.tierWeight - 1 ||
           (stableTier >= config.tierWeight - 2 && worldRng.next() > ROSTER_TIER_FALLBACK_CHANCE)
         );
       });
 
+      // Prestige pull: real rosters are heavy-tailed (Isegahama 33,
+      // Takasago 26 — JSA 2026) because stature attracts recruits at
+      // every level. Weight the draw by band^2 + 4 so powerhouse rooms
+      // emerge while every stable still houses a few members.
+      const prestigePool = (pool: Heya[]): Heya[] =>
+        pool.flatMap((h) => {
+          const t = STABLE_TIER_VALUE[h.statureBand] ?? 0;
+          return new Array(t * t + 4).fill(h);
+        });
+
       const heya =
-        eligibleStables.length > 0 ? worldRng.pick(eligibleStables) : worldRng.pick(heyaList);
+        eligibleStables.length > 0
+          ? worldRng.pick(prestigePool(eligibleStables))
+          : worldRng.pick(prestigePool(heyaList));
 
       const oyakata = oyakataMap.get(heya?.oyakataId || "");
 

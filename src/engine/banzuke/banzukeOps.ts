@@ -294,39 +294,7 @@ export function updateBanzuke(
     assigned = assignBanzukeSlots(scored, template, demotedOzeki, perfById);
   }
 
-  // HARD INVARIANT — the fixed tiers always meet quota
-  // (M42 / J28 / Ms120 / Sd160) while a LEGAL fill remains unseated: an
-  // active body (convention-promotable anywhere) or a kyūjō absentee
-  // whose landing floor reaches the division. A short sheet with a
-  // fillable body left over is the measured 38-man makuuchi bug —
-  // throw before it reaches the published banzuke. Kyūjō men whose
-  // floor sits BELOW the vacant tier can't legally take it (an
-  // absentee never promotes), so they don't count. Jonidan/jonokuchi
-  // are unfixed and exempt by design.
-  const SLOT_TIER_BY_DIVISION: Record<string, number> = {
-    makuuchi: 5,
-    juryo: 6,
-    makushita: 7,
-    sandanme: 8,
-  };
-  const seatedIds = new Set(assigned.map((a) => a.rikishiId));
-  for (const division of ["makuuchi", "juryo", "makushita", "sandanme"] as const) {
-    const actual = assigned.filter((e) => e.division === division).length;
-    if (actual >= DIVISION_QUOTA[division]) continue;
-    const tier = SLOT_TIER_BY_DIVISION[division];
-    const legalLeftover = scored.filter((c) => {
-      if (seatedIds.has(c.entry.rikishiId)) return false;
-      const p = perfById.get(c.entry.rikishiId);
-      const kyujo = (p?.absences ?? 0) > 0 && (p?.wins ?? 0) === 0;
-      return !kyujo || c.eligibleBestTier <= tier;
-    }).length;
-    if (legalLeftover > 0) {
-      throw new Error(
-        `banzuke quota violated: ${division} published ${actual}/${DIVISION_QUOTA[division]} ` +
-          `with ${legalLeftover} fillable bodies still unseated`
-      );
-    }
-  }
+  assertDivisionQuota(assigned, scored, perfById);
 
   markOverflowBanzukeGai(assigned, scored, banzukeGai, banzukeGaiReasons, banzukeGaiEvents);
 
@@ -563,6 +531,49 @@ function markOverflowBanzukeGai(
       kind: "demotion",
       description: `Demoted: ${from} → Banzuke-gai (division overflow)`,
     });
+  }
+}
+
+/**
+ * HARD INVARIANT — the fixed tiers always meet quota
+ * (M42 / J28 / Ms120 / Sd160) while a LEGAL fill remains unseated: an
+ * active body (convention-promotable anywhere) or a kyūjō absentee
+ * whose landing floor reaches the division. A short sheet with a
+ * fillable body left over is the measured 38-man makuuchi bug —
+ * throw before it reaches the published banzuke. Kyūjō men whose
+ * floor sits BELOW the vacant tier can't legally take it (an
+ * absentee never promotes), so they don't count. Jonidan/jonokuchi
+ * are unfixed and exempt by design.
+ */
+const SLOT_TIER_BY_DIVISION: Record<string, number> = {
+  makuuchi: 5,
+  juryo: 6,
+  makushita: 7,
+  sandanme: 8,
+};
+
+function assertDivisionQuota(
+  assigned: BanzukeEntry[],
+  scored: ScoredCandidate[],
+  perfById: Map<string, BashoPerformance>
+): void {
+  const seatedIds = new Set(assigned.map((a) => a.rikishiId));
+  for (const division of ["makuuchi", "juryo", "makushita", "sandanme"] as const) {
+    const actual = assigned.filter((e) => e.division === division).length;
+    if (actual >= DIVISION_QUOTA[division]) continue;
+    const tier = SLOT_TIER_BY_DIVISION[division];
+    const legalLeftover = scored.filter((c) => {
+      if (seatedIds.has(c.entry.rikishiId)) return false;
+      const p = perfById.get(c.entry.rikishiId);
+      const kyujo = (p?.absences ?? 0) > 0 && (p?.wins ?? 0) === 0;
+      return !kyujo || c.eligibleBestTier <= tier;
+    }).length;
+    if (legalLeftover > 0) {
+      throw new Error(
+        `banzuke quota violated: ${division} published ${actual}/${DIVISION_QUOTA[division]} ` +
+          `with ${legalLeftover} fillable bodies still unseated`
+      );
+    }
   }
 }
 
