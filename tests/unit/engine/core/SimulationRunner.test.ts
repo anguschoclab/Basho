@@ -76,7 +76,10 @@ vi.mock("@/engine/generation/TalentPoolService", () => ({
 
 // ── Import module under test AFTER mocks ──────────────────────────────────
 
-import { runPostBashoResolution } from "@/engine/core/SimulationRunner";
+import {
+  runPostBashoResolution,
+  runPostBashoInstitutionalSteps,
+} from "@/engine/core/SimulationRunner";
 import { runPrestigeDecay } from "@/engine/history/prestige";
 import { runGovernanceReview, runAIMetaDrift } from "@/engine/governance/services/governanceReview";
 import { processAllRetirements } from "@/engine/lifecycle/processRetirements";
@@ -180,5 +183,36 @@ describe("runPostBashoResolution", () => {
     expect((runRetiredRikishiSummarization as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
     runPostBashoResolution(makeWorld(11)); // November
     expect((runRetiredRikishiSummarization as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
+  });
+});
+
+describe("runPostBashoInstitutionalSteps", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("runs the institution-facing subset: prestige, governance, AI meta, sponsors, koenkai band", () => {
+    // The AutoSim basho loop bypasses endBasho, so it calls this directly —
+    // the subset whose absence produced the 25-yr diagnostic's zombie
+    // stables (no governance review → no insolvency mergers) and 30x fund
+    // inflation (no sponsor churn → income saturating).
+    runPostBashoInstitutionalSteps(makeWorld());
+    expect((runPrestigeDecay as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
+    expect((runGovernanceReview as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
+    expect((runAIMetaDrift as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
+  });
+
+  it("does NOT run tick-covered steps — retirements and records are excluded", () => {
+    // processAllRetirements already fires via phase01_week_governance in
+    // both paths; running it here too would double-retire in AutoSim.
+    runPostBashoInstitutionalSteps(makeWorld());
+    expect((processAllRetirements as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
+    expect((onBashoEnded as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
+    expect((openRecruitmentWindow as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
+  });
+
+  it("sequences progressively through ImpactResolver", () => {
+    runPostBashoInstitutionalSteps(makeWorld());
+    expect((ImpactResolver.sequenceImpacts as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
   });
 });

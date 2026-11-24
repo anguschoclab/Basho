@@ -21,6 +21,7 @@ import {
 import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { getHeya, getRikishi, isRetiredRikishiSummaryEntry } from "@/engine/core/queries";
 import { jsaYushoPrize, jsaSanshoPrize } from "@/constants/engine/jsaEra";
+import { distributePrizes } from "@/engine/lifecycle/PrizeDistribution";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -175,21 +176,7 @@ export function runAutoSim(
     // pre-publish check could never observe a yokozuna/ozeki promotion.
     currentWorld = publishBanzukeForSim(currentWorld, bashoResult, bashoName);
 
-    const publishedPromotions: PromotionEvent[] = [];
-    const publishedDemotions: DemotionEvent[] = [];
-    for (const [id, from] of prePublishRanks) {
-      const to = getRikishi(currentWorld, id)?.rank;
-      if (!to || to === from) continue;
-      const evt = { rikishiId: id, from, to, description: `${from} → ${to}` };
-      const toTier = RANK_HIERARCHY[to as Rank]?.tier ?? 999;
-      const fromTier = RANK_HIERARCHY[from as Rank]?.tier ?? 999;
-      if (toTier < fromTier) publishedPromotions.push(evt);
-      else publishedDemotions.push(evt);
-    }
-    if (publishedPromotions.length || publishedDemotions.length) {
-      bashoResult.promotions = [...bashoResult.promotions, ...publishedPromotions];
-      bashoResult.demotions = [...(bashoResult.demotions ?? []), ...publishedDemotions];
-    }
+    diffPublishedRanks(currentWorld, prePublishRanks, bashoResult);
 
     // Post-basho institutional review — the headless loop bypasses endBasho,
     // so prestige decay, the insolvency/merger ladder, AI meta drift, and
@@ -280,6 +267,24 @@ function publishBanzukeForSim(
   bashoResult: BashoSimResult,
   bashoName: BashoName
 ): WorldState {
+  // 0. Prize pass — the headless path has no concludeBashoCompetition, so
+  // sansho committees, award counters, and rikishi economics credits never
+  // ran and the result's sansho fields went unset (the history record wrote
+  // `shukunsho: undefined` for 150 basho). Interactive credits these at
+  // endBasho via distributePrizes; this is the parity call.
+  const bashoForPrizes = currentWorld.currentBasho;
+  if (bashoForPrizes?.matches?.length && bashoResult.yushoWinner.id) {
+    const { prizes, impact } = distributePrizes(
+      currentWorld,
+      bashoForPrizes,
+      bashoResult.yushoWinner.id
+    );
+    currentWorld = resolveImpacts(currentWorld, [impact]);
+    bashoResult.ginoSho = prizes.ginoSho;
+    bashoResult.kantosho = prizes.kantosho;
+    bashoResult.shukunsho = prizes.shukunsho;
+  }
+
   // 1. Build standings map in the format publishBanzukeUpdate expects.
   // The authoritative source is `finalWorld.currentBasho.standings` — the
   // sim's own `result.standings` is deliberately sekitori-only (it feeds the
@@ -345,6 +350,35 @@ function publishBanzukeForSim(
   // 3. Run publishBanzukeUpdate — handles yokozuna promotion, careerHistory, council warnings
   const banzukeImpact = publishBanzukeUpdate(worldWithStandings);
   return resolveImpacts(worldWithStandings, [banzukeImpact]);
+}
+
+/**
+ * Diff pre/post-publish ranks into promotion/demotion events on the basho
+ * result — real promotions land inside the publish impact as rikishiUpdates,
+ * and bashoResult.promotions only carries hook output (the sim path never
+ * passes one), so the diff is the authoritative promotion feed for stop
+ * conditions and chronicles.
+ */
+function diffPublishedRanks(
+  currentWorld: WorldState,
+  prePublishRanks: Map<string, string>,
+  bashoResult: BashoSimResult
+): void {
+  const publishedPromotions: PromotionEvent[] = [];
+  const publishedDemotions: DemotionEvent[] = [];
+  for (const [id, from] of prePublishRanks) {
+    const to = getRikishi(currentWorld, id)?.rank;
+    if (!to || to === from) continue;
+    const evt = { rikishiId: id, from, to, description: `${from} → ${to}` };
+    const toTier = RANK_HIERARCHY[to as Rank]?.tier ?? 999;
+    const fromTier = RANK_HIERARCHY[from as Rank]?.tier ?? 999;
+    if (toTier < fromTier) publishedPromotions.push(evt);
+    else publishedDemotions.push(evt);
+  }
+  if (publishedPromotions.length || publishedDemotions.length) {
+    bashoResult.promotions = [...bashoResult.promotions, ...publishedPromotions];
+    bashoResult.demotions = [...(bashoResult.demotions ?? []), ...publishedDemotions];
+  }
 }
 
 /** True when the world has at least one non-retired yokozuna. */

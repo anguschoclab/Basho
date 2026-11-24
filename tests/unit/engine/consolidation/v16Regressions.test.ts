@@ -174,21 +174,39 @@ describe("V16-B12b talent-pool materialization roster", () => {
 // ── V16-B12c — insolvency gift composes with the bailout loan + charges
 //                the benefactor once per insolvent heya ──────────────────────
 describe("V16-B12c governanceReview funds composition", () => {
-  it("insolvent heya keeps loan principal AND receives the ichimon gift; benefactor is charged per gift", async () => {
+  it("loan-rescued heya skips the ichimon gift; gift-drawers each charge the benefactor once", async () => {
     const { runGovernanceReview } = await import("@/engine/governance/services/governanceReview");
     const { resolveImpacts } = await import("@/engine/core/ImpactResolver");
     const { FACTION_BAILOUT_AMOUNT, LOAN_ISSUANCE_THRESHOLD } =
       await import("@/constants/engine/economic");
 
-    const insolvent = makeMockHeya("insolvent", {
-      funds: LOAN_ISSUANCE_THRESHOLD - 1_000_000,
+    const loanRescued = makeMockHeya("loan-rescued", {
+      funds: LOAN_ISSUANCE_THRESHOLD - 1_000_000, // loan fires → lifts to solvency → no gift
       runwayBand: "desperate",
       ichimon: "Tokitsukaze",
     });
-    const insolvent2 = makeMockHeya("insolvent2", {
+    const giftOnly = makeMockHeya("gift-only", {
       funds: -1_000_000, // above loan threshold — gift only
       runwayBand: "desperate",
       ichimon: "Tokitsukaze",
+    });
+    const giftAfterLadder = makeMockHeya("gift-after-ladder", {
+      funds: -8_000_000, // loan ladder exhausted — the gift restores solvency
+      runwayBand: "desperate",
+      ichimon: "Tokitsukaze",
+      activeLoans: [
+        {
+          id: "LN-existing",
+          type: "benefactor",
+          principal: 1_000_000,
+          interestRate: 0.06,
+          remainingBalance: 1_060_000,
+          providerName: "Anonymous Benefactor",
+          monthlyPayment: 30_000,
+          issuedAtYear: 1,
+          issuedAtMonth: 1,
+        },
+      ],
     });
     const benefactor = makeMockHeya("benefactor", {
       funds: 100_000_000,
@@ -196,8 +214,9 @@ describe("V16-B12c governanceReview funds composition", () => {
     });
     const world = makeMockWorld({
       heyas: new Map([
-        ["insolvent", insolvent],
-        ["insolvent2", insolvent2],
+        ["loan-rescued", loanRescued],
+        ["gift-only", giftOnly],
+        ["gift-after-ladder", giftAfterLadder],
         ["benefactor", benefactor],
       ]),
     });
@@ -205,27 +224,34 @@ describe("V16-B12c governanceReview funds composition", () => {
     const impact = runGovernanceReview(world);
     const result = resolveImpacts(world, [impact]);
 
-    const rInsolvent = result.heyas.get("insolvent")!;
-    const rInsolvent2 = result.heyas.get("insolvent2")!;
+    const rLoanRescued = result.heyas.get("loan-rescued")!;
+    const rGiftOnly = result.heyas.get("gift-only")!;
+    const rGiftAfterLadder = result.heyas.get("gift-after-ladder")!;
     const rBenefactor = result.heyas.get("benefactor")!;
 
-    // Benefactor pays one gift per insolvent stable — previously the stale
-    // base charged it once while two gifts were paid out (money created).
+    // Benefactor pays one gift per gift-drawing stable — previously the
+    // stale base charged it once while two gifts were paid out (money
+    // created). loan-rescued draws none: its loan already lifted it to
+    // solvency, so a gift on top would be the double-dip the solvency gate
+    // exists to kill.
     expect(rBenefactor.funds).toBe(100_000_000 - 2 * FACTION_BAILOUT_AMOUNT);
 
-    // insolvent2 got only the gift (no loan)
-    expect(rInsolvent2.funds).toBe(-1_000_000 + FACTION_BAILOUT_AMOUNT);
+    // gift-only drawer: gift only (no loan — above the issuance threshold)
+    expect(rGiftOnly.funds).toBe(-1_000_000 + FACTION_BAILOUT_AMOUNT);
+    // ladder-exhausted drawer: the gift is what restores its solvency
+    expect(rGiftAfterLadder.funds).toBe(-8_000_000 + FACTION_BAILOUT_AMOUNT);
 
-    // insolvent got loan principal + gift — the stale-base write destroyed the
-    // principal while leaving the liability. The fixture sits below the loan
-    // threshold, so the loan MUST exist — assert unconditionally.
-    const loanPrincipal = (rInsolvent.activeLoans ?? []).reduce(
+    // loan-rescued got loan principal with NO gift on top — the stale-base
+    // write once destroyed the principal while leaving the liability. The
+    // fixture sits below the loan threshold, so the loan MUST exist —
+    // assert unconditionally.
+    const loanPrincipal = (rLoanRescued.activeLoans ?? []).reduce(
       (s: number, l: { principal?: number }) => s + (l.principal ?? 0),
       0
     );
     expect(loanPrincipal).toBeGreaterThan(0);
-    expect(rInsolvent.funds).toBe(
-      LOAN_ISSUANCE_THRESHOLD - 1_000_000 + loanPrincipal + FACTION_BAILOUT_AMOUNT
+    expect(rLoanRescued.funds).toBe(
+      LOAN_ISSUANCE_THRESHOLD - 1_000_000 + loanPrincipal
     );
   });
 });
