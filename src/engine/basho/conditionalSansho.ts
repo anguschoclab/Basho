@@ -50,6 +50,7 @@ export function announceConditionalSansho(world: WorldState, basho: BashoState):
   );
 
   // Candidate pool mirrors determineSpecialPrizes: makuuchi, below ozeki.
+  const rikishiById = world.rikishi;
   const winCounts = new Map<string, number>();
   for (const m of resolved) {
     const w = m.result?.winnerRikishiId;
@@ -68,7 +69,7 @@ export function announceConditionalSansho(world: WorldState, basho: BashoState):
   for (const [holders, prizeName] of provisionalLists) {
     for (const id of holders) {
       announced.add(id);
-      const r: Rikishi | undefined = world.rikishi.get(id);
+      const r: Rikishi | undefined = rikishiById.get(id);
       builder.logEvent(
         "SANSHO_CONDITIONAL",
         "banzuke_committee",
@@ -90,7 +91,7 @@ export function announceConditionalSansho(world: WorldState, basho: BashoState):
   for (const m of todayPending) {
     for (const id of [m.eastRikishiId, m.westRikishiId]) {
       if (announced.has(id)) continue;
-      const r = world.rikishi.get(id);
+      const r = rikishiById.get(id);
       if (!r || r.division !== "makuuchi" || isYokozunaOrOzekiRank(r.rank)) continue;
       if ((winCounts.get(id) ?? 0) !== 7) continue;
       builder.logEvent(
