@@ -8,11 +8,15 @@
  * feature-matrix signature fallback.
  *
  * Specs sources (one required):
- *   --specs <file.json>   [{seed, nationality?, role?, ...AvatarStageInput}]
- *   --count <n>           n deterministic synthetic entities across roles
- *   --world <file.json>   extract every person entity from a world JSON
- *                         (rikishi, oyakata, staff, gyoji/shimpan pools,
- *                         talent/candidate pools, academy prospects+staff)
+ *   --specs <file.json>      [{seed, nationality?, role?, ...AvatarStageInput}]
+ *   --count <n>              n deterministic synthetic entities across roles
+ *   --world <file.json>      extract every person entity from a world JSON
+ *                            (rikishi, oyakata, staff, gyoji/shimpan pools,
+ *                            talent/candidate pools, academy prospects+staff)
+ *   --world-seed <seed>      regenerate the genesis roster via
+ *                            generateInitialWorld(seed) — covers any save's
+ *                            starting entities without a save-file export
+ *                            (world.seed is shown on the main menu)
  *
  * Flags: --model <m>  --concurrency <n>  --limit <n>
  *
@@ -237,9 +241,14 @@ const fileNameFor = (seed: string) =>
 let specs: EntitySpec[];
 const specsPath = opt("--specs", "");
 const worldPath = opt("--world", "");
+const worldSeed = opt("--world-seed", "");
 const count = parseInt(opt("--count", "0"), 10) || 0;
 
-if (specsPath) {
+if (worldSeed) {
+  const { generateInitialWorld } = await import("@/engine/generation/WorldFactory");
+  console.log(`generating world "${worldSeed}"...`);
+  specs = worldSpecs(generateInitialWorld(worldSeed) as unknown as AnyRec);
+} else if (specsPath) {
   const raw = JSON.parse(readFileSync(resolve(specsPath), "utf8")) as SpecFileEntry[];
   specs = raw.map((e) => {
     const { seed, nationality, role, ...rest } = e;
@@ -255,7 +264,7 @@ if (specsPath) {
 } else if (count > 0) {
   specs = syntheticSpecs(count);
 } else {
-  console.error("provide --specs <file>, --world <file>, or --count <n>");
+  console.error("provide --specs <file>, --world <file>, --world-seed <seed>, or --count <n>");
   process.exit(1);
 }
 
