@@ -25,7 +25,7 @@ import { rollArchetype, rollArchetypeWithBias, buildCombatProfile } from "@/engi
 import { DEVELOPMENT_PROFILE_WEIGHTS } from "@/constants/engine/development";
 import type { DevelopmentProfile } from "@/constants/engine/development";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
-import { rollPotential } from "@/engine/generation/CandidateStats";
+import { rollPotential, rollCeilingRank } from "@/engine/generation/CandidateStats";
 import { LegacyService } from "@/engine/legacy/LegacyService";
 import type { WorldState } from "@/engine/types/world";
 import type { RikishiStats } from "@/engine/types/rikishi";
@@ -187,9 +187,13 @@ export function generateCandidate(args: {
   const isEmergentProdigy = rng.next() < EMERGENT_PRODIGY_CHANCE;
   const devProfileForRoll = isEmergentProdigy ? "prodigy" : developmentProfile;
 
+  // Candidates still debut at jonokuchi, but their ceiling tier is drawn
+  // first — debut rank and potential ceiling are not the same thing. The
+  // thin elite tail supplies sanyaku-calibre material (measured 0 ≥72 PA
+  // in 400 under the flat jonokuchi roll).
   const paPkg = rollPotential({
     rng,
-    rank: "jonokuchi",
+    rank: rollCeilingRank(rng),
     profile,
     developmentProfile: devProfileForRoll,
   });

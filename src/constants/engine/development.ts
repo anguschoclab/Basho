@@ -91,6 +91,24 @@ export const PA_BY_RANK: Record<Rank, { mean: number; stdDev: number }> = {
   jonokuchi: { mean: 44, stdDev: 12 },
 };
 
+/**
+ * Elite ceiling tail — the share of recurring candidates whose potential is
+ * drawn from sekitori-tier means instead of the jonokuchi row. Measured
+ * (probe-sanyaku-tenure, 6yr + 400-candidate sample): the fat-tail roll
+ * supplies juryo/maegashira material (79/400 ≥58, 16/400 ≥64) but ZERO
+ * sanyaku-calibre ceilings (0/400 ≥72), so the S/K ranks have no elite
+ * pipeline. A 3% tail re-rolls the ceiling from the tiers below —
+ * ~1.65%/0.75%/0.45%/0.15% per cohort — enough to staff the elite ranks
+ * without flooding them.
+ */
+export const ELITE_CEILING_TAIL_CHANCE = 0.03;
+export const ELITE_CEILING_TIERS: [Rank, number][] = [
+  ["maegashira", 0.55],
+  ["komusubi", 0.25],
+  ["sekiwake", 0.15],
+  ["ozeki", 0.05],
+];
+
 /** Age distribution by rank — Gaussian, biased but not hard-gated. */
 export const AGE_BY_RANK: Record<Rank, { mean: number; stdDev: number; min: number; max: number }> =
   {

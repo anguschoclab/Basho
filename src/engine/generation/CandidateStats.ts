@@ -14,6 +14,8 @@ import {
   SIZE_POTENTIAL,
   STAT_GROUP,
   DEVELOPMENT_PROFILE_WEIGHTS,
+  ELITE_CEILING_TAIL_CHANCE,
+  ELITE_CEILING_TIERS,
   maturityFactor,
   type DevelopmentProfile,
 } from "@/constants/engine/development";
@@ -106,6 +108,23 @@ export function rollDevelopmentProfile(
     if (roll < acc) return profile as DevelopmentProfile;
   }
   return "standard";
+}
+
+/**
+ * The ceiling tier a recruit's potential is drawn from. Nearly everyone
+ * rolls the jonokuchi row — debut rank and potential ceiling were once
+ * conflated — but a thin elite tail draws sekitori-tier ceilings so the
+ * sanyaku ranks have a pipeline at all.
+ */
+export function rollCeilingRank(rng: SeededRNG): Rank {
+  if (rng.next() >= ELITE_CEILING_TAIL_CHANCE) return "jonokuchi";
+  const roll = rng.next();
+  let acc = 0;
+  for (const [rank, weight] of ELITE_CEILING_TIERS) {
+    acc += weight;
+    if (roll < acc) return rank;
+  }
+  return "maegashira";
 }
 
 /**
