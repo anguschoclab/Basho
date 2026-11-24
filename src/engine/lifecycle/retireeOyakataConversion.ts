@@ -342,7 +342,13 @@ export function evaluateFoundingEligibility(
   // stable count is institutional, so the association backs a qualified
   // founder's branch when neither he nor the parent can fund the seed.
   const jsaBacked = world.heyas.size < HEYA_COUNT_FLOOR;
-  const personallySolvent = (retiree.economics?.retirementFund ?? 0) >= FOUNDING_SEED_FUNDS;
+  // Solvency = total wealth — the retirement account is only the
+  // JSA-managed slice (kenshō splits + prize halves); a sekitori's salary
+  // lands in cash, and at intai he liquidates everything anyway. Real
+  // founders fund branches from career earnings, not the nenkin balance.
+  const liquidWealth =
+    (retiree.economics?.retirementFund ?? 0) + (retiree.economics?.cash ?? 0);
+  const personallySolvent = liquidWealth >= FOUNDING_SEED_FUNDS;
   const parentCanSponsor = (parentHeya.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2;
   if (!personallySolvent && !parentCanSponsor && !jsaBacked) return none;
 

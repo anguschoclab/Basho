@@ -530,6 +530,19 @@ describe("evaluateFoundingEligibility — JSA branching gates", () => {
     expect(evaluateFoundingEligibility(world, careerMaegashira).canFound).toBe(false);
   });
 
+  it("counts liquid salary cash toward solvency — top earners can self-fund", () => {
+    // A decade at ¥3M/mo salary lands in cash, not the retirement account
+    // — the real founder funds his branch from career earnings.
+    const world = worldWithParent({ funds: 10_000_000 }, HEYA_COUNT_FLOOR - 1);
+    const retiree = accomplished({
+      economics: { cash: FOUNDING_SEED_FUNDS, retirementFund: 5_000_000 } as any,
+    });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.parentSponsors).toBe(false);
+    expect(e.jsaBacked).toBe(false);
+  });
+
   it("allows a personally solvent retiree (self-funded founding)", () => {
     const world = worldWithParent({ funds: 10_000_000 });
     const retiree = accomplished({
