@@ -609,10 +609,18 @@ function transferElderStock(
   let changed = false;
   for (const [stockId, stock] of Object.entries(market.stocks)) {
     if (stock.holderId === fromOyakataId || stock.ownerId === fromOyakataId) {
+      // Shakukabu (borrowed stock): a share the outgoing master owned but
+      // leased out cannot follow him — the lessee's claim dies with the
+      // owner's retirement and the share reverts to the heir outright.
+      const leaseVacates = stock.ownerId === fromOyakataId && stock.status === "leased";
       nextStocks[stockId] = {
         ...stock,
-        holderId: stock.holderId === fromOyakataId ? toOyakataId : stock.holderId,
+        holderId:
+          stock.holderId === fromOyakataId || leaseVacates ? toOyakataId : stock.holderId,
         ownerId: stock.ownerId === fromOyakataId ? toOyakataId : stock.ownerId,
+        ...(leaseVacates
+          ? { status: "held" as const, leaseFee: undefined, askingPrice: undefined }
+          : {}),
       };
       changed = true;
     }

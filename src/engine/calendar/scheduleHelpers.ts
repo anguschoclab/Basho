@@ -9,6 +9,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import { getActiveRikishi } from "@/engine/core/selectors";
 import { stableSort } from "@/engine/utils/sort";
+import { DIVISION_QUOTA, JONIDAN_MAX } from "@/constants/engine/banzuke";
 
 /** Default bout days per division (sekitori = 15, lower = 7) */
 export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
@@ -22,16 +23,17 @@ export const DEFAULT_DIVISION_DAYS: Record<Division, number> = {
 
 /**
  * Get the expected roster size for a division.
- * Based on real-life sumo division sizes.
+ * Sourced from the real banzuke quotas (42/28/120/160); the unfixed tiers
+ * use their documented bounds — jonidan's 250 cap, jonokuchi's 40-man floor.
  */
 export function getDivisionExpectedSize(division: Division): number {
   const sizes: Record<Division, number> = {
-    makuuchi: 42,
-    juryo: 28,
-    makushita: 120,
-    sandanme: 200,
-    jonidan: 200,
-    jonokuchi: 200,
+    makuuchi: DIVISION_QUOTA.makuuchi,
+    juryo: DIVISION_QUOTA.juryo,
+    makushita: DIVISION_QUOTA.makushita,
+    sandanme: DIVISION_QUOTA.sandanme,
+    jonidan: JONIDAN_MAX,
+    jonokuchi: 40,
   };
   return sizes[division];
 }

@@ -79,7 +79,7 @@ export function processRetireeOyakataConversion(
   const rng = rngForWorld(world, "governance", `retirement_${id}`);
 
   // WS-17 — evaluate founding BEFORE elder-share resolution: the founding
-  // career bar (peak-Y/O OR 25 sanyaku OR 60 makuuchi basho) is wider than
+  // career bar (peak-Y/O OR 12 sanyaku OR 25 makuuchi basho) is wider than
   // the jun_toshiyori credential, so at a saturated kabu market eligible
   // veterans would otherwise early-return below and never be evaluated —
   // measured `founded=0` over a full 25-yr diagnostic. The founder's elder
@@ -340,7 +340,7 @@ export function evaluateFoundingEligibility(
   if (headroomToTarget <= 0) return none;
 
   // WS-6 — branch-out (bunke) is the ELITE tier of the eligibility ladder:
-  // Yokozuna/Ōzeki peak, 25 sanyaku basho, or 60 makuuchi basho. A career
+  // Yokozuna/Ōzeki peak, 12 sanyaku basho, or 25 makuuchi basho. A career
   // sekiwake cannot found a stable no matter his bank balance.
   const SANYAKU = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
   const history = retiree.careerHistory ?? [];

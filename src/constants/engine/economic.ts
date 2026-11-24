@@ -213,8 +213,8 @@ export const INHERIT_SEKITORI_BASHO = 20;
 export const COACH_SANYAKU_BASHO = 1; // or 20 makuuchi / 30 sekitori
 export const COACH_MAKUUCHI_BASHO = 20;
 export const COACH_SEKITORI_BASHO = 30;
-export const BRANCH_FOUNDING_SANYAKU_BASHO = 25; // or Y/O peak / 60 makuuchi
-export const BRANCH_FOUNDING_MAKUUCHI_BASHO = 60;
+export const BRANCH_FOUNDING_SANYAKU_BASHO = 12; // or Y/O peak / 25 makuuchi
+export const BRANCH_FOUNDING_MAKUUCHI_BASHO = 25;
 
 /** WS-7 — each held kabu (elder stock) share is worth this many influence
  *  points in board elections; kabu power must outweigh reputation noise. */
