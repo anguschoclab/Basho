@@ -355,7 +355,7 @@ export const MATRIX_GROUPS: { title: string; cells: MatrixCell[] }[] = [
 // Render helpers
 // ---------------------------------------------------------------------------
 
-function svgFromPaths(paths: Map<string, string>, px: number): string {
+export function svgFromPaths(paths: Map<string, string>, px: number): string {
   const inner = [...paths.entries()]
     .map(([hex, d]) => `<path fill="${hex}" d="${d}"/>`)
     .join("");

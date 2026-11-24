@@ -13,18 +13,28 @@
 
 import type { AvatarIdentity, AvatarStage } from "@/engine/types/avatar";
 import manifest from "./polishedManifest.json";
+import entityManifest from "./entityManifest.json";
 
 const files = import.meta.glob("./polished/*.png", {
   eager: true,
   import: "default",
 }) as Record<string, string>;
+const entityFiles = import.meta.glob("./polished/entities/*.png", {
+  eager: true,
+  import: "default",
+}) as Record<string, string>;
+
+const stemOf = (path: string) => path.slice(path.lastIndexOf("/") + 1, -".png".length);
 
 const URL_BY_KEY: Record<string, string> = Object.fromEntries(
-  Object.entries(files).map(([path, url]) => [
-    path.slice(path.lastIndexOf("/") + 1, -".png".length),
-    url,
-  ])
+  Object.entries(files).map(([path, url]) => [stemOf(path), url])
 );
+const ENTITY_URLS: Record<string, string> = Object.fromEntries(
+  Object.entries(entityFiles).map(([path, url]) => [stemOf(path), url])
+);
+
+/** entityManifest.json: identity seed → "entities/<file>.png". */
+const ENTITY_FILE_BY_SEED = entityManifest as Record<string, string>;
 
 /** Every polished asset key on disk (e.g. "head-shapes-1-round", "parts-4-tsuna-rope"). */
 export const POLISHED_AVATAR_KEYS: readonly string[] = Object.keys(URL_BY_KEY).sort();
@@ -83,6 +93,13 @@ export function resolvePolishedAvatar(
   identity: AvatarIdentity,
   stage: AvatarStage
 ): string | undefined {
+  // Per-entity portraits win — keyed by the identity's seed (= entity id).
+  const entityFile = ENTITY_FILE_BY_SEED[identity.seed];
+  if (entityFile) {
+    const url = ENTITY_URLS[stemOf(entityFile)];
+    if (url) return url;
+  }
+
   const idRec = identity as unknown as Record<string, unknown>;
   const stRec = stage as unknown as Record<string, unknown>;
   const ck = JSON.stringify([
