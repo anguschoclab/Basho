@@ -255,6 +255,8 @@ export function RikishiProfileBody({
                 kinboshiCount: rikishi.kinboshiCount,
                 popularity: rikishi.popularity,
                 currentBashoEarnings: rikishi.currentBashoEarnings,
+                careerEndorsements: rikishi.careerEndorsements,
+                careerPatronage: rikishi.careerPatronage,
               }}
             />
             <RikishiGlobalCup rikishiId={rikishi.id} world={world} />

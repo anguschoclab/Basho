@@ -14,6 +14,10 @@ export interface RikishiEconomics {
   currentBashoEarnings: number;
   popularity: number;
   mochikyukinLastPayoutMonth?: number; // Track last payout month for cadence
+  /** Career ¥ from commercial endorsements (CM/media) — outside income. */
+  careerEndorsements?: number;
+  /** Career ¥ from personal tanimachi/kōenkai gifts — outside income. */
+  careerPatronage?: number;
 }
 
 // Governance Types

@@ -151,3 +151,49 @@ export const TRAVEL_ALLOWANCE_CASH_SPLIT = 0.7;
 
 /** Travel allowance retirement split percentage */
 export const TRAVEL_ALLOWANCE_RETIREMENT_SPLIT = 0.3;
+
+/**
+ * Outside income — the non-JSA streams (real-2026 calibration):
+ *
+ * Commercial endorsements (CM/print/TV) concentrate at Yokozuna/Ōzeki
+ * and charismatic makuuchi — one major corporate deal runs ¥10–30M+/yr,
+ * a star yokozuna holds 2–3 (¥30–60M/yr). Rank-and-file maegashira get
+ * ¥0–5M (regional ads); jūryō and below essentially nothing.
+ *
+ * Personal tanimachi/kōenkai gifts (goshūgi) — cash envelopes at
+ * post-tournament parties and promotion celebrations — run
+ * ¥10–30M+/yr for top sanyaku. Distinct from KOENKAI_INCOME_* (the
+ * heya-level supporter-club stream split evenly across sekitori):
+ * this is the individual, star-scaled half.
+ */
+export const ENDORSEMENT_ANNUAL_BY_RANK = {
+  yokozuna: 35_000_000,
+  ozeki: 18_000_000,
+  sekiwake: 5_000_000,
+  komusubi: 4_000_000,
+  maegashira: 2_500_000,
+  juryo: 0,
+} as const;
+
+/** Per-basho tanimachi gift base by rank (¥) — paid at basho conclusion. */
+export const PATRONAGE_BASHO_BASE_BY_RANK = {
+  yokozuna: 2_200_000,
+  ozeki: 1_500_000,
+  sekiwake: 900_000,
+  komusubi: 700_000,
+  maegashira: 400_000,
+  juryo: 150_000,
+} as const;
+
+/**
+ * Star-power multiplier on outside income — `marketability` drives both
+ * streams (real-world: endorsements chase charisma, patrons chase
+ * winners). 50 → 0.8, 75 → 1.05, 100 → 1.3; clamped [0.3, 1.3].
+ */
+export function outsideIncomeStarFactor(marketability: number): number {
+  return Math.min(1.3, Math.max(0.3, 0.3 + marketability / 100));
+}
+
+/** Seeded jitter band on per-basho patronage (party size varies). */
+export const PATRONAGE_JITTER_MIN = 0.85;
+export const PATRONAGE_JITTER_SPAN = 0.3;

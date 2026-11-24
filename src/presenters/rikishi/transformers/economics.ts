@@ -31,5 +31,7 @@ export function toEconomicsDTO(r: Rikishi, year?: number): RikishiEconomicsDTO {
     kinboshiCount: e?.kinboshiCount ?? 0,
     popularity: e?.popularity ?? 50,
     currentBashoEarnings: e?.currentBashoEarnings ?? 0,
+    careerEndorsements: e?.careerEndorsements ?? 0,
+    careerPatronage: e?.careerPatronage ?? 0,
   };
 }

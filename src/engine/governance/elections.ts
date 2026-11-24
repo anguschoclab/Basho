@@ -208,16 +208,19 @@ export function runElections(world: WorldState): StateImpact {
   for (const [clan, ids] of byClan) {
     const quota = seats.get(clan) ?? 0;
     if (quota <= 0) continue;
+    const idsSet = new Set(ids);
     const slate = allCandidates
-      .filter((c) => ids.includes(c.heyaId))
+      .filter((c) => idsSet.has(c.heyaId))
       .sort((a, b) => b.score - a.score || (a.heyaId < b.heyaId ? -1 : 1));
     elected.push(...slate.slice(0, quota));
   }
 
   // Internal chairman pick — consensus score, deterministic tiebreak.
+  // chairmanScore is pure; score each electee once instead of per comparison.
+  const chairmanScores = new Map(elected.map((c) => [c.heyaId, chairmanScore(world, c.heyaId)]));
   const chairman = [...elected].sort(
     (a, b) =>
-      chairmanScore(world, b.heyaId) - chairmanScore(world, a.heyaId) ||
+      (chairmanScores.get(b.heyaId) ?? 0) - (chairmanScores.get(a.heyaId) ?? 0) ||
       (a.heyaId < b.heyaId ? -1 : 1)
   )[0];
 

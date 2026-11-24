@@ -5,12 +5,21 @@ import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { perceivedTalentSeed } from "@/engine/recruitment/perceivedTalent";
 import { createPlan } from "@/engine/npc/StrategicPlanner";
+import { buildSwissTorikumi } from "@/engine/matchmaking/index";
+import { DynastyService } from "@/engine/legacy/DynastyService";
+import { runHistoryUpdates } from "@/engine/history/history";
+import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare";
+import { BloodlineService } from "@/engine/legacy/BloodlineService";
+import { applyWeeklyDegeiko } from "@/engine/training/DegeikoService";
+import { projectCornerAdvice } from "@/presenters/projections/cornerAdviceProjection";
 import type { AIContext } from "@/engine/npc/types";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule, BashoState, BoutResult } from "@/engine/types/basho";
+import type { CareerSnapshot } from "@/engine/types/history";
 import type { TalentCandidate } from "@/engine/types/talent";
 import type { Staff } from "@/engine/types/staff";
+import type { Division } from "@/engine/types/banzuke";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 
 /**
@@ -273,5 +282,236 @@ describe("createPlan planHistory failure penalty (PR #939)", () => {
     if (noFail!.planId === "yokozuna_push") {
       expect(withFails!.planId).not.toBe("yokozuna_push");
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Equivalence pins for the perf-audit sweep — Set/Map lookups, invariant
+// hoists, sort→top-k scans, and merged filter passes. These characterize
+// CURRENT behavior; every assertion must stay green after the mechanical
+// optimizations land.
+// ---------------------------------------------------------------------------
+
+describe("buildSwissTorikumi hot-streak pullup (perf-audit A2)", () => {
+  function mkMakuuchi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
+    return MockFactory.createRikishi({ id, division: "makuuchi", ...overrides });
+  }
+
+  it("an undefeated non-sanyaku is pulled up to the top available sanyaku", () => {
+    const hot = mkMakuuchi("hot-1", { rank: "maegashira", rankNumber: 8, side: "east" });
+    // Sekiwake outranks komusubi on the banzuke — "san-top" is the sekiwake.
+    const sanyakuTop = mkMakuuchi("san-top", { rank: "sekiwake", rankNumber: 2, side: "west" });
+    const sanyakuLow = mkMakuuchi("san-low", { rank: "komusubi", rankNumber: 1, side: "east" });
+    const fillers: Rikishi[] = [];
+    for (let i = 0; i < 20; i++) {
+      fillers.push(
+        mkMakuuchi(`f-${i}`, {
+          rank: "maegashira",
+          rankNumber: 9 + (i % 8),
+          side: i % 2 === 0 ? "east" : "west",
+        })
+      );
+    }
+    const basho = MockFactory.createBasho({ day: 10 });
+    basho.standings.set("hot-1", { wins: 10, losses: 0 });
+    const pool = [hot, sanyakuTop, sanyakuLow, ...fillers];
+    const pairings = buildSwissTorikumi(basho, pool, {
+      seed: "pin-a2",
+      day: 10,
+      division: "makuuchi",
+    });
+    const hotPair = pairings.find((p) => p.eastId === "hot-1" || p.westId === "hot-1");
+    expect(hotPair).toBeDefined();
+    expect(hotPair!.reasons).toContain("hot_streak_pullup");
+    const partner = hotPair!.eastId === "hot-1" ? hotPair!.westId : hotPair!.eastId;
+    expect(partner).toBe("san-top");
+  });
+});
+
+describe("DynastyService.findEligibleSuccessors (perf-audit A5)", () => {
+  function snap(division: Division): CareerSnapshot {
+    return {
+      id: `s-${division}`,
+      bashoId: "b1",
+      year: 2029,
+      month: 1,
+      bashoName: "hatsu",
+      rank: division === "makuuchi" ? "maegashira" : "juryo",
+      division,
+      rankNumber: 1,
+      side: "east",
+      wins: 8,
+      losses: 7,
+      absences: 0,
+    } as CareerSnapshot;
+  }
+
+  it("returns roster members and alumni meeting the inherit bar only", () => {
+    const inside = MockFactory.createRikishi({
+      id: "in-1",
+      heyaId: "h1",
+      division: "makuuchi",
+      careerHistory: Array.from({ length: 12 }, () => snap("makuuchi")),
+    });
+    const alum = MockFactory.createRikishi({
+      id: "al-1",
+      heyaId: "h2",
+      division: "juryo",
+      careerHistory: Array.from({ length: 20 }, () => snap("juryo")),
+      heyaHistory: [{ heyaId: "h1", joinWeek: 1 }],
+    });
+    const under = MockFactory.createRikishi({
+      id: "no-1",
+      heyaId: "h2",
+      division: "makuuchi",
+      careerHistory: Array.from({ length: 5 }, () => snap("makuuchi")),
+      heyaHistory: [{ heyaId: "h1", joinWeek: 1 }],
+    });
+    const world = MockFactory.createWorld({
+      rikishi: new Map([["in-1", inside], ["al-1", alum], ["no-1", under]]),
+      heyas: new Map([
+        ["h1", MockFactory.createHeya("h1", { rikishiIds: ["in-1"] })],
+        ["h2", MockFactory.createHeya("h2", { rikishiIds: ["al-1", "no-1"] })],
+      ]),
+    });
+    const eligible = DynastyService.findEligibleSuccessors(world, "h1");
+    expect([...eligible].sort()).toEqual(["al-1", "in-1"]);
+  });
+});
+
+describe("runHistoryUpdates career-win milestones (perf-audit A6)", () => {
+  const mkMilestone = (title: string) => ({
+    id: `m-${title}`,
+    type: "stats_record" as const,
+    title,
+    description: "",
+    date: { year: 2029, month: 1 },
+  });
+
+  it("records the lowest unrecorded threshold and never re-records it", () => {
+    const fresh = MockFactory.createRikishi({ id: "r-new", careerWins: 500, milestones: [] });
+    const done = MockFactory.createRikishi({
+      id: "r-done",
+      careerWins: 500,
+      milestones: [mkMilestone("100 Career Wins")],
+    });
+    const world = MockFactory.createWorld({
+      year: 2030,
+      rikishi: new Map([["r-new", fresh], ["r-done", done]]),
+      history: [],
+    });
+    const impact = runHistoryUpdates(world);
+    const updNew = impact.entities?.rikishiUpdates?.get("r-new");
+    const updDone = impact.entities?.rikishiUpdates?.get("r-done");
+    // Thresholds scan ascending: 500 wins fires "100 Career Wins" first.
+    expect(updNew?.milestones?.some((m) => m.title === "100 Career Wins")).toBe(true);
+    const doneTitles = (updDone?.milestones ?? []).map((m) => m.title);
+    expect(doneTitles.filter((t) => t === "100 Career Wins")).toHaveLength(1);
+    expect(doneTitles).toContain("500 Career Wins");
+  });
+});
+
+describe("phase01_week_welfare welfare_standards morale (perf-audit B1)", () => {
+  function worldWithPolicies(policies: string[]): WorldState {
+    return MockFactory.createWorld({
+      heyas: new Map([["h1", MockFactory.createHeya("h1", { rikishiIds: [] })]]),
+      rikishiCouncil: { activePolicies: policies } as WorldState["rikishiCouncil"],
+    });
+  }
+
+  it("the council charter lifts every heya's morale by exactly 3", () => {
+    const withPolicy = phase01_week_welfare(worldWithPolicies(["welfare_standards"]));
+    const without = phase01_week_welfare(worldWithPolicies([]));
+    const moraleWith = withPolicy.entities?.heyaUpdates?.get("h1")?.welfareState?.morale;
+    const moraleWithout = without.entities?.heyaUpdates?.get("h1")?.welfareState?.morale;
+    expect(moraleWith).toBeDefined();
+    expect(moraleWithout).toBeDefined();
+    expect((moraleWith ?? 0) - (moraleWithout ?? 0)).toBe(3);
+  });
+});
+
+describe("BloodlineService.applyHeritageBonus (perf-audit B2)", () => {
+  function worldWithBloodline(power: number): WorldState {
+    const r = MockFactory.createRikishi({ id: "r1", stats: { power } as Rikishi["stats"] });
+    r.lineage = { bloodlineTraitId: "strong" };
+    return MockFactory.createWorld({
+      rikishi: new Map([["r1", r]]),
+      bloodlineRegistry: {
+        traits: {
+          strong: {
+            traitId: "strong",
+            label: "Powerful Ancestor",
+            description: "Inherited strength",
+            statFloorBonus: { power: 80 },
+            ceilingBonus: 0,
+            ancestorShikona: "Tetsuyama",
+            registeredYear: 1990,
+          },
+        },
+      },
+    });
+  }
+
+  it("nudges stats toward the floor by 1 and respects the floor", () => {
+    const below = BloodlineService.applyHeritageBonus(worldWithBloodline(40));
+    expect(below.entities?.rikishiUpdates?.get("r1")?.stats?.power).toBe(41);
+    const atFloor = BloodlineService.applyHeritageBonus(worldWithBloodline(80));
+    expect(atFloor.entities?.rikishiUpdates?.get("r1")).toBeUndefined();
+  });
+});
+
+describe("applyWeeklyDegeiko host selection (perf-audit B3)", () => {
+  it("a retired rikishi still on the host roster is never chosen as host", () => {
+    const guest = MockFactory.createRikishi({ id: "guest-a", heyaId: "heya-g" });
+    const hostA = MockFactory.createRikishi({ id: "host-a", heyaId: "heya-h" });
+    const hostRet = MockFactory.createRikishi({ id: "host-ret", heyaId: "heya-h", isRetired: true });
+    const world = MockFactory.createWorld({
+      heyas: new Map([
+        ["heya-g", MockFactory.createHeya("heya-g", { rikishiIds: ["guest-a"] })],
+        ["heya-h", MockFactory.createHeya("heya-h", { rikishiIds: ["host-a", "host-ret"] })],
+      ]),
+      rikishi: new Map([["guest-a", guest], ["host-a", hostA], ["host-ret", hostRet]]),
+      trainingState: new Map([
+        [
+          "heya-g",
+          {
+            heyaId: "heya-g",
+            activeProfile: {} as never,
+            focusSlots: [],
+            pendingDegeiko: { targetHeyaId: "heya-h", week: 1, rikishiIds: ["guest-a"] },
+          },
+        ],
+      ]),
+    });
+    const impact = applyWeeklyDegeiko(world);
+    expect(impact.entities?.rikishiUpdates?.get("host-ret")).toBeUndefined();
+    const guestUpd = impact.entities?.rikishiUpdates?.get("guest-a");
+    expect(guestUpd?.practicePartners ?? []).not.toContain("host-ret");
+  });
+});
+
+describe("projectCornerAdvice match selection (perf-audit B4)", () => {
+  it("finds today's unplayed player bout and rejects non-participants", () => {
+    const p1 = MockFactory.createRikishi({ id: "p1", heyaId: "h1" });
+    const o1 = MockFactory.createRikishi({ id: "o1", heyaId: "h2" });
+    const other = MockFactory.createRikishi({ id: "other", heyaId: "h2" });
+    const basho = MockFactory.createBasho({ day: 5 });
+    basho.matches = [
+      { boutId: "m1", day: 5, eastRikishiId: "p1", westRikishiId: "o1" } as MatchSchedule,
+      { boutId: "m2", day: 6, eastRikishiId: "other", westRikishiId: "o1" } as MatchSchedule,
+    ];
+    const world = MockFactory.createWorld({
+      rikishi: new Map([["p1", p1], ["o1", o1], ["other", other]]),
+      heyas: new Map([
+        ["h1", MockFactory.createHeya("h1", { rikishiIds: ["p1"] })],
+        ["h2", MockFactory.createHeya("h2", { rikishiIds: ["o1", "other"] })],
+      ]),
+      currentBasho: basho,
+      cyclePhase: "active_basho",
+    });
+    const proj = projectCornerAdvice(world, ["p1"]);
+    expect(proj?.playerRikishi.id).toBe("p1");
+    expect(proj?.opponent.id).toBe("o1");
+    expect(projectCornerAdvice(world, ["other"])).toBeNull();
   });
 });

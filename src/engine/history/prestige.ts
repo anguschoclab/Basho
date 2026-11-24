@@ -82,6 +82,13 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
 
   const builder = createImpactBuilder("prestigeDecay");
 
+  // Loop-invariant prize lists — one Set each instead of four linear scans
+  // per roster member.
+  const junYushoSet = new Set(lastBasho.junYusho);
+  const ginoShoSet = new Set(lastBasho.ginoSho ?? []);
+  const kantoShoSet = new Set(lastBasho.kantosho ?? []);
+  const shukunShoSet = new Set(lastBasho.shukunsho ?? []);
+
   for (const heya of world.heyas.values()) {
     let totalWins = 0;
     let totalLosses = 0;
@@ -96,10 +103,10 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
       totalLosses += r.currentBashoLosses ?? 0;
 
       if (lastBasho.yusho === r.id) hasYusho = true;
-      if (lastBasho.junYusho.includes(r.id)) hasJunYusho = true;
-      if ((lastBasho.ginoSho ?? []).includes(r.id)) sanshoPrizeCount++;
-      if ((lastBasho.kantosho ?? []).includes(r.id)) sanshoPrizeCount++;
-      if ((lastBasho.shukunsho ?? []).includes(r.id)) sanshoPrizeCount++;
+      if (junYushoSet.has(r.id)) hasJunYusho = true;
+      if (ginoShoSet.has(r.id)) sanshoPrizeCount++;
+      if (kantoShoSet.has(r.id)) sanshoPrizeCount++;
+      if (shukunShoSet.has(r.id)) sanshoPrizeCount++;
 
       if (isSekitoriDivision(r.division)) sekitoriCount++;
     }

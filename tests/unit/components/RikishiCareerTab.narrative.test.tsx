@@ -353,8 +353,9 @@ describe("RikishiCareerTab earnings tracker", () => {
         economics={sampleEconomics}
       />
     );
-    // 500000 formatted with toLocaleString should contain "500,000"
-    expect(screen.getByText(/500,000/)).toBeTruthy();
+    // 500000 formatted with toLocaleString should contain "500,000" —
+    // appears in the stats row AND the income-mix legend (JSA segment).
+    expect(screen.getAllByText(/500,000/).length).toBeGreaterThan(0);
     // 100000 formatted should contain "100,000"
     expect(screen.getByText(/100,000/)).toBeTruthy();
   });

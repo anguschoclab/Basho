@@ -11,6 +11,7 @@
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { mergeImpacts, resolveImpacts } from "@/engine/core/ImpactResolver";
 import { accumulateMochikyukinPoints } from "@/engine/economy/MochikyukinService";
+import { applyBashoPatronage } from "@/engine/economy/OutsideIncomeService";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import {
@@ -135,6 +136,9 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   // 本場所特別手当 — per-basho sanyaku+ allowance, pro-rated by days contested.
   const postTeateWorld = resolveImpacts(postPrizeWorld, [teateImpact]);
   const sanyakuAllowanceImpact = paySanyakuBashoAllowance(postTeateWorld);
+  // 御祝儀 — personal tanimachi/kōenkai gifts at post-tournament parties,
+  // star-scaled (outside income, distinct from JSA prizes above).
+  const patronageImpact = applyBashoPatronage(postTeateWorld);
 
   // Kinboshi compensation flows exclusively through mochikyukin accumulation
   // below (+10 pts/star at ¥4,000/pt, paid every 2 months while sekitori) —
@@ -147,6 +151,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     historyImpact,
     teateImpact,
     sanyakuAllowanceImpact,
+    patronageImpact,
     mochikyukinImpact,
   ]);
 }

@@ -333,6 +333,7 @@ export function checkYokozunaPromotions(
     }
   }
 
+  const junYushoIdSet = new Set(currentBasho?.junYushoIds ?? []);
   for (const rid of ozekiIds) {
     // historyIndex lags — the just-concluded basho is queued as a world-array
     // append, not indexed yet. Append a synthesized entry so `last` is THIS
@@ -341,7 +342,7 @@ export function checkYokozunaPromotions(
     if (currentBasho) {
       history.push({
         yusho: currentBasho.yusho === rid,
-        junYusho: currentBasho.junYushoIds.includes(rid),
+        junYusho: junYushoIdSet.has(rid),
       } as (typeof history)[number]);
     }
     const len = history.length;

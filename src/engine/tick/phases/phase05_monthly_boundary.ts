@@ -26,6 +26,7 @@ import {
   deductTsukebitoCosts,
   distributeKoenkaiToSekitori,
 } from "@/engine/economy/TravelAllowanceService";
+import { payMonthlyEndorsements } from "@/engine/economy/OutsideIncomeService";
 import { tickMonthlyNPC } from "@/engine/npc/ticks";
 import { tickMonthlyKoenkaiDemands } from "@/engine/economy/koenkaiDemands";
 import { tickFacilityCondition } from "@/engine/economy/facilityWear";
@@ -120,6 +121,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     (w) => payTravelAllowance(w),
     (w) => deductTsukebitoCosts(w),
     (w) => distributeKoenkaiToSekitori(w),
+    (w) => payMonthlyEndorsements(w),
   ];
   if (jungyoParticipants && jungyoEvent) {
     const participants = jungyoParticipants;

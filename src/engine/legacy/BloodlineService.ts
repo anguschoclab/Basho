@@ -40,6 +40,20 @@ const WEEKLY_HERITAGE_BONUS = 1;
  * }
  * ```
  */
+/** Stats eligible for heritage floor nudges — one Set for all rikishi. */
+const NUMERIC_STAT_KEYS: ReadonlySet<keyof RikishiStats> = new Set([
+  "power",
+  "technique",
+  "speed",
+  "weight",
+  "stamina",
+  "mental",
+  "adaptability",
+  "balance",
+  "aggression",
+  "experience",
+]);
+
 export const BloodlineService = {
   /**
    * Applies weekly heritage bonuses to rikishi with bloodline traits.
@@ -89,23 +103,10 @@ export const BloodlineService = {
       const nextStats = { ...rikishi.stats };
       let changed = false;
 
-      const numericStatKeys: ReadonlySet<keyof RikishiStats> = new Set([
-        "power",
-        "technique",
-        "speed",
-        "weight",
-        "stamina",
-        "mental",
-        "adaptability",
-        "balance",
-        "aggression",
-        "experience",
-      ]);
-
       for (const [stat, floor] of Object.entries(trait.statFloorBonus)) {
         if (floor === undefined) continue;
         const s = stat as keyof RikishiStats;
-        if (!numericStatKeys.has(s)) continue;
+        if (!NUMERIC_STAT_KEYS.has(s)) continue;
         const current = nextStats[s] as number;
         if (current < floor) {
           nextStats[s] = clampInt(current + WEEKLY_HERITAGE_BONUS, 0, 99) as never;

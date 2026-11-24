@@ -34,19 +34,18 @@ export function projectCornerAdvice(
   const basho = world.currentBasho;
   if (!basho || !basho.matches || world.cyclePhase !== "active_basho") return null;
   const day = basho.day ?? 1;
+  const playerIds = new Set(playerRikishiIds);
 
   const todayMatch = basho.matches.find((m) => {
     if ((m.day ?? 1) !== day || m.result) return false;
     const eastId = m.eastRikishiId;
     const westId = m.westRikishiId;
-    return (
-      (eastId && playerRikishiIds.includes(eastId)) || (westId && playerRikishiIds.includes(westId))
-    );
+    return (eastId && playerIds.has(eastId)) || (westId && playerIds.has(westId));
   });
   if (!todayMatch) return null;
 
   const playerId =
-    (todayMatch.eastRikishiId && playerRikishiIds.includes(todayMatch.eastRikishiId)
+    (todayMatch.eastRikishiId && playerIds.has(todayMatch.eastRikishiId)
       ? todayMatch.eastRikishiId
       : todayMatch.westRikishiId) || undefined;
   if (!playerId) return null;

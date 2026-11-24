@@ -696,15 +696,25 @@ function scoreBanzukeCandidates(
     sandanme: { division: "jonidan", depth: 50 },
     jonidan: { division: "jonokuchi", depth: 40 },
   };
+  // Precompute each target band's depth-th incumbent once — the anchor depends
+  // only on target.division (source divisions never equal their target, so
+  // `s !== c` could never exclude an anchor candidate) and is invariant
+  // across the loop.
+  const anchorByDivision = new Map<string, (typeof sorted)[number] | undefined>();
+  for (const t of Object.values(KYUJO_TARGET)) {
+    if (anchorByDivision.has(t.division)) continue;
+    anchorByDivision.set(
+      t.division,
+      sorted.filter((s) => s.entry.division === t.division)[t.depth - 1]
+    );
+  }
   let kyujoAdjusted = false;
   for (const c of sorted) {
     const p = perfById.get(c.entry.rikishiId);
     if (!p || (p.absences ?? 0) < 7 || (p.absences ?? 0) < p.wins + p.losses) continue;
     const target = KYUJO_TARGET[c.entry.division];
     if (!target) continue;
-    const anchor = sorted.filter(
-      (s) => s !== c && s.entry.division === target.division
-    )[target.depth - 1];
+    const anchor = anchorByDivision.get(target.division);
     if (!anchor || c.desiredKey < anchor.desiredKey) continue;
     c.desiredKey = anchor.desiredKey - 0.5;
     kyujoAdjusted = true;

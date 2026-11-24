@@ -170,9 +170,19 @@ export function selectHeadlineIndex(lines: PbpLine[]): number {
     "yusho_race",
     "playoff",
   ];
-  for (const tag of priority) {
-    const idx = lines.findIndex((l) => l.tags?.includes(tag));
-    if (idx >= 0) return idx;
-  }
-  return lines.length - 1;
+  // Single pass: keep the first line carrying the best (lowest-index) tag
+  // seen so far — same result as scanning once per tag in priority order.
+  let bestPri = priority.length;
+  let bestIdx = -1;
+  lines.forEach((l, i) => {
+    if (!l.tags) return;
+    for (let t = 0; t < bestPri; t++) {
+      if (l.tags.includes(priority[t])) {
+        bestPri = t;
+        bestIdx = i;
+        break;
+      }
+    }
+  });
+  return bestIdx >= 0 ? bestIdx : lines.length - 1;
 }

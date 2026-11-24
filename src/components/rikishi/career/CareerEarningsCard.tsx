@@ -27,7 +27,15 @@ export interface CareerEconomics {
   kinboshiCount: number;
   popularity: number;
   currentBashoEarnings: number;
+  careerEndorsements: number;
+  careerPatronage: number;
 }
+
+const STREAMS = [
+  { key: "jsa", label: "JSA Pay", color: "hsl(var(--primary) / 0.75)" },
+  { key: "endorsements", label: "Endorsements", color: "hsl(var(--warning) / 0.8)" },
+  { key: "patronage", label: "Tanimachi Gifts", color: "hsl(var(--success) / 0.8)" },
+] as const;
 
 export function CareerEarningsCard({
   earningsProgressionData,
@@ -53,7 +61,7 @@ export function CareerEarningsCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
           <div className="space-y-1">
             <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
               Total Earnings
@@ -92,7 +100,16 @@ export function CareerEarningsCard({
               {economics.kinboshiCount}
             </div>
           </div>
+          <div className="space-y-1">
+            <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
+              Outside Income
+            </div>
+            <div className="text-lg font-display font-black tabular-nums">
+              ¥{((economics.careerEndorsements ?? 0) + (economics.careerPatronage ?? 0)).toLocaleString("ja-JP")}
+            </div>
+          </div>
         </div>
+        <IncomeMixBar economics={economics} />
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
@@ -163,5 +180,67 @@ export function CareerEarningsCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+/**
+ * Career income composition — JSA pay vs the two outside streams.
+ * JSA pay is derived (totalEarnings minus the tracked outside streams),
+ * so the bar always reconciles to Total Earnings.
+ */
+function IncomeMixBar({ economics }: { economics: CareerEconomics }) {
+  const endorsements = economics.careerEndorsements ?? 0;
+  const patronage = economics.careerPatronage ?? 0;
+  const outside = endorsements + patronage;
+  const total = economics.totalEarnings;
+  if (total <= 0) return null;
+  const segments = [
+    { ...STREAMS[0], value: Math.max(0, total - outside) },
+    { ...STREAMS[1], value: endorsements },
+    { ...STREAMS[2], value: patronage },
+  ];
+  const outsidePct = Math.round((outside / total) * 100);
+  return (
+    <div className="mb-6 space-y-2">
+      <div className="flex items-baseline justify-between">
+        <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
+          Income Mix
+        </div>
+        <div className="text-xs font-display font-black tabular-nums">
+          {outsidePct}% outside JSA
+        </div>
+      </div>
+      <div className="flex h-3 w-full overflow-hidden rounded-sm bg-muted/40">
+        {segments.map(
+          (s) =>
+            s.value > 0 && (
+              <div
+                key={s.key}
+                style={{ width: `${(s.value / total) * 100}%`, backgroundColor: s.color }}
+                title={`${s.label}: ¥${Math.round(s.value).toLocaleString("ja-JP")}`}
+              />
+            )
+        )}
+      </div>
+      <div className="flex flex-wrap gap-x-4 gap-y-1">
+        {segments.map(
+          (s) =>
+            s.value > 0 && (
+              <div key={s.key} className="flex items-center gap-1.5">
+                <span
+                  className="inline-block h-2 w-2 rounded-full"
+                  style={{ backgroundColor: s.color }}
+                />
+                <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
+                  {s.label}
+                </span>
+                <span className="text-[10px] font-display font-black tabular-nums">
+                  ¥{Math.round(s.value).toLocaleString("ja-JP")}
+                </span>
+              </div>
+            )
+        )}
+      </div>
+    </div>
   );
 }

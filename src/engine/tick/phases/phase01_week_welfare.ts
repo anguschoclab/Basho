@@ -62,6 +62,10 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
   const mediaPressureChanges: Record<string, number> = {};
   const collectedHeadlines: MediaHeadline[] = [];
 
+  // Loop-invariant: rikishiCouncil policies cannot change inside the heya loop.
+  const hasWelfareStandardsPolicy =
+    world.rikishiCouncil?.activePolicies.includes("welfare_standards") ?? false;
+
   for (const [id, heya] of world.heyas) {
     const heyaUpdates: Partial<Heya> = {};
 
@@ -95,7 +99,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     // Facility morale bonuses (dormitory quarters lift heya morale)
     morale += Math.round(InfrastructureService.getHeyaBonuses(heya).moraleBonus);
     // §3 Rikishi-kai welfare_standards charter lifts morale across all stables
-    if (world.rikishiCouncil?.activePolicies.includes("welfare_standards")) {
+    if (hasWelfareStandardsPolicy) {
       morale += 3;
     }
     nextState.morale = clamp(morale, 0, MAX_MORALE);

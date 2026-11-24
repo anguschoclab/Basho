@@ -190,6 +190,8 @@ export interface RikishiEconomicsDTO {
   kinboshiCount: number;
   popularity: number;
   currentBashoEarnings: number;
+  careerEndorsements: number;
+  careerPatronage: number;
 }
 
 /** Kesho-mawashi and visual customization */

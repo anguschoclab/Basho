@@ -487,9 +487,13 @@ export function planDivisionCallups(args: {
     for (const lower of lowerDivs) {
       if (callup) break;
       const taken = excludedEverywhere();
-      callup = (rosterByDiv.get(lower) ?? [])
-        .filter((r) => !r.injured && !taken.has(r.id) && !busyToday.has(r.id) && !r.isMaezumo)
-        .sort(byTopRank)[0];
+      // Single-pass minimum under the same byTopRank order — the previous
+      // .filter().sort()[0] sorted an entire lower-division roster to keep
+      // only its top man.
+      for (const r of rosterByDiv.get(lower) ?? []) {
+        if (r.injured || taken.has(r.id) || busyToday.has(r.id) || r.isMaezumo) continue;
+        if (!callup || byTopRank(r, callup) < 0) callup = r;
+      }
       if (callup) markExcluded(lower, callup.id);
     }
 
@@ -934,14 +938,19 @@ export function ensureRollingTorikumi(world: WorldState, throughDay?: number): S
   let runningWorld = world;
   let maxPosted = basho.postedThroughDay ?? 0;
 
+  let scheduledDays = new Set((basho.matches ?? []).map((m) => m.day ?? 1));
   for (let d = currentDay; d <= targetDay; d++) {
     const currentBasho = runningWorld.currentBasho;
     if (!currentBasho) break;
-    const alreadyScheduled = currentBasho.matches.some((m) => m.day === d);
+    const alreadyScheduled = scheduledDays.has(d);
     if (!alreadyScheduled && needsScheduleForDay("makuuchi", d)) {
       const dayImpact = ensureDaySchedule(runningWorld, d);
       builder.merge(dayImpact);
       runningWorld = resolveImpacts(runningWorld, [dayImpact]);
+      // matches grow as days are scheduled — rebuild the day index.
+      scheduledDays = new Set(
+        (runningWorld.currentBasho?.matches ?? []).map((m) => m.day ?? 1)
+      );
     }
     if (d > maxPosted) maxPosted = d;
   }

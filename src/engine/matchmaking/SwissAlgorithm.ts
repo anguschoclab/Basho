@@ -333,14 +333,15 @@ function phase2(
 
   const bucketKeys = [...bucketMap.keys()].sort((a, b) => b - a);
 
+  // Sanyaku order is static (banzukeOrdinal doesn't change mid-loop) — sort
+  // once, then each pullup takes the first currently-unpaired entry.
+  const sanyakuByRank = pool.filter(isSanyakuRikishi).sort(
+    (a, b) => banzukeOrdinal(a) - banzukeOrdinal(b)
+  );
   for (const r of pool) {
     const rec = standings?.get(r.id) ?? { wins: 0, losses: 0 };
     if (rec.wins >= HOT_STREAK_WINS_THRESHOLD && rec.losses === 0 && !isSanyakuRikishi(r)) {
-      const topSanyakuPool: Rikishi[] = [];
-      for (const s of pool) {
-        if (isSanyakuRikishi(s) && !paired.has(s.id) && !pulledUp.has(s.id)) topSanyakuPool.push(s);
-      }
-      const topSanyaku = topSanyakuPool.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
+      const topSanyaku = sanyakuByRank.find((s) => !paired.has(s.id) && !pulledUp.has(s.id));
       if (topSanyaku) {
         const p = tryPair(basho, r, topSanyaku, facedSet, paired, { rivalriesState, day });
         if (p) {

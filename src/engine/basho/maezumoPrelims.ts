@@ -124,7 +124,9 @@ export function scheduleMaezumoDay(
   const out: MatchSchedule[] = [];
   while (pool.length >= 2) {
     const [east] = pool.splice(0, 1);
-    let idx = pool.findIndex((r) => r.heyaId !== east.heyaId);
+    // Pool is capped at the maezumo entrant count (~10-40) and findIndex
+    // early-exits — a non-same-heya partner usually matches within a few entries.
+    let idx = pool.findIndex((r) => r.heyaId !== east.heyaId); // perf-hotspots: ignore
     if (idx < 0) idx = 0;
     const [west] = pool.splice(idx, 1);
     out.push({

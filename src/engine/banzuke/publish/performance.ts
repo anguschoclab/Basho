@@ -1,5 +1,5 @@
 import type { WorldState } from "@/engine/types/world";
-import type { BashoState } from "@/engine/types/basho";
+import type { BashoState, MatchSchedule } from "@/engine/types/basho";
 import type { BashoPerformance } from "@/engine/types/banzuke";
 import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
@@ -183,6 +183,7 @@ function recordBashoPerformance(
   stats: StandingStats,
   isYusho: boolean,
   isJunYusho: boolean,
+  rikishiMatches: MatchSchedule[],
   tracked: {
     consecutiveStrongOzeki: number;
     consecutiveMakeKoshi: number;
@@ -197,8 +198,7 @@ function recordBashoPerformance(
   const id = rikishi.id;
   const history = world.history[world.history.length - 1];
 
-  const dayResults = (lastBasho.matches ?? [])
-    .filter((m) => m.result && (m.eastRikishiId === id || m.westRikishiId === id) && m.day <= 15)
+  const dayResults = rikishiMatches
     .sort((a, b) => a.day - b.day)
     .flatMap((m) => {
       const res = m.result;
@@ -457,6 +457,21 @@ export function buildPerformanceList(
   // Loop-invariant: the just-published basho result is the same for every entry.
   const history = world.history[world.history.length - 1];
   const junYushoSet = new Set(history?.junYusho ?? []);
+  const ginoShoSet = new Set(history?.ginoSho ?? []);
+  const shukunShoSet = new Set(history?.shukunsho ?? []);
+  const kantoShoSet = new Set(history?.kantosho ?? []);
+
+  // Index each rikishi's decided day<=15 matches once — recordBashoPerformance
+  // rebuilds the day-by-day star chart from them per entry below.
+  const matchesByRikishi = new Map<string, MatchSchedule[]>();
+  for (const m of lastBasho.matches ?? []) {
+    if (!m.result || m.day > 15) continue;
+    for (const pid of [m.eastRikishiId, m.westRikishiId]) {
+      const list = matchesByRikishi.get(pid);
+      if (list) list.push(m);
+      else matchesByRikishi.set(pid, [m]);
+    }
+  }
 
   for (const [id, stats] of normalizedEntries) {
     const isYusho = history?.yusho === id;
@@ -465,9 +480,9 @@ export function buildPerformanceList(
     const divisionDays = rikishi ? getTotalBashodays(rikishi.division) : 15;
 
     let prizePoints = 0;
-    if ((history?.ginoSho ?? []).includes(id)) prizePoints += 1;
-    if ((history?.shukunsho ?? []).includes(id)) prizePoints += 1;
-    if ((history?.kantosho ?? []).includes(id)) prizePoints += 1;
+    if (ginoShoSet.has(id)) prizePoints += 1;
+    if (shukunShoSet.has(id)) prizePoints += 1;
+    if (kantoShoSet.has(id)) prizePoints += 1;
 
     let promoteToYokozuna = false;
     let consecutiveStrongOzeki = rikishi?.consecutiveStrongOzeki || 0;
@@ -511,6 +526,7 @@ export function buildPerformanceList(
         stats,
         isYusho,
         isJunYusho,
+        matchesByRikishi.get(id) ?? [],
         {
           consecutiveStrongOzeki,
           consecutiveMakeKoshi: pressure.consecutiveMakeKoshi,

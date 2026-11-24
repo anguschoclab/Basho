@@ -17,6 +17,7 @@ import { SPONSOR_RECRUITMENT_COSTS } from "@/constants/engine/economic";
 import { STAR_POWER_SATISFACTION_WEIGHT } from "@/constants/engine/sponsors";
 
 const BAND_ORDER: KoenkaiBandType[] = ["none", "weak", "moderate", "strong", "powerful"];
+const BAND_INDEX = new Map(BAND_ORDER.map((b, i) => [b, i]));
 
 /**
  * Recruit a new sponsor for a heya.
@@ -165,7 +166,8 @@ export function processSponsorChurn(world: WorldState, _rng?: SeededRNG): StateI
     }
 
     if (membersToRemove.length > 0) {
-      const updatedMembers = koenkai.members.filter((m) => !membersToRemove.includes(m.sponsorId));
+      const removeSet = new Set(membersToRemove);
+      const updatedMembers = koenkai.members.filter((m) => !removeSet.has(m.sponsorId));
 
       const newBand = recalculateKoenkaiBand(heya, world);
 
@@ -223,8 +225,8 @@ export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
     const prestige = computeHeyaPrestigeScore(heya, world);
     const targetBand = targetKoenkaiBandFromPrestige(prestige);
     const currentBand = koenkai.strengthBand;
-    const currentIdx = BAND_ORDER.indexOf(currentBand);
-    const targetIdx = BAND_ORDER.indexOf(targetBand);
+    const currentIdx = BAND_INDEX.get(currentBand) ?? -1;
+    const targetIdx = BAND_INDEX.get(targetBand) ?? -1;
 
     if (currentIdx === targetIdx) continue;
 

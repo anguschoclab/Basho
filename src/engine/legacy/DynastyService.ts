@@ -293,10 +293,12 @@ function findEligibleSuccessors(world: WorldState, heyaId: string): string[] {
     // WS-6 — inherit is the LOWEST ladder tier: 12 makuuchi or 20 sekitori
     // basho (career juryo-lifers like Kanechika qualify; fresh J13s don't).
     const history = rikishi.careerHistory ?? [];
-    const sekitoriBasho = history.filter(
-      (h) => h.division === "makuuchi" || h.division === "juryo"
-    ).length;
-    const makuuchiBasho = history.filter((h) => h.division === "makuuchi").length;
+    let sekitoriBasho = 0;
+    let makuuchiBasho = 0;
+    for (const h of history) {
+      if (h.division === "makuuchi" || h.division === "juryo") sekitoriBasho++;
+      if (h.division === "makuuchi") makuuchiBasho++;
+    }
     const meetsInheritBar =
       makuuchiBasho >= INHERIT_MAKUUCHI_BASHO || sekitoriBasho >= INHERIT_SEKITORI_BASHO;
     // Elite candidates: seasoned current sekitori or qualifying alumni.

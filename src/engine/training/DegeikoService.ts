@@ -23,6 +23,7 @@ import { createImpactBuilder, type ImpactBuilder } from "@/engine/core/ImpactBui
 import type { StateImpact } from "@/engine/core/StateImpact";
 import { rngForWorld } from "@/engine/core/rng";
 import { getHeya, getRikishi } from "@/engine/core/queries";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -158,9 +159,9 @@ export function applyWeeklyDegeiko(world: WorldState): StateImpact {
     const session = state.pendingDegeiko;
     if (!session) continue;
 
-    const hosts = [...world.rikishi.values()].filter(
-      (r) => r.heyaId === session.targetHeyaId && !r.isRetired
-    );
+    // EntityCollection.getHeyaRoster is memoized per world+week and already
+    // excludes retired members — replaces a full-world scan per session.
+    const hosts = EntityCollection.getHeyaRoster(world, session.targetHeyaId);
     applySession(builder, world, heyaId, session.targetHeyaId, session.rikishiIds, hosts);
     builder.updateTrainingState(heyaId, {
       ...state,
@@ -186,22 +187,26 @@ function applySession(
   // Accumulate host-side links per host id — sequential updateRikishi
   // calls on the same entity clobber earlier practicePartners writes.
   const hostAdds = new Map<string, string[]>();
+  // practicePartners lists are invariant for the session (builder writes
+  // land on the impact, not on world objects) — snapshot once as Sets.
+  const partnerExisting = new Map(
+    partners.map((p) => [p.id, new Set(p.practicePartners ?? [])])
+  );
   for (const id of rikishiIds) {
     const r = getRikishi(world, id);
     if (!r || r.heyaId !== heyaId) continue;
     const stats = { ...r.stats };
     stats.technique = Math.min(99, (stats.technique ?? 0) + DEGEIKO_TECHNIQUE_GAIN);
     stats.experience = Math.min(99, (stats.experience ?? 0) + DEGEIKO_EXPERIENCE_GAIN);
-    const partnersToAdd = partners
-      .filter((p) => !(r.practicePartners ?? []).includes(p.id))
-      .map((p) => p.id);
+    const guestExisting = new Set(r.practicePartners ?? []);
+    const partnersToAdd = partners.filter((p) => !guestExisting.has(p.id)).map((p) => p.id);
     builder.updateRikishi(id, {
       stats,
       fatigue: Math.min(100, r.fatigue + DEGEIKO_FATIGUE_COST),
       practicePartners: [...(r.practicePartners ?? []), ...partnersToAdd],
     });
     for (const p of partners) {
-      if ((p.practicePartners ?? []).includes(id)) continue;
+      if (partnerExisting.get(p.id)?.has(id)) continue;
       hostAdds.set(p.id, [...(hostAdds.get(p.id) ?? []), id]);
     }
   }

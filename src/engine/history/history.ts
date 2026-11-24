@@ -113,8 +113,9 @@ export function runHistoryUpdates(world: WorldState): StateImpact {
     // Crossing-detection: a ~15-win basho can skip an exact threshold (95→110).
     // Fire for the highest threshold at-or-below wins that isn't recorded yet.
     const wins = rikishi.careerWins || 0;
+    const recordedTitles = new Set(updatedMilestones.map((m) => m.title));
     const hitThreshold = CAREER_WIN_MILESTONE_THRESHOLDS.find(
-      (t) => wins >= t && !updatedMilestones.some((m) => m.title === `${t} Career Wins`)
+      (t) => wins >= t && !recordedTitles.has(`${t} Career Wins`)
     );
     if (hitThreshold !== undefined) {
       updatedMilestones.push({

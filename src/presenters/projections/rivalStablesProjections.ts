@@ -79,9 +79,18 @@ export function projectRivalStables(
 ): RivalStablesProjection {
   const rivals: RivalStableDTO[] = [];
 
+  // Group decisions by heya once — order within each heya is preserved, so
+  // downstream .find(.planId) sees the same sequence the filter produced.
+  const decisionsByHeyaId = new Map<string, NPCDecisionDTO[]>();
+  for (const d of npcDecisions) {
+    const list = decisionsByHeyaId.get(d.heyaId);
+    if (list) list.push(d);
+    else decisionsByHeyaId.set(d.heyaId, [d]);
+  }
+
   for (const heya of world.heyas.values()) {
     if (heya.id === world.playerHeyaId) continue;
-    const recentDecisions = npcDecisions.filter((d) => d.heyaId === heya.id);
+    const recentDecisions = decisionsByHeyaId.get(heya.id) ?? [];
     const scouted = hasScoutingCoverage(world, heya.id);
     const oyakata = scouted ? getOyakataForHeya(world, heya.id) : undefined;
     // Faces are public record (stablemasters appear at every basho).
