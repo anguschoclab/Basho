@@ -10,9 +10,9 @@
  * Weights are balanced across the trainable set — effectiveness in the bout
  * engine is archetype-dependent (a yotsu specialist leans on belt/power,
  * an oshi specialist on speed/aggression), so no stat is worth zero and the
- * big three (power/technique/speed) carry a mild emphasis. Weight and
- * experience are excluded: weight is physique not skill, experience is a
- * function of tenure not ability.
+ * big three (power/technique/speed) carry a mild emphasis. Mass contributes
+ * a modest share (archetypes weigh it 0.85–1.3 in matchups); experience is
+ * excluded as a function of tenure not ability.
  *
  * Fog-of-war: these are the TRUE values. Players and NPCs see them only
  * through perceivedCA/perceivedPA (star bands), never raw — the same noisy
@@ -33,22 +33,38 @@ export const TRAINABLE_STAT_KEYS = [
 ] as const;
 export type TrainableStatKey = (typeof TRAINABLE_STAT_KEYS)[number];
 
-/** CA weighting — big-three skills carry the largest share. Sums to 1. */
+/** CA weighting — big-three skills carry the largest share. The trainable
+ *  set sums to 0.88; physique (mass) takes the remaining 0.12 — sumo is a
+ *  contact sport and a 95kg prospect cannot use his skill against 160kg
+ *  men yet, so an underdeveloped frame drags effective CA below the skill
+ *  sheet exactly like a missing stat would. */
 export const CA_STAT_WEIGHTS: Record<TrainableStatKey, number> = {
-  power: 0.2,
-  technique: 0.2,
-  speed: 0.15,
-  balance: 0.12,
-  mental: 0.12,
-  stamina: 0.08,
-  adaptability: 0.07,
-  aggression: 0.06,
+  power: 0.176,
+  technique: 0.176,
+  speed: 0.132,
+  balance: 0.106,
+  mental: 0.106,
+  stamina: 0.07,
+  adaptability: 0.062,
+  aggression: 0.052,
 };
+
+/** Competitive mass band → 0–100. Enho-scale lightness (~99kg) reads ~8;
+ *  a 180kg ozeki frame reads ~75. Below-band mass still counts a little —
+ *  being light hurts but isn't zero. */
+export const MASS_NORM_MIN_KG = 90;
+export const MASS_NORM_MAX_KG = 210;
+export const MASS_CA_SHARE = 0.12;
+
+export function massScore(weightKg: number | undefined): number {
+  if (weightKg == null || !Number.isFinite(weightKg)) return 0;
+  return Math.max(0, Math.min(100, ((weightKg - MASS_NORM_MIN_KG) / (MASS_NORM_MAX_KG - MASS_NORM_MIN_KG)) * 100));
+}
 
 function weightedMean(stats: Partial<RikishiStats> | undefined): number {
   let acc = 0;
   for (const k of TRAINABLE_STAT_KEYS) acc += ((stats?.[k] as number | undefined) ?? 0) * CA_STAT_WEIGHTS[k];
-  return acc; // 0–100 scale
+  return acc + massScore(stats?.weight) * MASS_CA_SHARE; // 0–100 scale
 }
 
 const clamp200 = (v: number) => Math.max(0, Math.min(200, v));
@@ -68,7 +84,11 @@ export function currentAbility(r: { stats?: RikishiStats }): number {
  */
 export function potentialAbility(r: Rikishi): number {
   if (!r.potential?.stats) return currentAbility(r);
-  const raw = weightedMean(r.potential.stats) * (r.potential.ceilingFraction ?? 1) * 2;
+  // potential.stats.weight is a 0 placeholder — the real PA frame lives on
+  // potential.weightKg; inject it so PA prices in the adult physique the
+  // same way CA prices the current one.
+  const paStats = { ...r.potential.stats, weight: r.potential.weightKg } as RikishiStats;
+  const raw = weightedMean(paStats) * (r.potential.ceilingFraction ?? 1) * 2;
   return Math.round(clamp200(Math.max(raw, currentAbility(r))));
 }
 

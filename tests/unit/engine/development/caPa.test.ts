@@ -5,6 +5,8 @@ import {
   abilityToStars,
   CA_STAT_WEIGHTS,
   TRAINABLE_STAT_KEYS,
+  MASS_CA_SHARE,
+  massScore,
 } from "@/engine/development/caPa";
 import { mockRikishi } from "@tests/unit/engine/utils";
 import type { RikishiStats } from "@/engine/types/rikishi";
@@ -24,18 +26,40 @@ const stats = (v: number): RikishiStats =>
   }) as RikishiStats;
 
 describe("CA_STAT_WEIGHTS", () => {
-  it("sums to 1 over the 8 trainable stats", () => {
+  it("trainables + mass share sum to 1", () => {
     const sum = Object.values(CA_STAT_WEIGHTS).reduce((a, b) => a + b, 0);
-    expect(sum).toBeCloseTo(1, 10);
+    expect(sum + MASS_CA_SHARE).toBeCloseTo(1, 10);
     expect(Object.keys(CA_STAT_WEIGHTS).sort()).toEqual([...TRAINABLE_STAT_KEYS].sort());
   });
 });
 
+describe("mass in CA", () => {
+  it("a bigger frame reads higher CA at equal skill — Enho vs an ozeki physique", () => {
+    const light = currentAbility(
+      mockRikishi("l", { stats: { ...stats(60), weight: 100 } })
+    );
+    const heavy = currentAbility(
+      mockRikishi("h", { stats: { ...stats(60), weight: 200 } })
+    );
+    expect(heavy).toBeGreaterThan(light);
+    // 100kg → massScore ~8 vs 200kg → ~92: ~17 CA points of pure frame
+    expect(heavy - light).toBeGreaterThanOrEqual(15);
+  });
+
+  it("massScore maps the competitive band 90–210kg to 0–100", () => {
+    expect(massScore(90)).toBe(0);
+    expect(massScore(150)).toBe(50);
+    expect(massScore(210)).toBe(100);
+    expect(massScore(undefined)).toBe(0);
+  });
+});
+
 describe("currentAbility", () => {
-  it("maps uniform stats onto the 0–200 scale", () => {
-    expect(currentAbility(mockRikishi("r0", { stats: stats(0) }))).toBe(0);
+  it("maps uniform stats onto the 0–200 scale (150kg frame adds its mass share)", () => {
+    // massScore(150)=50 × 0.12 = 6 on the 0–100 scale → +12 CA
+    expect(currentAbility(mockRikishi("r0", { stats: stats(0) }))).toBe(12);
     expect(currentAbility(mockRikishi("r50", { stats: stats(50) }))).toBe(100);
-    expect(currentAbility(mockRikishi("r100", { stats: stats(100) }))).toBe(200);
+    expect(currentAbility(mockRikishi("r100", { stats: stats(100) }))).toBe(188);
   });
 
   it("is monotonic in every weighted stat", () => {
@@ -61,7 +85,7 @@ describe("potentialAbility", () => {
       potential: {
         stats: stats(100),
         heightCm: 185,
-        weightKg: 150,
+        weightKg: 210, // max frame → clean 200
         developmentSpeed: 1,
         peakAgeOffset: 0,
         ceilingFraction: 1,
@@ -74,7 +98,7 @@ describe("potentialAbility", () => {
       potential: {
         stats: stats(100),
         heightCm: 185,
-        weightKg: 150,
+        weightKg: 210,
         developmentSpeed: 1,
         peakAgeOffset: 0,
         ceilingFraction: 0.75,

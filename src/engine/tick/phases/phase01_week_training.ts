@@ -41,7 +41,7 @@ import {
   applyWeeklyOtotodeshiEffects,
   isEligibleForTsukebito,
 } from "@/engine/training/TsukebitoService";
-import { applyWeightJourneyTick } from "@/engine/training/WeightJourney";
+import { applyWeightJourneyTick, applyPhysicalMaturationTick } from "@/engine/training/WeightJourney";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 import { getRikishi } from "@/engine/core/queries";
 
@@ -154,13 +154,15 @@ export function phase01_week_training(world: WorldState): StateImpact {
     tsukebitoImpacts.push(applyWeeklyOtotodeshiEffects(w0, heyaId, heyaRikishi));
   }
 
-  // Weight journey tick — process all active rikishi on the world after
-  // tsukebito effects so its stats snapshot composes with theirs.
+  // Weight journey + physical maturation ticks — process all active rikishi
+  // on the world after tsukebito effects so its stats snapshot composes
+  // with theirs.
   const wAfterTsukebito = tsukebitoImpacts.length ? resolveImpacts(w0, tsukebitoImpacts) : w0;
   const weightJourneyImpacts: StateImpact[] = [];
   for (const rikishi of EntityCollection.getActiveRikishi(wAfterTsukebito)) {
     const heya = EntityCollection.getHeya(wAfterTsukebito, rikishi.heyaId);
     weightJourneyImpacts.push(applyWeightJourneyTick(rikishi, heya, wAfterTsukebito));
+    weightJourneyImpacts.push(applyPhysicalMaturationTick(rikishi, heya, wAfterTsukebito));
   }
 
   return mergeImpacts([...groupImpacts, ...tsukebitoImpacts, ...weightJourneyImpacts]);

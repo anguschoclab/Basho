@@ -15,6 +15,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { NUTRITION_MULTIPLIERS } from "@/constants/engine/multipliers";
 import { DEFAULT_FACILITY_LEVEL } from "@/constants/engine/rikishi";
 import { clamp, finiteOr } from "@/engine/utils/math";
+import { maturityFactor, ATTRIBUTE_PEAK } from "@/constants/engine/development";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -26,6 +27,14 @@ export const WEIGHT_JOURNEY_WEEKLY_GAIN = 0.8;
 
 /** Heya funds below this threshold stalls progress */
 export const WEIGHT_JOURNEY_STALL_THRESHOLD = 5000;
+
+/** Max weekly height growth (cm) before developmentSpeed — caps catch-up
+ *  growth spurts at ~10cm/yr (Hakuho-class maturation pace). */
+export const HEIGHT_WEEKLY_MAX_GAIN = 0.2;
+
+/** Natural adolescent fill-out (kg/wk) before developmentSpeed/nutrition —
+ *  ~8kg/yr, separate from the deliberate bulking journey. */
+export const NATURAL_WEIGHT_WEEKLY_GAIN = 0.15;
 
 /** Power bonus on breakthrough */
 export const WEIGHT_JOURNEY_POWER_BOOST = 3;
@@ -117,7 +126,10 @@ export function applyWeightJourneyTick(
     (clamp(nutritionFacility, 0, 100) / 100) * NUTRITION_MULTIPLIERS.RANGE;
 
   journeyUpdate.stalled = false;
-  const weeklyGain = WEIGHT_JOURNEY_WEEKLY_GAIN * nutritionMult;
+  // developmentSpeed scales bulking too — a prodigy packs on mass faster
+  // (Hakuho trajectory), a journeyman's frame fills slowly.
+  const weeklyGain =
+    WEIGHT_JOURNEY_WEEKLY_GAIN * nutritionMult * (rikishi.potential?.developmentSpeed ?? 1.0);
   journeyUpdate.progressKg = journey.progressKg + weeklyGain;
 
   // targetKg is the absolute potential weight — the breakthrough gap is
@@ -156,5 +168,98 @@ export function applyWeightJourneyTick(
   }
 
   builder.updateRikishi(rikishi.id, updates);
+  return builder.build();
+}
+
+// ── Physical Maturation ─────────────────────────────────────────────────────
+//
+// Rikishi debut at 15-16 still growing — real-world trajectories (Hakuho
+// ~181cm/80kg at 16 → 192cm/155kg; Terunofuji growing into his 20s; Kyokutenho
+// filling out late) show height and weight mature on the same profile curves
+// as the stat sheet. Generation seeds debut size via the size_* maturity
+// curves; this tick keeps applying them afterward so a teen actually grows
+// into his potential frame — paced by developmentSpeed and peakAgeOffset.
+// Without it stats.height froze at ~88% of potential forever.
+
+/**
+ * Weekly physical maturation for a rikishi still inside his growth window.
+ *
+ * - Height: grows toward potential.heightCm × size_height maturityFactor —
+ *   a monotonic age curve (peak ~19 ± peakAgeOffset). Capped weekly gain so
+ *   a behind-curve teen catches up gradually, never shrinks, never exceeds
+ *   potential.
+ * - Weight (natural fill-out): adolescents gain ~8kg/yr toward the
+ *   age-indexed natural target independent of any formal bulking journey;
+ *   a rikishi already ahead of the curve (early bulker) keeps his mass.
+ * - Both scale with developmentSpeed: prodigies mature fast, late bloomers
+ *   keep maturing into their early 20s.
+ */
+export function applyPhysicalMaturationTick(
+  rikishi: Rikishi,
+  heya: Heya | undefined,
+  world: WorldState
+): StateImpact {
+  const builder = createImpactBuilder("applyPhysicalMaturationTick");
+  const potential = rikishi.potential;
+  const age = rikishi.birthYear ? world.year - rikishi.birthYear : undefined;
+  if (!potential || !age) return builder.build();
+
+  const devSpeed = potential.developmentSpeed ?? 1.0;
+  const peakOffset = potential.peakAgeOffset ?? 0;
+  const updates: Partial<Rikishi> = {};
+  const stats = { ...(rikishi.stats || {}) } as Rikishi["stats"];
+  const nutritionFacility = heya?.facilities?.nutrition ?? DEFAULT_FACILITY_LEVEL;
+  const nutritionMult =
+    NUTRITION_MULTIPLIERS.BASE +
+    (clamp(nutritionFacility, 0, 100) / 100) * NUTRITION_MULTIPLIERS.RANGE;
+
+  // Injury stalls adolescent growth — the body is recovering, not building.
+  if (rikishi.injured) return builder.build();
+
+  // ── Height ────────────────────────────────────────────────────────────
+  // Growth only inside the rise window — the size curves flatline at 1.0
+  // past peak (they never decline), so an ungated adult would keep filling
+  // toward potential forever. A 22-year-old standard does not grow 15cm.
+  const heightPeakAge = ATTRIBUTE_PEAK.size_height.peakAge + peakOffset;
+  if (potential.heightCm && stats?.height != null && age <= heightPeakAge) {
+    const heightM = maturityFactor({
+      age,
+      group: "size_height",
+      developmentSpeed: devSpeed,
+      peakAgeOffset: peakOffset,
+    });
+    const target = potential.heightCm * heightM;
+    const current = stats.height;
+    if (target > current) {
+      const gain = Math.min(target - current, HEIGHT_WEEKLY_MAX_GAIN * devSpeed);
+      stats.height = Math.min(potential.heightCm, current + gain);
+      updates.stats = stats;
+    }
+  }
+
+  // ── Natural weight fill-out ───────────────────────────────────────────
+  // The age-indexed target is a floor, not a cap: a rikishi who already
+  // bulked past his curve via the formal journey is untouched.
+  const weightPeakAge = ATTRIBUTE_PEAK.size_weight.peakAge + peakOffset;
+  if (potential.weightKg && stats?.weight != null && age <= weightPeakAge) {
+    const weightM = maturityFactor({
+      age,
+      group: "size_weight",
+      developmentSpeed: devSpeed,
+      peakAgeOffset: peakOffset,
+    });
+    const naturalTarget = potential.weightKg * weightM;
+    const current = stats.weight;
+    if (naturalTarget > current) {
+      const gain = Math.min(
+        naturalTarget - current,
+        NATURAL_WEIGHT_WEEKLY_GAIN * devSpeed * nutritionMult
+      );
+      stats.weight = Math.min(naturalTarget, current + gain);
+      updates.stats = stats;
+    }
+  }
+
+  if (updates.stats) builder.updateRikishi(rikishi.id, updates);
   return builder.build();
 }
