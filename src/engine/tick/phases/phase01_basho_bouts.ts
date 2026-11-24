@@ -26,6 +26,7 @@ import {
 } from "@/engine/basho/NakabiService";
 import { mergeImpacts, applyImpact } from "@/engine/core/ImpactResolver";
 import { applyOyakataIntervention } from "@/engine/npc/OyakataIntervention";
+import { announceConditionalSansho } from "@/engine/basho/conditionalSansho";
 
 export function phase01_basho_bouts(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_basho_bouts");
@@ -35,6 +36,14 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
   if (!basho) return builder.build();
 
   let currentWorld = world;
+
+  // Sanshō committee's morning-of-senshuraku session — provisional table on
+  // days 1–14 plus "needs a win today" conditionals (WS-12 residual). Runs
+  // before the day's bouts resolve; the binding award still lands in
+  // distributePrizes on the completed results.
+  if (basho.day === 15) {
+    builder.merge(announceConditionalSansho(currentWorld, basho));
+  }
 
   // Simulate all unplayed bouts for the current day in a single pass.
   // simulateBoutsForDay owns one mutable copy of the matches array and writes

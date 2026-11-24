@@ -14,6 +14,7 @@ import { initializeBasho } from "@/engine/generation/WorldFactory";
 import { scheduleAllDivisionsDay } from "@/engine/calendar/schedule";
 import { stableTieBreak, sortStandings } from "@/engine/utils/sort";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { announceConditionalSansho } from "@/engine/basho/conditionalSansho";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { evaluateNpcMorningKyujo } from "@/engine/tick/phases/phase01_basho_npc_tactics";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
@@ -99,6 +100,15 @@ function simulateDay(
   const morningBuilder = createImpactBuilder("simMorningKyujo");
   evaluateNpcMorningKyujo(workingWorld, morningBuilder);
   workingWorld = resolveImpacts(workingWorld, [morningBuilder.build()]);
+
+  // Sanshō committee's morning-of-senshuraku session — provisional table on
+  // days 1–14 plus "needs a win today" conditionals (WS-12 residual). Same
+  // announcement the interactive path emits in phase01_basho_bouts.
+  if (day === 15) {
+    workingWorld = resolveImpacts(workingWorld, [
+      announceConditionalSansho(workingWorld, activeBasho),
+    ]);
+  }
 
   const dayMatches = activeBasho.matches.filter((m) => m.day === day && !m.result);
 

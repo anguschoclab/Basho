@@ -35,6 +35,7 @@ export type EngineEventType =
   | "GOVERNANCE_RULING" // A governance ruling was issued
   | "FINANCIAL_ALERT" // Financial alert triggered
   | "AWARD_CONFERRED" // An award was conferred
+  | "SANSHO_CONDITIONAL" // Sansho committee's day-15-AM provisional award table
   | "LIFECYCLE_EVENT" // Career lifecycle event (retirement, promotion, etc.)
   | "RETIREMENT_ANNOUNCED" // Career lifecycle — intai (retirement) announcement
   | "BASHO_STATUS" // Basho status update
