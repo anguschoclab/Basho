@@ -5,6 +5,7 @@ import {
 } from "@/engine/lifecycle/retireeOyakataConversion";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { rngForWorld } from "@/engine/core/rng";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@tests/unit/engine/utils";
 import {
   FOUNDING_CHANCE,
@@ -452,30 +453,35 @@ describe("evaluateFoundingEligibility — JSA branching gates", () => {
     return makeMockWorld({ year: 2025, heyas });
   }
 
-  it("rejects when the parent stable is missing", () => {
-    const world = makeMockWorld({ year: 2025, heyas: new Map() });
+  it("rejects a missing parent when the league is at/above HEYA_COUNT_FLOOR", () => {
+    const heyas = new Map<string, ReturnType<typeof makeMockHeya>>();
+    for (let i = 0; i < HEYA_COUNT_FLOOR; i++) heyas.set(`h-${i}`, makeMockHeya(`h-${i}`));
+    const world = makeMockWorld({ year: 2025, heyas });
     expect(evaluateFoundingEligibility(world, accomplished()).canFound).toBe(false);
   });
 
-  it("rejects when the parent stable is sanctioned", () => {
-    const world = worldWithParent({
-      funds: 100_000_000,
-      welfareState: {
-        welfareRisk: 80,
-        activeDiet: "maintenance",
-        complianceState: "sanctioned",
-        weeksInState: 5,
-        lastReviewedWeek: 0,
+  it("rejects when the parent stable is sanctioned at/above HEYA_COUNT_FLOOR", () => {
+    const world = worldWithParent(
+      {
+        funds: 100_000_000,
+        welfareState: {
+          welfareRisk: 80,
+          activeDiet: "maintenance",
+          complianceState: "sanctioned",
+          weeksInState: 5,
+          lastReviewedWeek: 0,
+        },
       },
-    });
+      HEYA_COUNT_FLOOR - 1 // parent + fillers = FLOOR → no JSA waiver
+    );
     const retiree = accomplished({
       economics: { retirementFund: 200_000_000 } as any,
     });
     expect(evaluateFoundingEligibility(world, retiree).canFound).toBe(false);
   });
 
-  it("rejects when the parent stable is insolvent (below merger threshold)", () => {
-    const world = worldWithParent({ funds: MERGER_THRESHOLD - 1 });
+  it("rejects when the parent stable is insolvent at/above HEYA_COUNT_FLOOR", () => {
+    const world = worldWithParent({ funds: MERGER_THRESHOLD - 1 }, HEYA_COUNT_FLOOR - 1);
     const retiree = accomplished({
       economics: { retirementFund: 200_000_000 } as any,
     });
@@ -587,6 +593,169 @@ describe("evaluateFoundingEligibility — JSA branching gates", () => {
     const crowded = worldWithParent({ funds: 100_000_000 }, HEYA_SOFT_TARGET - 5);
     const e = evaluateFoundingEligibility(crowded, retiree);
     expect(e.effectiveChance).toBeCloseTo(FOUNDING_CHANCE * (4 / HEYA_FOUNDING_RAMP), 6);
+  });
+});
+
+describe("evaluateFoundingEligibility — JSA waiver below HEYA_COUNT_FLOOR", () => {
+  const accomplished = (overrides: Record<string, unknown> = {}) =>
+    mockRikishi("candidate", {
+      heyaId: "parent",
+      rank: "ozeki",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 300,
+      ...overrides,
+    });
+
+  const sanctionedWelfare = {
+    welfareRisk: 80,
+    activeDiet: "maintenance" as const,
+    complianceState: "sanctioned" as const,
+    weeksInState: 5,
+    lastReviewedWeek: 0,
+  };
+
+  it("waives a sanctioned parent below HEYA_COUNT_FLOOR — JSA affiliates the founder directly", () => {
+    const heyas = new Map([["parent", makeMockHeya("parent", { funds: 100_000_000, welfareState: sanctionedWelfare })]]);
+    const world = makeMockWorld({ year: 2025, heyas });
+    const retiree = accomplished({ economics: { retirementFund: 1_000_000 } as any });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.jsaBacked).toBe(true);
+    expect(e.parentSponsors).toBe(false);
+    expect(e.parentHeyaId).toBe("parent");
+  });
+
+  it("a sanctioned rich parent cannot sponsor — falls through to JSA backing", () => {
+    const heyas = new Map([["parent", makeMockHeya("parent", { funds: FOUNDING_SEED_FUNDS * 2, welfareState: sanctionedWelfare })]]);
+    const world = makeMockWorld({ year: 2025, heyas });
+    const retiree = accomplished({ economics: { retirementFund: 1_000_000 } as any });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.jsaBacked).toBe(true);
+    expect(e.parentSponsors).toBe(false);
+  });
+
+  it("waives an insolvent parent below HEYA_COUNT_FLOOR", () => {
+    const heyas = new Map([["parent", makeMockHeya("parent", { funds: MERGER_THRESHOLD - 1 })]]);
+    const world = makeMockWorld({ year: 2025, heyas });
+    const retiree = accomplished({ economics: { retirementFund: 1_000_000 } as any });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.jsaBacked).toBe(true);
+  });
+
+  it("waives a missing parent below HEYA_COUNT_FLOOR — orphan founds under JSA affiliation", () => {
+    const world = makeMockWorld({ year: 2025, heyas: new Map() });
+    const retiree = accomplished({ heyaId: "ghost-parent", economics: { retirementFund: 1_000_000 } as any });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.jsaBacked).toBe(true);
+    expect(e.parentSponsors).toBe(false);
+    expect(e.parentHeyaId).toBe("ghost-parent"); // lineage id preserved
+  });
+
+  it("an orphan founder self-funds without JSA backing when personally solvent", () => {
+    const world = makeMockWorld({ year: 2025, heyas: new Map() });
+    const retiree = accomplished({ heyaId: "ghost-parent", economics: { retirementFund: FOUNDING_SEED_FUNDS } as any });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.jsaBacked).toBe(false);
+  });
+});
+
+describe("maybeFoundStable — orphan and sanctioned foundings", () => {
+  const FOUNDING_IMPORTS = "@/engine/lifecycle/retireeOyakataConversion";
+
+  function forcedRollRng(world: ReturnType<typeof makeMockWorld>) {
+    // Delegate to the real world rng but force every probability check — the
+    // founding roll is the only stochastic gate under test.
+    const base = rngForWorld(world, "governance", "retirement_candidate");
+    const rng = Object.create(base);
+    rng.bool = () => true;
+    return rng;
+  }
+
+  it("founds a heya for an orphan retiree — dead-parent lineage, closed-ichimon, JSA-seeded deshi", async () => {
+    const { maybeFoundStable } = await import(FOUNDING_IMPORTS);
+    const ghost = makeMockHeya("ghost", { ichimon: "Dewanoumi" });
+    const heyas = new Map([["absorber", makeMockHeya("absorber")]]);
+    const world = makeMockWorld({
+      year: 2025,
+      heyas,
+      closedHeyas: new Map([["ghost", ghost]]),
+      oyakata: new Map(),
+      rikishi: new Map(),
+    });
+    const retiree = mockRikishi("candidate", {
+      heyaId: "ghost",
+      rank: "ozeki",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 300,
+      economics: { retirementFund: 1_000_000 } as any,
+    });
+    const builder = createImpactBuilder("test");
+    const ok = maybeFoundStable(world, retiree, "newOy", forcedRollRng(world), builder);
+    expect(ok).toBe(true);
+
+    const next = resolveImpacts(world, [builder.build()]);
+    const founded = [...next.heyas.values()].find((h) => h.branchedFromHeyaId === "ghost");
+    expect(founded).toBeDefined();
+    expect(founded?.ichimon).toBe("Dewanoumi"); // lineage inherited from the closed parent
+    expect((founded?.rikishiIds ?? []).length).toBeGreaterThan(0);
+    expect((founded?.rikishiIds ?? []).length).toBeLessThanOrEqual(3);
+
+    // Seeded deshi are maezumo-enrolled, attached to the new stable, jonokuchi.
+    for (const id of founded?.rikishiIds ?? []) {
+      const deshi = next.rikishi.get(id);
+      expect(deshi).toBeDefined();
+      expect(deshi?.heyaId).toBe(founded?.id);
+      expect(deshi?.isMaezumo).toBe(true);
+      expect(deshi?.division).toBe("jonokuchi");
+    }
+  });
+
+  it("founds under a sanctioned parent below the floor without deducting parent funds", async () => {
+    const { maybeFoundStable } = await import(FOUNDING_IMPORTS);
+    const parent = makeMockHeya("parent", {
+      funds: FOUNDING_SEED_FUNDS * 2,
+      rikishiIds: ["jr1", "jr2"],
+      welfareState: {
+        welfareRisk: 80,
+        activeDiet: "maintenance",
+        complianceState: "sanctioned",
+        weeksInState: 5,
+        lastReviewedWeek: 0,
+      },
+    });
+    const jr1 = mockRikishi("jr1", { heyaId: "parent", division: "jonokuchi", rank: "jonokuchi" });
+    const jr2 = mockRikishi("jr2", { heyaId: "parent", division: "jonidan", rank: "jonidan" });
+    const world = makeMockWorld({
+      year: 2025,
+      heyas: new Map([["parent", parent]]),
+      rikishi: new Map([["jr1", jr1], ["jr2", jr2]]),
+    });
+    const retiree = mockRikishi("candidate", {
+      heyaId: "parent",
+      rank: "ozeki",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 300,
+      economics: { retirementFund: 1_000_000 } as any,
+    });
+    const builder = createImpactBuilder("test");
+    const ok = maybeFoundStable(world, retiree, "newOy", forcedRollRng(world), builder);
+    expect(ok).toBe(true);
+
+    const next = resolveImpacts(world, [builder.build()]);
+    const founded = [...next.heyas.values()].find((h) => h.branchedFromHeyaId === "parent");
+    expect(founded).toBeDefined();
+    expect(next.heyas.get("parent")?.funds).toBe(FOUNDING_SEED_FUNDS * 2); // sanctioned — no sponsor deduction
+    // Followers pulled from the parent's unsalaried roster.
+    expect(next.heyas.get("parent")?.rikishiIds ?? []).toHaveLength(
+      2 - (founded?.rikishiIds ?? []).length
+    );
   });
 });
 

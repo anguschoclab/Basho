@@ -3,7 +3,7 @@ import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyaka
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "@tests/unit/engine/utils";
-import { MYOSEKI_TOTAL_COUNT } from "@/constants/engine/economic";
+import { MYOSEKI_TOTAL_COUNT, HEYA_COUNT_FLOOR } from "@/constants/engine/economic";
 
 /**
  * WS-17 — founding decoupling. Verified structural bug: `maybeFoundStable`
@@ -130,13 +130,18 @@ describe("founding decoupling — saturated kabu no longer blocks the branch eva
     expect(next.heyas.size).toBe(1);
   });
 
-  it("insolvent parent still blocks founding (career bar met, eval fails)", () => {
+  it("insolvent parent still blocks founding at/above HEYA_COUNT_FLOOR", () => {
     const retiree = eligibleVeteran("vet-poor");
     const heya = makeMockHeya("h1", { rikishiIds: [retiree.id], funds: -20_000_000 });
+    const heyas = new Map([["h1", heya]]);
+    // At/above the league floor the JSA waiver is off — insolvency gates.
+    for (let i = 0; i < HEYA_COUNT_FLOOR - 1; i++) {
+      heyas.set(`filler-${i}`, makeMockHeya(`filler-${i}`));
+    }
     const world = makeMockWorld({
       year: 2025,
       rikishi: new Map([[retiree.id, retiree]]),
-      heyas: new Map([["h1", heya]]),
+      heyas,
       myosekiMarket: saturatedMarket(),
     });
     const builder = createImpactBuilder("test");
@@ -145,7 +150,7 @@ describe("founding decoupling — saturated kabu no longer blocks the branch eva
     processRetireeOyakataConversion(world, retiree, builder);
     const next = resolveImpacts(world, [builder.build()]);
 
-    expect(next.heyas.size).toBe(1);
+    expect(next.heyas.size).toBe(HEYA_COUNT_FLOOR); // unchanged — eval rejected
     expect(next.oyakata?.size ?? 0).toBe(before);
   });
 

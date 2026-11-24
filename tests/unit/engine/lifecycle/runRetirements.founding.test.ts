@@ -78,7 +78,17 @@ describe("runRetirements — stable founding", () => {
     );
     expect(newHeya).toBeDefined();
     expect(newHeya!.statureBand).toBe("new");
-    expect(newHeya!.rikishiIds).toEqual([]);
+    // No living parent followers to release → the JSA seeds a maezumo
+    // class so the new stable never opens empty.
+    const seededIds = newHeya!.rikishiIds ?? [];
+    expect(seededIds.length).toBeGreaterThan(0);
+    expect(seededIds.length).toBeLessThanOrEqual(3);
+    for (const id of seededIds) {
+      const deshi = newWorld.rikishi.get(id);
+      expect(deshi?.heyaId).toBe(newHeya!.id);
+      expect(deshi?.isMaezumo).toBe(true);
+      expect(deshi?.division).toBe("jonokuchi");
+    }
   });
 
   it("lower-division deshi follow the founder to the branched stable", () => {

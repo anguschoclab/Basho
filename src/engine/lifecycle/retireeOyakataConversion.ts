@@ -18,7 +18,9 @@ import { generateOyakata } from "@/engine/npc/personas/oyakataPersonalities";
 import { foundStable } from "@/engine/generation/WorldFactory";
 import { generateAvatarIdentity } from "@/engine/generation/avatarGenerator";
 import { recordOyakataHandover } from "@/engine/legacy/lineage";
-import { rngForWorld } from "@/engine/core/rng";
+import { rngForWorld, SeededRNG } from "@/engine/core/rng";
+import { generateFullRikishi } from "@/engine/generation/CandidateBuilder";
+import { enrollInMaezumo } from "@/engine/basho/maezumoPrelims";
 import {
   FOUNDING_CHANCE,
   FOUNDING_FOLLOWER_MAX,
@@ -327,21 +329,23 @@ export function evaluateFoundingEligibility(
   parentHeyaId?: string;
 } {
   const none = { canFound: false, effectiveChance: 0, parentSponsors: false, jsaBacked: false };
+  // Below the league floor the JSA underwrites the founding — a shrinking
+  // stable count is institutional, so the association backs a qualified
+  // founder's branch even through a dead or dying parent stable (the JSA
+  // affiliates the founder directly, as real orphans of folded stables have
+  // branched under ichimon/JSA approval).
+  const jsaBacked = world.heyas.size < HEYA_COUNT_FLOOR;
   const parentHeya = getHeya(world, retiree.heyaId);
-  if (!parentHeya) return none;
+  if (!parentHeya && !jsaBacked) return none;
 
   const parentViable =
-    parentHeya.welfareState?.complianceState !== "sanctioned" &&
-    (parentHeya.funds ?? 0) > MERGER_THRESHOLD;
-  if (!parentViable) return none;
+    !parentHeya || // orphan — nothing left to approve or veto the release
+    (parentHeya.welfareState?.complianceState !== "sanctioned" &&
+      (parentHeya.funds ?? 0) > MERGER_THRESHOLD);
+  if (!parentViable && !jsaBacked) return none;
 
   const headroomToTarget = HEYA_SOFT_TARGET - world.heyas.size;
   if (headroomToTarget <= 0) return none;
-
-  // Below the league floor the JSA underwrites the founding — a shrinking
-  // stable count is institutional, so the association backs a qualified
-  // founder's branch when neither he nor the parent can fund the seed.
-  const jsaBacked = world.heyas.size < HEYA_COUNT_FLOOR;
   // Solvency = total wealth — the retirement account is only the
   // JSA-managed slice (kenshō splits + prize halves); a sekitori's salary
   // lands in cash, and at intai he liquidates everything anyway. Real
@@ -349,7 +353,10 @@ export function evaluateFoundingEligibility(
   const liquidWealth =
     (retiree.economics?.retirementFund ?? 0) + (retiree.economics?.cash ?? 0);
   const personallySolvent = liquidWealth >= FOUNDING_SEED_FUNDS;
-  const parentCanSponsor = (parentHeya.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2;
+  const parentCanSponsor =
+    !!parentHeya &&
+    parentHeya.welfareState?.complianceState !== "sanctioned" &&
+    (parentHeya.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2;
   if (!personallySolvent && !parentCanSponsor && !jsaBacked) return none;
 
   // WS-6 — branch-out (bunke) is the ELITE tier of the eligibility ladder:
@@ -379,12 +386,15 @@ export function evaluateFoundingEligibility(
     effectiveChance,
     parentSponsors: !personallySolvent && parentCanSponsor,
     jsaBacked: jsaBacked && !personallySolvent && !parentCanSponsor,
-    parentHeyaId: parentHeya.id,
+    // Dead parents contribute only the lineage id — branchedFromHeyaId and the
+    // ichimon inherit-from-closure path carry it; every live-parent effect is
+    // gated on the lookup below.
+    parentHeyaId: parentHeya?.id ?? retiree.heyaId,
   };
 }
 
 /** RNG-gated chance to found a new heya. Returns true when founding succeeded. */
-function maybeFoundStable(
+export function maybeFoundStable(
   world: WorldState,
   retiree: Rikishi,
   newOyakataId: string,
@@ -406,6 +416,14 @@ function maybeFoundStable(
 
   const parent = getHeya(world, eligibility.parentHeyaId);
 
+  // Orphan founding — the parent closed. Inherit its ichimon from the
+  // closure record so the lineage reads correctly (a live parent supplies
+  // it inside foundStable; a dead one can't be reached there).
+  if (!parent) {
+    const closedIchimon = world.closedHeyas?.get(eligibility.parentHeyaId)?.ichimon;
+    if (closedIchimon) result.heya.ichimon = closedIchimon;
+  }
+
   // WS-6 — roster-follow: a founder brings a handful of his deshi from the
   // parent's unsalaried divisions (real dokuritsu convention — sekitori
   // never follow; their rank belongs to the parent heya's sheet slot).
@@ -422,6 +440,28 @@ function maybeFoundStable(
   if (followerIds.length > 0) {
     result.heya.rikishiIds = followerIds;
     for (const id of followerIds) builder.updateRikishi(id, { heyaId: result.heya.id });
+  }
+
+  // JSA-seeded deshi: no living parent released followers (orphan or a
+  // stripped roster) — the association assigns the founder a small maezumo
+  // class so the new stable doesn't open empty.
+  if (followerIds.length === 0) {
+    const deshiCount = 2 + Math.floor(rng.next() * 2);
+    const seeded: string[] = [];
+    for (let i = 0; i < deshiCount; i++) {
+      const r = generateFullRikishi({
+        id: `${result.heya.id}-deshi-${i}`,
+        rng: new SeededRNG(`${world.seed}::jsa_deshi::${retiree.id}::${i}`),
+        currentYear: world.year,
+        rank: "jonokuchi",
+        division: "jonokuchi",
+        side: i % 2 === 0 ? "east" : "west",
+        rankNumber: i + 1,
+      });
+      seeded.push(r.id);
+      builder.addRikishi(enrollInMaezumo({ ...r, heyaId: result.heya.id }));
+    }
+    result.heya.rikishiIds = seeded;
   }
 
   // Parent-sponsored founding: the seed is real wealth, transferred from the
