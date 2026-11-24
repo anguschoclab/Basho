@@ -374,6 +374,7 @@ export function RecruitingDialogs({ state }: { state: State }) {
         candidate={state.signingCandidate}
         playerHeyaName={state.playerHeya?.name}
         rosterSize={state.playerHeya?.rikishiIds?.length}
+        rosterTarget={state.playerHeya?.rosterTarget}
       />
 
       <Dialog open={state.showCompare} onOpenChange={state.setShowCompare}>

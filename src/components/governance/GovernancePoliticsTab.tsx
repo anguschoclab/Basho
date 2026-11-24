@@ -49,6 +49,7 @@ interface Props {
 export function GovernancePoliticsTab({ world, heya, derived }: Props) {
   return (
     <TabsContent value="politics" className="space-y-6">
+      <JsaBoardPanel derived={derived} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <PoliticalStanding heya={heya} />
         <PoliticalFavorsList heya={heya} />
@@ -56,6 +57,74 @@ export function GovernancePoliticsTab({ world, heya, derived }: Props) {
         <IchimonRankings world={world} heya={heya} derived={derived} />
       </div>
     </TabsContent>
+  );
+}
+
+/**
+ * The sitting JSA riji — directors elected through clan caucuses with the
+ * internal chairman pick marked, plus the per-clan seat split and the next
+ * election year. Absent until the first biennial election resolves.
+ */
+function JsaBoardPanel({ derived }: { derived: GovernanceDerivedData }) {
+  const board = derived.jsaBoard;
+  if (!board) return null;
+  return (
+    <div className="space-y-4">
+      <SectionHeader eyebrow="BOARD" title="JSA Board of Directors" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <StatCard
+          eyebrow=""
+          title={`Elected ${board.electedYear} — next vote ${board.nextElectionYear}`}
+          cols={2}
+          stats={[
+            {
+              label: "Chairman",
+              value: board.chairmanName ?? "—",
+              tone: "gold",
+              sub: "Internal board pick, not the top slate score",
+            },
+            {
+              label: "Clan Seats",
+              value: board.directors.length,
+              sub: Object.entries(board.clanSeats)
+                .map(([clan, n]) => `${clan} ${n}`)
+                .join(" · "),
+            },
+          ]}
+        />
+        <Card className="border-border/40 bg-card">
+          <CardContent className="p-3.5 space-y-2">
+            <div className="text-xs font-bold text-foreground/90">Directors</div>
+            <div className="flex flex-wrap gap-1.5">
+              {board.directors.map((d) => (
+                <Badge
+                  key={d.oyakataId}
+                  variant={d.isChairman ? "default" : "outline"}
+                  className={
+                    d.isChairman
+                      ? "text-[10px] px-1.5 py-0 h-5"
+                      : "text-[10px] px-1.5 py-0 h-5 border-primary/40"
+                  }
+                >
+                  {d.oyakataName} · {d.heyaName}
+                  {d.isChairman ? " ★" : ""}
+                  {d.isPlayerHeya ? " (you)" : ""}
+                </Badge>
+              ))}
+              {board.externalSeats > 0 && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5">
+                  +{board.externalSeats} external
+                </Badge>
+              )}
+            </div>
+            <p className="text-[10px] text-muted-foreground/80 leading-tight">
+              Seats are won inside ichimon caucuses by kabu weight — holding same-clan elder stock
+              raises both your clan's seat count and your own slate standing.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
 
@@ -218,13 +287,13 @@ function IchimonRankings({
     const fn = accessor[factionSortKey];
     if (!fn) return derived.factionRows;
     const sorted = [...derived.factionList].sort((a, b) => compareBy(a, b, fn, factionSortOrder));
-    const maxInfluence = sorted.length > 0 ? sorted[0].influence : 0;
+    const chairmanIchimon = world.jsaBoard?.directors.find((d) => d.isChairman)?.ichimon;
     return sorted.map((fac) => ({
       id: fac.id,
       label: (
         <span className="flex items-center gap-1.5 flex-wrap">
           {fac.name}
-          {fac.influence === maxInfluence && (
+          {chairmanIchimon === fac.id && (
             <Badge variant="default" className="text-[10px] px-1.5 py-0 h-3.5">
               Chairman
             </Badge>

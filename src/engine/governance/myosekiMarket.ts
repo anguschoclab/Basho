@@ -282,9 +282,7 @@ export function generateMyosekiMarket(
       ])
     );
     const sekitori = stableSort(
-      [...rikishiMap.values()].filter(
-        (r) => !r.isRetired && isSekitoriDivision(r.division)
-      ),
+      [...rikishiMap.values()].filter((r) => !r.isRetired && isSekitoriDivision(r.division)),
       (r) => `${RESERVE_RANK_ORDER[r.rank] ?? 9}-${r.rankNumber ?? 99}-${r.id}`
     );
     for (const r of sekitori) {
@@ -488,6 +486,8 @@ const MYOSEKI_FALLBACK_PRICES: Record<MyosekiStock["prestigeTier"], number> = {
  * Buy a Myoseki stock — the single canonical purchase path for the player
  * worker command, NPC execution/finance, and the weekly NPC myoseki sweep.
  * Returns StateImpact describing myoseki purchase instead of mutating directly.
+ * Sale proceeds are credited to the *selling owner's* heya funds (JSA-held
+ * stock dissolves into the JSA ledger); the buyer's heya is debited.
  */
 export function buyMyoseki(
   world: WorldState,
@@ -515,8 +515,7 @@ export function buyMyoseki(
   // money as going to "JSA" even when a third party owned the stock, so sale
   // proceeds vanished.
   const ownerHeyaId =
-    world.oyakata?.get(stock.ownerId)?.heyaId ??
-    world.rikishi?.get(stock.ownerId)?.heyaId;
+    world.oyakata?.get(stock.ownerId)?.heyaId ?? world.rikishi?.get(stock.ownerId)?.heyaId;
   const ownerHeya = ownerHeyaId ? getHeya(world, ownerHeyaId) : undefined;
   if (ownerHeya && ownerHeya.id !== buyerHeyaId) {
     builder.updateHeya(ownerHeya.id, { funds: ownerHeya.funds + amount });

@@ -85,6 +85,12 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
         (s) => s.status === "available" && s.askingPrice && s.askingPrice < funds * 0.5
       );
 
+      // Clan-quota elections: a share tagged to the buyer's own ichimon
+      // grows that clan's electorate AND counts toward the stable's own
+      // slate score — the only stock that helps both races. Value it more
+      // in the run-up to the biennial vote (elections resolve even years).
+      const myClan = world.heyas.get(oyakata.heyaId)?.ichimon;
+      const electionCycleBonus = world.year % 2 === 1 ? 10 : 20;
       prioritized = affordableStocks.sort((a, b) => {
         let scoreA = 0;
         let scoreB = 0;
@@ -93,6 +99,9 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
         if (b.prestigeTier === "elite") scoreB += 30;
         if (a.prestigeTier === "respected") scoreA += 15;
         if (b.prestigeTier === "respected") scoreB += 15;
+        // Same-clan tags feed the caucus vote that seats the board.
+        if (a.ichimon && a.ichimon === myClan) scoreA += electionCycleBonus;
+        if (b.ichimon && b.ichimon === myClan) scoreB += electionCycleBonus;
         // Prefer cheaper options for moderate
         scoreA += (funds - (a.askingPrice || 0)) / 1000000;
         scoreB += (funds - (b.askingPrice || 0)) / 1000000;

@@ -141,6 +141,16 @@ function pickGenesisStable(
   return { heya, eligibleStables };
 }
 
+/**
+ * Seeds every stable's opening roster at genesis.
+ *
+ * Sizes follow the real 2026 distribution: rank counts total ~590 and each
+ * rikishi draws a stable via `pickGenesisStable`'s prestige-weighted roulette,
+ * capped at that stable's `rosterTarget` so powerhouse rooms emerge
+ * (Isegahama ~33) without starving the tail stables empty. Foreign-slot
+ * occupancy is tracked across the whole pass (§5.1: one foreigner per beya),
+ * with a post-pass backfill honoring the occupancy target.
+ */
 export function createRosters(
   worldRng: SeededRNG,
   heyaMap: Map<string, Heya>,
@@ -212,12 +222,7 @@ export function createRosters(
           : 1;
 
       const rikishiId = worldRng.uuid("RK");
-      const { heya, eligibleStables } = pickGenesisStable(
-        heyaByTier,
-        heyaList,
-        config,
-        worldRng
-      );
+      const { heya, eligibleStables } = pickGenesisStable(heyaByTier, heyaList, config, worldRng);
       const oyakata = oyakataMap.get(heya?.oyakataId || "");
 
       const r = generateFullRikishi({
@@ -357,9 +362,8 @@ function backfillGenesisForeign(
     const drawn = foreignDivisionByHeya.get(heyaId);
     const ordered = [drawn, ...FALLBACK_ORDER.filter((d) => d !== drawn)] as Division[];
     const pick =
-      ordered
-        .map((d) => members.find((m) => m.division === d))
-        .find((m): m is Rikishi => !!m) ?? members[0];
+      ordered.map((d) => members.find((m) => m.division === d)).find((m): m is Rikishi => !!m) ??
+      members[0];
     applyGenesisForeign(pick);
     foreignOccupied.add(heyaId);
   }

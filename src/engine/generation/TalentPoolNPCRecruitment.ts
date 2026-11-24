@@ -11,10 +11,7 @@ import { isRecruitmentPlayerRelevant } from "@/engine/npc/eventSurfacing";
 import { getHeya } from "@/engine/core/queries";
 import { recruitmentBalanceMultipliers } from "@/engine/generation/competitiveBalance";
 import { error } from "@/engine/utils/Logger";
-import {
-  perceivedTalentSeed,
-  scoutNoiseSpreadForHeya,
-} from "@/engine/recruitment/perceivedTalent";
+import { perceivedTalentSeed, scoutNoiseSpreadForHeya } from "@/engine/recruitment/perceivedTalent";
 import { isForeign } from "@/engine/utils/identity";
 import {
   candidateConsumesForeignSlot,

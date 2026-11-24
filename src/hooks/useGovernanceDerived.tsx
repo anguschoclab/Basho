@@ -43,13 +43,15 @@ function buildHistoryRows(history: NonNullable<Heya["governanceHistory"]>) {
 }
 
 function buildFactionRows(factionList: Faction[], heya: Heya, world: WorldState) {
-  const maxInfluence = factionList.length > 0 ? factionList[0].influence : 0;
+  // The chairman's clan comes from the elected board (internal pick), not
+  // from raw ichimon influence.
+  const chairmanIchimon = world.jsaBoard?.directors.find((d) => d.isChairman)?.ichimon;
   return factionList.map((fac) => ({
     id: fac.id,
     label: (
       <span className="flex items-center gap-1.5 flex-wrap">
         {fac.name}
-        {fac.influence === maxInfluence && (
+        {chairmanIchimon === fac.id && (
           <Badge variant="default" className="text-[10px] px-1.5 py-0 h-3.5">
             Chairman
           </Badge>
@@ -163,6 +165,7 @@ export function useGovernanceDerived(world: WorldState | null) {
       recordStats,
       pendingRulings: gov.pendingRulings,
       rikishiCouncil: gov.rikishiCouncil,
+      jsaBoard: gov.jsaBoard,
     };
   }, [world, heya]);
 

@@ -111,22 +111,29 @@ export interface Loan {
 export type IchimonName = "Dewanoumi" | "Nishonoseki" | "Takasago" | "Tokitsukaze" | "Isegahama";
 
 /**
+ * One elected JSA riji (理事) seat — the stablemaster carrying it. */
+export interface JsaBoardDirector {
+  /** The seated master. */
+  oyakataId: Id;
+  /** The stable whose caucus slot he won. */
+  heyaId: Id;
+  /** His clan — the slate he was elected through. */
+  ichimon?: IchimonName;
+  /** Internal board pick, not the top slate score — see elections.ts. */
+  isChairman: boolean;
+}
+/**
  * The elected JSA board (riji). Persisted on world.jsaBoard after each
  * biennial clan-quota election — one entry per seat plus the cosmetic
  * external directors the real board also seats.
  */
-export interface JsaBoardDirector {
-  oyakataId: Id;
-  heyaId: Id;
-  ichimon?: IchimonName;
-  isChairman: boolean;
-}
 export interface JsaBoard {
   directors: JsaBoardDirector[];
   /** Non-elected seats for outside academics/luminaries (cosmetic). */
   externalSeats: number;
   /** Seats won per clan this cycle ("unaffiliated" for clanless stables). */
   clanSeats: Record<string, number>;
+  /** Basho-year of the election that seated this board. */
   electedYear: number;
 }
 

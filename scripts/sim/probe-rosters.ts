@@ -1,3 +1,10 @@
+/**
+ * probe-rosters.ts — genesis roster-distribution check.
+ *
+ * Prints per-stable roster sizes + sekitori counts after worldgen so the
+ * heavy-tailed real-2026 spread (top ~33, no empty stables, ~590 total)
+ * can be eyeballed without running a multi-year sim.
+ */
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 
 const world = generateInitialWorld("roster-c");
@@ -17,4 +24,9 @@ console.log(`stables=${sizes.length} total=${total} mean=${(total / sizes.length
 console.log(`top10 sizes: ${sizes.slice(0, 10).join(", ")}`);
 console.log(`bottom10: ${sizes.slice(-10).join(", ")}`);
 const sek = Object.entries(sekitori).sort((a, b) => b[1] - a[1]);
-console.log(`sekitori total=${sek.reduce((a, [, n]) => a + n, 0)} | top: ${sek.slice(0, 8).map(([n, c]) => `${n}:${c}`).join(" ")}`);
+console.log(
+  `sekitori total=${sek.reduce((a, [, n]) => a + n, 0)} | top: ${sek
+    .slice(0, 8)
+    .map(([n, c]) => `${n}:${c}`)
+    .join(" ")}`
+);

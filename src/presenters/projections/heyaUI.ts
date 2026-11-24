@@ -34,6 +34,7 @@ export interface UIHeya {
   recruitment: {
     scoutingPriority: string;
     targetStyle: string;
+    /** Headroom to `heya.rosterTarget` — an appetite gauge, not a legal cap. */
     openSlots: number;
   };
   achievements: {

@@ -591,7 +591,15 @@ function buildSuccessorOyakata(
   };
 }
 
-/** Passes the outgoing oyakata's held myoseki to the new oyakata. */
+/**
+ * Passes the outgoing oyakata's held myoseki to the new oyakata.
+ *
+ * Shares the retiree *held* (holderId) transfer straight across; shares he
+ * merely *owned* but leased out (shakukabu, 借株) also reseat to the heir —
+ * the lessee's borrowed-elder claim dies with the owner's retirement, so the
+ * lease is vacated (status→held, leaseFee/askingPrice cleared) rather than
+ * surviving the handover.
+ */
 function transferElderStock(
   builder: ImpactBuilder,
   world: WorldState,
@@ -615,8 +623,7 @@ function transferElderStock(
       const leaseVacates = stock.ownerId === fromOyakataId && stock.status === "leased";
       nextStocks[stockId] = {
         ...stock,
-        holderId:
-          stock.holderId === fromOyakataId || leaseVacates ? toOyakataId : stock.holderId,
+        holderId: stock.holderId === fromOyakataId || leaseVacates ? toOyakataId : stock.holderId,
         ownerId: stock.ownerId === fromOyakataId ? toOyakataId : stock.ownerId,
         ...(leaseVacates
           ? { status: "held" as const, leaseFee: undefined, askingPrice: undefined }

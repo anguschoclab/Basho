@@ -47,6 +47,8 @@ interface RecruitSigningDialogProps {
   } | null;
   playerHeyaName?: string;
   rosterSize?: number;
+  /** The stable's organic size goal — appetite gauge, not a legal cap. */
+  rosterTarget?: number;
 }
 
 const POOL_ICONS: Record<string, React.ReactNode> = {
@@ -80,6 +82,7 @@ export function RecruitSigningDialog({
   candidate,
   playerHeyaName,
   rosterSize,
+  rosterTarget,
 }: RecruitSigningDialogProps) {
   const [offerType, setOfferType] = useState<"standard" | "aggressive">("standard");
   const [interest, setInterest] = useState<"low" | "medium" | "high" | "all_in">("medium");
@@ -169,7 +172,9 @@ export function RecruitSigningDialog({
 
               {rosterSize !== undefined && (
                 <p className="text-[11px] text-muted-foreground bg-muted/30 p-2 rounded">
-                  Stable roster: {rosterSize} rikishi. Negotiation may take 1-2 weeks.
+                  Stable roster: {rosterSize}
+                  {rosterTarget !== undefined && ` of ~${rosterTarget}`} rikishi. Negotiation may
+                  take 1-2 weeks.
                 </p>
               )}
             </div>

@@ -35,8 +35,7 @@ export type ClanKey = IchimonName | typeof UNAFFILIATED;
 export const EXTERNAL_BOARD_SEATS = 3;
 
 /** A heya's clan key for election purposes. */
-export const clanKeyOf = (ichimon: IchimonName | undefined): ClanKey =>
-  ichimon ?? UNAFFILIATED;
+export const clanKeyOf = (ichimon: IchimonName | undefined): ClanKey => ichimon ?? UNAFFILIATED;
 
 /** Resolve a stock/elder holder's stable clan (oyakata or rikishi holder). */
 function holderClan(world: WorldState, holderId: Id | undefined): ClanKey {
@@ -56,8 +55,7 @@ function kabuByHeya(world: WorldState): Map<Id, number> {
   for (const stock of Object.values(world.myosekiMarket?.stocks ?? {})) {
     if (stock.status !== "held" && stock.status !== "leased") continue;
     const holder = stock.holderId;
-    const heyaId =
-      world.oyakata?.get(holder)?.heyaId ?? world.rikishi?.get(holder)?.heyaId;
+    const heyaId = world.oyakata?.get(holder)?.heyaId ?? world.rikishi?.get(holder)?.heyaId;
     if (heyaId) counts.set(heyaId, (counts.get(heyaId) ?? 0) + 1);
   }
   return counts;
@@ -98,7 +96,10 @@ export function apportionClanSeats(
   let voteBase = votes;
   const totalVotes = [...votes.values()].reduce((a, b) => a + b, 0);
   if (totalVotes <= 0) voteBase = new Map(candidates);
-  const total = Math.max(1, [...voteBase.values()].reduce((a, b) => a + b, 0));
+  const total = Math.max(
+    1,
+    [...voteBase.values()].reduce((a, b) => a + b, 0)
+  );
 
   const clans = stableSort([...candidates.keys()], (c) => c);
   const quota = new Map<ClanKey, { floor: number; rem: number }>();
@@ -146,7 +147,7 @@ function slateScore(world: WorldState, heyaId: Id, kabu: Map<Id, number>): numbe
  */
 function chairmanScore(world: WorldState, heyaId: Id): number {
   const heya = getHeya(world, heyaId);
-  const years = heya?.oyakataId ? world.oyakata?.get(heya.oyakataId)?.yearsInCharge ?? 0 : 0;
+  const years = heya?.oyakataId ? (world.oyakata?.get(heya.oyakataId)?.yearsInCharge ?? 0) : 0;
   return (heya?.reputation ?? 50) + (heya?.politicalCapital ?? 50) + years * 2;
 }
 
@@ -245,10 +246,7 @@ export function runElections(world: WorldState): StateImpact {
   }
 
   // Persist the board — careerProjections + governance UI read it.
-  const directors: JsaBoardDirector[] = stableSort(
-    elected,
-    (c) => c.heyaId
-  ).map((c) => {
+  const directors: JsaBoardDirector[] = stableSort(elected, (c) => c.heyaId).map((c) => {
     const heya = getHeya(world, c.heyaId);
     return {
       oyakataId: heya?.oyakataId ?? "",

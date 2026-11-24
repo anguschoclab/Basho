@@ -46,6 +46,27 @@ export interface RikishiCouncilProjection {
   playerHasSekitori: boolean;
 }
 
+/** Display-ready row for one elected JSA director. */
+export interface JsaBoardDirectorRow {
+  oyakataId: string;
+  oyakataName: string;
+  heyaName: string;
+  ichimon?: string;
+  isChairman: boolean;
+  isPlayerHeya: boolean;
+}
+
+/** The sitting board as the politics tab renders it. */
+export interface JsaBoardProjection {
+  directors: JsaBoardDirectorRow[];
+  chairmanName?: string;
+  clanSeats: Record<string, number>;
+  externalSeats: number;
+  electedYear: number;
+  /** Elections resolve on even years (phase06). */
+  nextElectionYear: number;
+}
+
 export interface GovernanceDerived {
   status: string;
   politicalCapital: number;
@@ -71,6 +92,7 @@ export interface GovernanceDerived {
   }>;
   factionList: Faction[];
   rikishiCouncil: RikishiCouncilProjection;
+  jsaBoard?: JsaBoardProjection;
 }
 
 export function projectGovernanceDerived(world: WorldState, heya: Heya): GovernanceDerived {
@@ -173,6 +195,36 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
     completedMergerEvents,
     factionList,
     rikishiCouncil,
+    jsaBoard: projectJsaBoard(world, heya),
+  };
+}
+
+/**
+ * Resolves `world.jsaBoard` entity ids to display names. Absent until the
+ * first biennial clan-quota election resolves (runElections).
+ */
+function projectJsaBoard(world: WorldState, heya: Heya): JsaBoardProjection | undefined {
+  const board = world.jsaBoard;
+  if (!board || board.directors.length === 0) return undefined;
+  const directors = board.directors.map((d) => {
+    const oyakata = world.oyakata?.get(d.oyakataId);
+    const heyaRec = world.heyas?.get(d.heyaId);
+    return {
+      oyakataId: d.oyakataId,
+      oyakataName: oyakata?.name ?? d.oyakataId,
+      heyaName: heyaRec?.name ?? d.heyaId,
+      ichimon: d.ichimon,
+      isChairman: d.isChairman,
+      isPlayerHeya: d.heyaId === heya.id,
+    };
+  });
+  return {
+    directors,
+    chairmanName: directors.find((d) => d.isChairman)?.oyakataName,
+    clanSeats: board.clanSeats,
+    externalSeats: board.externalSeats,
+    electedYear: board.electedYear,
+    nextElectionYear: board.electedYear + 2,
   };
 }
 

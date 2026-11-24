@@ -324,7 +324,12 @@ function mintMaezumoEntrant(world: WorldState, basho: BashoState, index: number)
   };
 }
 
-/** One-pass map of resolved bouts per rikishi this basho. */
+/**
+ * One-pass map of resolved bouts per rikishi this basho. Replaces the old
+ * per-rikishi match rescan — the hachiban-zumo scan asks the same question
+ * for every lower-division candidate, so the map costs O(matches) once
+ * instead of O(rikishi × matches) per day.
+ */
 function completedBoutCounts(basho: BashoState): Map<string, number> {
   const counts = new Map<string, number>();
   for (const m of basho.matches) {

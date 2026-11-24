@@ -62,17 +62,24 @@ function StockCard({ stock, market }: { stock: MyosekiStock; market: Market }) {
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg">{stock.name}</CardTitle>
-          <Badge
-            variant={
-              stock.prestigeTier === "elite"
-                ? "default"
-                : stock.prestigeTier === "respected"
-                  ? "secondary"
-                  : "outline"
-            }
-          >
-            {stock.prestigeTier}
-          </Badge>
+          <div className="flex gap-1.5">
+            {stock.ichimon && (
+              <Badge variant="outline" className="border-primary/40 text-primary">
+                {stock.ichimon}
+              </Badge>
+            )}
+            <Badge
+              variant={
+                stock.prestigeTier === "elite"
+                  ? "default"
+                  : stock.prestigeTier === "respected"
+                    ? "secondary"
+                    : "outline"
+              }
+            >
+              {stock.prestigeTier}
+            </Badge>
+          </div>
         </div>
         <CardDescription className="flex items-center gap-2">
           Owned by:

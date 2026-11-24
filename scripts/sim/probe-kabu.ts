@@ -1,3 +1,10 @@
+/**
+ * probe-kabu.ts — genesis elder-stock distribution check.
+ *
+ * Reports sekitori supply per ichimon vs held-stock clan tags so the
+ * supply-constrained KABU_HELD_DISTRIBUTION targets can be verified
+ * without a sim run.
+ */
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 const w = generateInitialWorld("kabu-dist-seed");

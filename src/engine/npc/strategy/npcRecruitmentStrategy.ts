@@ -27,6 +27,13 @@ interface RecruitmentStrategy {
     heya: Heya,
     oyakata: Oyakata
   ) => { impact: StateImpact; count: number };
+  /**
+   * The stable's ceiling bid for a candidate.
+   * `noiseSpread` is the caller-hoisted `scoutNoiseSpreadForHeya` value —
+   * hot loops (fillVacanciesForNPCWithBidding) compute it once per heya so
+   * the heya×candidate scan doesn't re-derive scouting state per pair.
+   * Omit to derive it from the world (single-bid callers, tests).
+   */
   calculateMaxBid: (
     world: WorldState,
     heya: Heya,
@@ -89,9 +96,7 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     // high-potential prospects trigger competitive bidding wars between stables,
     // without the richest stable always identifying the objectively best prospect.
     const candidate = candidateId ? world.talentPool?.candidates?.[candidateId] : undefined;
-    const talentSeed = candidate
-      ? perceivedTalentSeed(world, heya.id, candidate, noiseSpread)
-      : 50;
+    const talentSeed = candidate ? perceivedTalentSeed(world, heya.id, candidate, noiseSpread) : 50;
     const talentMult = 0.5 + talentSeed / 100;
     maxBid *= talentMult;
 
