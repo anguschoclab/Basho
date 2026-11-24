@@ -69,6 +69,29 @@ describe("boutResolver copies dramaticContext onto BoutResult", () => {
     expect(dramaLine!.phase).toBe("opening");
   });
 
+  it("copies crossDivisionCallupId and eighthBoutForRikishiId from match schedule to result", () => {
+    const east = mockRikishi("r-east", { injured: false });
+    const west = mockRikishi("r-west", { injured: false });
+    const basho = makeMockBasho({
+      matches: [
+        {
+          boutId: "bout-test-001",
+          day: 1,
+          eastRikishiId: "r-east",
+          westRikishiId: "r-west",
+          crossDivisionCallupId: "r-east",
+          eighthBoutForRikishiId: "r-west",
+        },
+      ],
+    });
+    const ctx = makeBoutContext();
+
+    const { result } = resolveBout(ctx, east, west, basho);
+
+    expect(result.crossDivisionCallupId).toBe("r-east");
+    expect(result.eighthBoutForRikishiId).toBe("r-west");
+  });
+
   it("does not generate drama line when no dramaticContext is set", () => {
     const east = mockRikishi("r-east", { injured: false });
     const west = mockRikishi("r-west", { injured: false });

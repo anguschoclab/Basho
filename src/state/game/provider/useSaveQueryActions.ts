@@ -47,7 +47,8 @@ export function useSaveQueryActions(
 
   const quickSave = useCallback(() => {
     if (!state.world) return false;
-    autosaveWithSignal(state.world);
+    // Explicit user save — bypass the autosave debounce.
+    autosaveWithSignal(state.world, { immediate: true });
     return true;
   }, [state.world]);
 

@@ -201,9 +201,17 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
 
       builder.updateOyakata(nextOya.id, nextOya);
 
-      maybeAssignNPCMentors(world, heya, builder);
+      // Member list is shared by mentors + sparring assignment — build once
+      // per heya instead of twice (dedupeIdList + a map.get per member).
+      const members: Rikishi[] = [];
+      for (const id of dedupeIdList(heya.rikishiIds ?? []) ?? []) {
+        const r = getRikishi(world, id);
+        if (r) members.push(r);
+      }
+
+      maybeAssignNPCMentors(world, heya, members, builder);
       sparringDirty =
-        maybeAssignNPCSparringPairs(world, heya, builder, sparringMap) || sparringDirty;
+        maybeAssignNPCSparringPairs(world, heya, members, builder, sparringMap) || sparringDirty;
     }
   }
 
@@ -291,14 +299,9 @@ function resolveActivePlan(
 function maybeAssignNPCMentors(
   world: WorldState,
   heya: Heya,
+  members: Rikishi[],
   builder: ReturnType<typeof createImpactBuilder>
 ): void {
-  const members: Rikishi[] = [];
-  for (const id of dedupeIdList(heya.rikishiIds ?? []) ?? []) {
-    const r = getRikishi(world, id);
-    if (r) members.push(r);
-  }
-
   const active: Rikishi[] = [];
   const apprentices: Rikishi[] = [];
   for (const r of members) {
@@ -361,15 +364,10 @@ const CHEMISTRY_SCORE: Record<SparringChemistry, number> = {
 function maybeAssignNPCSparringPairs(
   world: WorldState,
   heya: Heya,
+  members: Rikishi[],
   builder: ReturnType<typeof createImpactBuilder>,
   sparringMap: Map<Id, SparringState>
 ): boolean {
-  const members: Rikishi[] = [];
-  for (const id of dedupeIdList(heya.rikishiIds ?? []) ?? []) {
-    const r = getRikishi(world, id);
-    if (r) members.push(r);
-  }
-
   // Gather already-paired ids — read the accumulated map, not the base world,
   // so pairs assigned earlier this same week are respected.
   const existingState = sparringMap.get(heya.id);
@@ -393,8 +391,9 @@ function maybeAssignNPCSparringPairs(
   }
   if (eligible.length < 2) return false;
 
-  // Score all potential pairs
-  const candidates: { a: Rikishi; b: Rikishi; score: number }[] = [];
+  // Score all potential pairs (chemistry is pure — carry it through so the
+  // assignment pass doesn't recompute it per accepted pair)
+  const candidates: { a: Rikishi; b: Rikishi; chemistry: SparringChemistry; score: number }[] = [];
   for (let i = 0; i < eligible.length; i++) {
     for (let j = i + 1; j < eligible.length; j++) {
       const a = eligible[i];
@@ -404,7 +403,7 @@ function maybeAssignNPCSparringPairs(
       const chemScore = CHEMISTRY_SCORE[chemistry];
       const statGap = Math.abs(a.stats.power - b.stats.power);
       const statGapBonus = Math.min(3, Math.floor(statGap / 20));
-      candidates.push({ a, b, score: chemScore + statGapBonus });
+      candidates.push({ a, b, chemistry, score: chemScore + statGapBonus });
     }
   }
 
@@ -414,9 +413,8 @@ function maybeAssignNPCSparringPairs(
   const currentWeek = world.calendar?.currentWeek ?? 0;
   const newPairs: SparringPair[] = [];
 
-  for (const { a, b } of candidates) {
+  for (const { a, b, chemistry } of candidates) {
     if (assignedIds.has(a.id) || assignedIds.has(b.id)) continue;
-    const chemistry = SparringService.calculateChemistry(a, b);
     newPairs.push({
       key: SparringService.makePairKey(a.id, b.id),
       aId: a.id,

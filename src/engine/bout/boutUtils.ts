@@ -43,6 +43,18 @@ export interface BoutContext {
    * not honbasho torikumi — no kinboshi, kensho, or record side-effects.
    */
   isPlayoff?: boolean;
+  /**
+   * The schedule record this bout was created from, when the caller already
+   * holds it. Lets enrichment copy dramaticContext / crossDivisionCallupId /
+   * eighthBoutForRikishiId without rescanning basho.matches per bout.
+   * Callers that omit it fall back to the matches lookup (identical output).
+   */
+  scheduleMatch?: Partial<
+    Pick<
+      import("@/engine/types/basho").MatchSchedule,
+      "dramaticContext" | "crossDivisionCallupId" | "eighthBoutForRikishiId"
+    >
+  >;
 }
 
 /** Resolved tactic for each side of a bout. */

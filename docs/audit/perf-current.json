@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-24T08:40:14.274Z",
+  "timestamp": "2026-11-24T15:19:27.562Z",
   "environment": {
     "platform": "darwin",
     "arch": "arm64",
@@ -8,35 +8,43 @@
   "results": [
     {
       "scenario": "S1_single_day",
-      "p50_ms": 1.9,
-      "p99_ms": 7.8,
-      "mean_ms": 2.2,
+      "p50_ms": 1.6,
+      "p99_ms": 4.1,
+      "mean_ms": 1.8,
       "runs": 50,
       "total_days": 1
     },
     {
       "scenario": "S2_weekly",
-      "p50_ms": 599.3,
-      "p99_ms": 717.5,
-      "mean_ms": 595.9,
+      "p50_ms": 526.7,
+      "p99_ms": 795.5,
+      "mean_ms": 548.2,
       "runs": 50,
       "total_days": 7
     },
     {
       "scenario": "S3_year",
-      "p50_ms": 2307.3,
-      "p99_ms": 2720.1,
-      "mean_ms": 2286.7,
+      "p50_ms": 1875.4,
+      "p99_ms": 2360.5,
+      "mean_ms": 1895,
       "runs": 50,
       "total_days": 365
     },
     {
       "scenario": "S4_25yr",
-      "p50_ms": 2279.4,
-      "p99_ms": 2363,
-      "mean_ms": 2291.3,
+      "p50_ms": 1873.5,
+      "p99_ms": 1943.2,
+      "mean_ms": 1878.2,
       "runs": 10,
       "total_days": 9125
+    },
+    {
+      "scenario": "S5_autosim_basho",
+      "p50_ms": 2895.4,
+      "p99_ms": 3502.2,
+      "mean_ms": 2932,
+      "runs": 10,
+      "total_days": 64
     }
   ]
 }

@@ -11,9 +11,37 @@
  */
 
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { BashoState } from "@/engine/types/basho";
+import type { BashoState, StandingsTableRuntime } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import { CONTENTION_WINDOW, FINAL_DAY } from "@/constants/engine/physics";
+
+// Per-bout memo: the two isYushoContention leader scans (east + west division,
+// plus isPlayoffScenario's third) share one full standings pass. Keyed on the
+// standings Map object — standings are rebuilt as a new Map per bout, so the
+// cache invalidates naturally; the rikishi-map guard covers swapped worlds.
+const leaderWinsCache = new WeakMap<
+  StandingsTableRuntime,
+  { rikishi: WorldState["rikishi"]; byDivision: Map<Rikishi["division"], number> }
+>();
+
+function leaderWinsByDivision(
+  basho: BashoState,
+  world: WorldState
+): Map<Rikishi["division"], number> {
+  const standings = basho.standings;
+  const cached = leaderWinsCache.get(standings);
+  if (cached && cached.rikishi === world.rikishi) return cached.byDivision;
+
+  const byDivision = new Map<Rikishi["division"], number>();
+  for (const [rid, record] of standings) {
+    const r = world.rikishi.get(rid);
+    if (!r) continue;
+    const current = byDivision.get(r.division) ?? 0;
+    if (record.wins > current) byDivision.set(r.division, record.wins);
+  }
+  leaderWinsCache.set(standings, { rikishi: world.rikishi, byDivision });
+  return byDivision;
+}
 
 /** Max wins among standings entries whose rikishi competes in `division`. */
 export function getLeaderWins(
@@ -23,13 +51,7 @@ export function getLeaderWins(
 ): number {
   const standings = basho.standings;
   if (!standings || standings.size === 0) return 0;
-  let maxWins = 0;
-  for (const [rid, record] of standings) {
-    const r = world.rikishi.get(rid);
-    if (!r || r.division !== division) continue;
-    if (record.wins > maxWins) maxWins = record.wins;
-  }
-  return maxWins;
+  return leaderWinsByDivision(basho, world).get(division) ?? 0;
 }
 
 export function isYushoContention(

@@ -39,14 +39,20 @@ export type PipelinePhase = ((world: WorldState) => WorldState | StateImpact) &
  */
 export interface PipelinePhaseMetadata {
   /**
-   * World fields this phase may modify. Runner snapshots these before execution.
-   * Note: The runner only respects fields listed in ENTITY_MAP_FIELDS (heyas, rikishi, oyakata, staff).
-   * Listing other top-level fields here will not cause them to be snapshotted or rolled back on failure.
+   * Entity maps this phase may mutate IN PLACE. Declaring a field makes the
+   * runner shallow-clone that map before execution so a throwing phase can be
+   * rolled back. Only fields in ENTITY_MAP_FIELDS (heyas, rikishi, oyakata,
+   * staff) are honored.
+   *
+   * CONTRACT: Phases must return new objects via spread/StateImpact and never
+   * mutate entity maps in place. `touches` is a safety net for phases that
+   * intentionally write in place — undeclared in-place mutation is a contract
+   * violation and is NOT rolled back on error.
    */
   touches?: string[];
   /**
    * Indicates if phase is read-only.
-   * When true, the runner passes an empty touches array to skip snapshotting.
+   * When true, the runner skips snapshotting even if touches is declared.
    * CONTRACT: Pure phases have zero rollback protection. If a phase marked pure
    * mutates state in-place before throwing an error, the pipeline cannot recover
    * and the corruption will persist.
@@ -66,39 +72,27 @@ type EntityMap = Map<string, unknown>;
 type EntitySnapshot = Partial<Record<EntityMapField, EntityMap>>;
 
 /**
- * Create a shallow snapshot of the specified entity maps for error recovery.
- * Clones maps that the phase is declared to touch (via metadata.touches).
- * Note: If touches is undefined (not declared), it falls back to cloning all
- * trackable entity maps. An empty array `[]` snapshots nothing (used for pure phases).
+ * Create a shallow snapshot of the entity maps a phase declares via
+ * `metadata.touches`, for rollback of intentional in-place mutation.
+ * Only runs when the phase opts in — phases that return new objects (the
+ * required contract) need no snapshot.
  *
  * CONTRACT: This mechanism ONLY rolls back top-level maps listed in ENTITY_MAP_FIELDS.
  * It does NOT deeply clone entities. If a phase mutates entity fields in-place (e.g. `rikishi.stats`)
  * or modifies unlisted top-level fields before throwing an error, that corruption WILL persist.
- * Furthermore, if a phase is marked `pure: true`, it passes an empty array `[]` and bypasses
- * snapshotting entirely, offering zero rollback protection if it throws.
+ * Undeclared in-place mutation of an entity map is likewise not rolled back.
  */
-function createShallowSnapshot(
-  world: WorldState,
-  touches?: string[]
-): { snapshot: Partial<WorldState>; restore: (w: WorldState) => WorldState } {
+function createShallowSnapshot(world: WorldState, touches: string[]): Partial<WorldState> {
   const validTouches = new Set<string>(ENTITY_MAP_FIELDS);
-  const fieldsToSnapshot: EntityMapField[] =
-    touches !== undefined
-      ? touches.filter((f): f is EntityMapField => validTouches.has(f))
-      : [...ENTITY_MAP_FIELDS];
-
   const snapshot: EntitySnapshot = {};
-  for (const field of fieldsToSnapshot) {
-    const map = world[field];
+  for (const field of touches) {
+    if (!validTouches.has(field)) continue;
+    const map = world[field as EntityMapField];
     if (map instanceof Map) {
-      snapshot[field] = new Map(map as EntityMap);
+      snapshot[field as EntityMapField] = new Map(map as EntityMap);
     }
   }
-
-  return {
-    snapshot: snapshot as Partial<WorldState>,
-    restore: (w: WorldState) => ({ ...w, ...(snapshot as Partial<WorldState>) }),
-  };
+  return snapshot as Partial<WorldState>;
 }
 
 /**
@@ -106,12 +100,13 @@ function createShallowSnapshot(
  * Each phase must return a new object (no mutation).
  * Phases can return either WorldState (legacy) or StateImpact (migrated).
  *
- * On phase failure the pre-phase snapshot (shallow clone of entity maps)
- * is restored, so the remaining phases still execute against a valid world.
- * WARNING: Only maps explicitly listed in `touches` or `ENTITY_MAP_FIELDS`
- * (heyas, rikishi, oyakata, staff) are restored. If a phase mutates nested
- * state, scalars, or unlisted maps in-place before throwing, that corruption persists.
- * This closes H7 for explicitly tracked maps only.
+ * On phase failure the runner restores the whole pre-phase world object, so
+ * the remaining phases still execute against a valid world. Phases that opt
+ * in via `touches` additionally get a shallow-clone rollback of the declared
+ * entity maps, covering intentional in-place `Map.set` mutation.
+ * WARNING: undeclared in-place mutation is a contract violation and is NOT
+ * rolled back — the clone is only paid for maps a phase explicitly declares.
+ * Nested-state, scalar, or unlisted-map mutation also persists on failure.
  */
 export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
   let currentWorld = initialWorld;
@@ -122,8 +117,16 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
   const perfTrace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> = [];
 
   for (const phase of phases) {
-    const touches = phase.pure ? [] : phase.touches;
-    const { restore } = createShallowSnapshot(currentWorld, touches);
+    // Free reference capture — the whole-world restore on failure. Entity-map
+    // clones are paid only for maps the phase declares via `touches` (the
+    // in-place-mutation backstop); all production phases return StateImpacts
+    // and never need the clone.
+    const prePhaseWorld = currentWorld;
+    const declaredTouches = phase.pure ? [] : phase.touches;
+    const snapshot =
+      declaredTouches && declaredTouches.length > 0
+        ? createShallowSnapshot(currentWorld, declaredTouches)
+        : null;
 
     const perfStart = perfEnabled ? performance.now() : 0;
 
@@ -160,7 +163,10 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
       }
     } catch (err) {
       error(`FATAL ERROR in phase: "${phase.name || "anonymous"}"`, "Pipeline", err);
-      currentWorld = restore(currentWorld);
+      // Whole-world restore covers structurally invalid returns; overlaying the
+      // declared-map clones additionally rolls back touches-declared in-place
+      // mutation on an otherwise-intact world.
+      currentWorld = snapshot ? { ...prePhaseWorld, ...snapshot } : prePhaseWorld;
       continue;
     }
   }

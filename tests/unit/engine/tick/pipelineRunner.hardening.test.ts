@@ -30,6 +30,7 @@ describe("Pipeline runner hardening (B3.1-2)", () => {
       world.heyas.set("heya2", { id: "heya2", name: "Bad" } as any);
       throw new Error("Mutation then throw");
     };
+    mutatingPhase.touches = ["heyas"];
 
     const result = runPipeline(initialWorld, [mutatingPhase]);
 
@@ -47,6 +48,7 @@ describe("Pipeline runner hardening (B3.1-2)", () => {
       world.rikishi.set("rik2", { id: "rik2", shikona: "Bad" } as any);
       throw new Error("Rikishi mutation then throw");
     };
+    mutatingPhase.touches = ["rikishi"];
 
     const result = runPipeline(initialWorld, [mutatingPhase]);
 

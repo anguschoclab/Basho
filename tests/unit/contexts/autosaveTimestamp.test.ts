@@ -25,11 +25,16 @@ vi.mock("@/pages/settingsHelpers", () => ({
 describe("autosaveWithSignal (WS5-05)", () => {
   afterEach(() => {
     vi.clearAllMocks();
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   it("passes a real ISO timestamp to the engine autosave", () => {
+    vi.useFakeTimers();
     const world = MockFactory.createWorld({});
     autosaveWithSignal(world);
+    // The debounced write fires after the settle window.
+    vi.advanceTimersByTime(2000);
     expect(autosave).toHaveBeenCalledWith(
       world,
       expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)

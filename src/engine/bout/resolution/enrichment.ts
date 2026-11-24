@@ -118,8 +118,10 @@ export function enrichResult(
     recordWinnerHighlights(winner, loser, bout, bashoLabel, kinboshiDelta, builder);
   }
 
-  // 2.5. Copy dramatic context + cross-division metadata from match schedule
-  const match = basho.matches?.find((m) => m.boutId === result.boutId);
+  // 2.5. Copy dramatic context + cross-division metadata from match schedule.
+  // Prefer the schedule record the caller threaded through the bout context —
+  // the matches.find below is an O(matches) scan per bout otherwise.
+  const match = bout.scheduleMatch ?? basho.matches?.find((m) => m.boutId === result.boutId);
   if (match?.dramaticContext) {
     result.dramaticContext = match.dramaticContext;
   }

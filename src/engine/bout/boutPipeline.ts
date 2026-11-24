@@ -74,6 +74,9 @@ export function resolveAndApplyBout(
     rikishiWestId: west.id,
     division: east.division,
     playerSide,
+    // The schedule record is already in hand — threading it through lets
+    // enrichment skip the O(matches) find per bout (callers pass richer shapes).
+    scheduleMatch: match as Partial<MatchSchedule>,
   };
 
   const { result, impact: resolveImpact } = resolveBout(

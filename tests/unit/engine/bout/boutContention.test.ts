@@ -163,4 +163,30 @@ describe("boutContention", () => {
       ).toBe(false);
     });
   });
+
+  describe("leader-wins derivation invalidation", () => {
+    it("recomputes when the standings Map object is replaced (next-bout standings)", () => {
+      const east = makeRikishi("east");
+      const west = makeRikishi("west");
+      const world = mkWorld([east, west], ["leader"]);
+
+      // Bout N: leader at 10, east at 9 — in window.
+      const standingsN = new Map([
+        ["leader", { wins: 10, losses: 0 }],
+        ["east", { wins: 9, losses: 1 }],
+        ["west", { wins: 9, losses: 1 }],
+      ]);
+      const bashoN = makeMockBasho({ standings: standingsN, day: 10 });
+      expect(isYushoContention(east, west, bashoN, world)).toBe(true);
+
+      // Bout N+1: standings object replaced with east now 4 behind — out of window.
+      const standingsN1 = new Map([
+        ["leader", { wins: 11, losses: 0 }],
+        ["east", { wins: 7, losses: 4 }],
+        ["west", { wins: 9, losses: 2 }],
+      ]);
+      const bashoN1 = makeMockBasho({ standings: standingsN1, day: 10 });
+      expect(isYushoContention(east, west, bashoN1, world)).toBe(false);
+    });
+  });
 });

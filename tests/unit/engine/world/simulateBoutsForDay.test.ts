@@ -131,4 +131,80 @@ describe("simulateBoutsForDay", () => {
     expect(result.results).toHaveLength(0);
     expect(result.world).toBe(world);
   });
+
+  it("consumes boutTactics keyed to resolved bouts and preserves future-day tactics", () => {
+    const matches = [
+      _makeTestMatch("b1", 1, "east1", "west1"),
+      _makeTestMatch("b2", 2, "east2", "west2"),
+    ];
+    const world = _makeTestWorld(matches, { day: 1 });
+    world.boutTactics = {
+      b1: "power_through" as never,
+      b2: "endure" as never,
+    };
+
+    const result = simulateBoutsForDay(world);
+
+    expect(result.results).toHaveLength(1);
+    // The resolved bout's tactic is consumed; the day-2 tactic survives.
+    expect(result.world.boutTactics?.b1).toBeUndefined();
+    expect(result.world.boutTactics?.b2).toBe("endure");
+  });
+
+  it("updates standings so wins+losses equal the number of resolved bouts", () => {
+    const matches = [
+      _makeTestMatch("b1", 1, "east1", "west1"),
+      _makeTestMatch("b2", 1, "east2", "west2"),
+    ];
+    const world = _makeTestWorld(matches, { day: 1 });
+
+    const result = simulateBoutsForDay(world);
+    const standings = result.world.currentBasho!.standings!;
+
+    let wins = 0;
+    let losses = 0;
+    for (const [, s] of standings) {
+      wins += s.wins;
+      losses += s.losses;
+    }
+    expect(wins).toBe(2);
+    expect(losses).toBe(2);
+  });
+
+  it("writes results to the correct match indices when the day has prior resolved bouts", () => {
+    const matches = [
+      _makeTestMatch("b0", 1, "east1", "west1"),
+      _makeTestMatch("b1", 1, "east2", "west2"),
+      _makeTestMatch("b2", 1, "east1", "west2"),
+    ];
+    matches[0].result = {
+      boutId: "b0",
+      winner: "east",
+      winnerRikishiId: "east1",
+      loserRikishiId: "west1",
+      kimarite: "yorikiri",
+      kimariteName: "Yorikiri",
+      stance: "migi-yotsu",
+      tachiaiWinner: "east",
+      duration: 4.1,
+      upset: false,
+      isKinboshi: false,
+      log: [],
+      kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
+    };
+    const world = _makeTestWorld(matches, { day: 1 });
+
+    const result = simulateBoutsForDay(world);
+
+    expect(result.results).toHaveLength(2);
+    const out = result.world.currentBasho!.matches;
+    // Index-stable: the pre-resolved match keeps its original result object,
+    // later slots get their own results — no drift or duplication.
+    expect(out[0].result?.boutId).toBe("b0");
+    expect(out[1].result?.boutId).toBe("b1");
+    expect(out[2].result?.boutId).toBe("b2");
+  });
 });

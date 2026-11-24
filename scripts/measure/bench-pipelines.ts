@@ -14,6 +14,7 @@
 
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
+import { runAutoSim } from "@/engine/simulation/AutoSimService";
 import type { WorldState } from "@/engine/types/world";
 import { performance } from "node:perf_hooks";
 import { cpus, platform, arch } from "node:os";
@@ -29,6 +30,10 @@ export interface ScenarioConfig {
   fast: boolean;
   runs: number;
   warmup: number;
+  /** When set, time runAutoSim for this many basho instead of the day loop —
+   *  the autonomous path covers senshuraku/playoffs/post-basho that
+   *  advanceDaysFast halts on (S3/S4 only measure ~16 real days). */
+  autosimBasho?: number;
 }
 
 export const SCENARIOS: Record<string, ScenarioConfig> = {
@@ -36,6 +41,7 @@ export const SCENARIOS: Record<string, ScenarioConfig> = {
   S2_weekly: { days: 7, fast: false, runs: 50, warmup: 5 },
   S3_year: { days: 365, fast: true, runs: 50, warmup: 5 },
   S4_25yr: { days: 25 * 365, fast: true, runs: 10, warmup: 2 },
+  S5_autosim_basho: { days: 64, fast: true, runs: 10, warmup: 2, autosimBasho: 1 },
 };
 
 export interface BenchmarkResult {
@@ -94,8 +100,18 @@ export function runScenario(name: string, cfg: ScenarioConfig): BenchmarkResult 
     const world = generateInitialWorld("bench-seed-0001");
     const t0 = performance.now();
     let w = world;
-    for (let i = 0; i < cfg.days; i++) {
-      w = cfg.fast ? advanceDaysFast(w, 1, { skipDailyMicroPhases: true }) : advanceOneDay(w);
+    if (cfg.autosimBasho) {
+      w = runAutoSim(world, {
+        duration: { type: "basho", count: cfg.autosimBasho },
+        stopConditions: [],
+        verbosity: "minimal",
+        delegationPolicy: "balanced",
+        observerMode: true,
+      }).finalWorld;
+    } else {
+      for (let i = 0; i < cfg.days; i++) {
+        w = cfg.fast ? advanceDaysFast(w, 1, { skipDailyMicroPhases: true }) : advanceOneDay(w);
+      }
     }
     const elapsed = performance.now() - t0;
 

@@ -175,6 +175,18 @@ function applyEntityUpdates(world: WorldState, entities: StateImpact["entities"]
  * world-level ID-integrity invariant forbids duplicates in these arrays.
  */
 function appendDeduped<T>(existing: readonly T[] | undefined, items: readonly T[]): T[] {
+  // Fast path: no appended item carries a string `.id` (e.g. basho.matches
+  // entries keyed by boutId), so dedupe is unreachable — skip building the
+  // seen set, which is O(existing) on large arrays.
+  let anyStringId = false;
+  for (const item of items) {
+    if (typeof (item as { id?: unknown }).id === "string") {
+      anyStringId = true;
+      break;
+    }
+  }
+  if (!anyStringId) return [...(existing ?? []), ...items];
+
   const seen = new Set<string>();
   for (const e of existing ?? []) {
     const id = (e as { id?: unknown }).id;

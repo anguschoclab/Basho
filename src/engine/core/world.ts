@@ -141,9 +141,9 @@ function consumeBoutTactic(world: WorldState, boutId: string | undefined): World
   const nextTactics = Object.fromEntries(
     Object.entries(world.boutTactics).filter(([k]) => k !== boutId)
   );
-  return resolveImpacts(world, [
-    createImpactBuilder("consumeBoutTactic").updateWorldField("boutTactics", nextTactics).build(),
-  ]);
+  // worldFields-only update — a direct spread is identical to routing through
+  // resolveImpacts but skips its per-call bookkeeping on the per-bout hot path.
+  return { ...world, boutTactics: nextTactics };
 }
 
 /**
@@ -196,15 +196,14 @@ export function simulateBoutForToday(
     const updatedMatches = currentWorld.currentBasho.matches.map((m) =>
       m.boutId === match.boutId ? { ...m, result } : m
     );
-    currentWorld = resolveImpacts(currentWorld, [
-      createImpactBuilder("simulateBoutForToday")
-        .updateWorldField("currentBasho", {
-          ...currentWorld.currentBasho,
-          ...(updatedStandings ? { standings: updatedStandings } : {}),
-          matches: updatedMatches,
-        })
-        .build(),
-    ]);
+    currentWorld = {
+      ...currentWorld,
+      currentBasho: {
+        ...currentWorld.currentBasho,
+        ...(updatedStandings ? { standings: updatedStandings } : {}),
+        matches: updatedMatches,
+      },
+    };
   }
 
   currentWorld = consumeBoutTactic(currentWorld, match.boutId);
@@ -256,15 +255,17 @@ export function simulateBoutsForDay(world: WorldState): {
     matches[i] = { ...match, result };
 
     if (currentWorld.currentBasho) {
-      currentWorld = resolveImpacts(currentWorld, [
-        createImpactBuilder("simulateBoutsForDay")
-          .updateWorldField("currentBasho", {
-            ...currentWorld.currentBasho,
-            ...(updatedStandings ? { standings: updatedStandings } : {}),
-            matches,
-          })
-          .build(),
-      ]);
+      // worldFields-only update — direct spread is identical to resolveImpacts
+      // here (no events, entities, or arrayAppends on this impact) and avoids
+      // the resolver's per-call work on the per-bout hot path.
+      currentWorld = {
+        ...currentWorld,
+        currentBasho: {
+          ...currentWorld.currentBasho,
+          ...(updatedStandings ? { standings: updatedStandings } : {}),
+          matches,
+        },
+      };
     }
 
     currentWorld = consumeBoutTactic(currentWorld, match.boutId);

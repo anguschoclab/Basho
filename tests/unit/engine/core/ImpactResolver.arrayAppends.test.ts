@@ -87,4 +87,37 @@ describe("applyArrayAppends — id collision dedupe", () => {
     const next = resolveImpacts(world, [builder.build()]);
     expect((next.governanceLog ?? []).map((g: any) => g.id)).toEqual(["GR-1", "GR-2"]);
   });
+
+  it("still remints intra-batch duplicate .id values when existing is empty", () => {
+    // Edge the appendDeduped fast-path must preserve: dedupe runs even with an
+    // empty existing array — two appended items sharing an id must not both land.
+    const world = makeMockWorld({ governanceLog: [] as any });
+    const builder = createImpactBuilder("test");
+    builder.appendToWorldArray("governanceLog", [
+      { id: "GR-DUP" },
+      { id: "GR-DUP" },
+      { id: "GR-OTHER" },
+    ] as any);
+    const next = resolveImpacts(world, [builder.build()]);
+    const ids = (next.governanceLog ?? []).map((g: any) => g.id);
+    expect(new Set(ids).size).toBe(3);
+    expect(ids[0]).toBe("GR-DUP");
+    expect(ids[2]).toBe("GR-OTHER");
+  });
+
+  it("appends items without an .id verbatim, preserving order", () => {
+    // MatchSchedule-shaped items (keyed by boutId, no .id) must not be touched —
+    // the dedupe pass is unreachable for them by construction.
+    const world = makeMockWorld({ governanceLog: [] as any });
+    const builder = createImpactBuilder("test");
+    builder.appendToWorldArray("governanceLog", [
+      { boutId: "b1", day: 1 },
+      { boutId: "b2", day: 1 },
+      { boutId: "b3", day: 1 },
+    ] as any);
+    const next = resolveImpacts(world, [builder.build()]);
+    const items = next.governanceLog ?? [];
+    expect(items).toHaveLength(3);
+    expect(items.map((m: any) => m.boutId)).toEqual(["b1", "b2", "b3"]);
+  });
 });
