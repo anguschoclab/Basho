@@ -21,6 +21,7 @@ import {
 } from "@/constants/engine/recruitment";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/constants/engine/recruitment";
+import { getHeyaRosterTarget } from "@/engine/generation/RecruitmentController";
 
 /**
  * Execute a stable merger.
@@ -211,6 +212,13 @@ function transferRosterAcrossMerger(
   const update: Record<string, unknown> = {
     rikishiIds: [...new Set([...(target.rikishiIds ?? []), ...addedIds])],
   };
+  // Capacity follows the men (Isegahama precedent: 13 + 24 absorbed →
+  // roster 37). The population floor is Σ per-heya rosterTarget — a
+  // closure deletes the dying stable's whole target, so the transferred
+  // men's implied slots must move with them or every merger shrinks
+  // league capacity permanently. Men who retired instead of relocating
+  // take their slots with them (they'd have exited regardless).
+  update.rosterTarget = getHeyaRosterTarget(target) + transferredRikishiIds.length;
   if (incomingForeign > 0) {
     const targetForeign = getHeyaRoster(world, target.id).filter((r) =>
       countsAsForeign(r, world.year)

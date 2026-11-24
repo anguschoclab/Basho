@@ -237,6 +237,14 @@ export const HEYA_FOUNDING_RAMP = 8;
 /** Minimum number of stables to preserve — mergers are blocked below this count. */
 export const HEYA_FLOOR = 10;
 
+/** Stable-count floor — the real league's equilibrium hovers ~42–46 and
+ *  the JSA treats a shrinking count as an institutional problem: below
+ *  this line the association underwrites foundings (relaxing the seed-
+ *  funds gate) and founding pressure saturates to full FOUNDING_CHANCE
+ *  regardless of the headroom ramp. The elite dokuritsu career bar is
+ *  never relaxed — the JSA backs money, never credentials. */
+export const HEYA_COUNT_FLOOR = 45;
+
 /** Base probability that an accomplished, approved, solvent retiree founds a
  *  new stable — scaled down by league fullness via HEYA_SOFT_TARGET/RAMP. */
 export const FOUNDING_CHANCE = 0.35;

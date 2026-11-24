@@ -10,6 +10,7 @@ import {
   FOUNDING_CHANCE,
   FOUNDING_SEED_FUNDS,
   HEYA_COUNT_CAP,
+  HEYA_COUNT_FLOOR,
   HEYA_SOFT_TARGET,
   HEYA_FOUNDING_RAMP,
   MERGER_THRESHOLD,
@@ -482,11 +483,51 @@ describe("evaluateFoundingEligibility — JSA branching gates", () => {
   });
 
   it("rejects when neither retiree fund nor parent sponsorship covers the seed", () => {
-    const world = worldWithParent({ funds: 10_000_000 });
+    // League at a healthy count (≥ HEYA_COUNT_FLOOR) — money gates.
+    const world = worldWithParent({ funds: 10_000_000 }, HEYA_COUNT_FLOOR - 1);
     const retiree = accomplished({
       economics: { retirementFund: 1_000_000 } as any,
     });
     expect(evaluateFoundingEligibility(world, retiree).canFound).toBe(false);
+  });
+
+  it("JSA underwrites a qualified founder below HEYA_COUNT_FLOOR", () => {
+    // 20 stables — closures have thinned the league; the association
+    // wants the count restored, so the seed-funds gate is suspended.
+    const world = worldWithParent({ funds: 10_000_000 }, 19);
+    const retiree = accomplished({
+      economics: { retirementFund: 1_000_000 } as any,
+    });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.jsaBacked).toBe(true);
+    expect(e.parentSponsors).toBe(false);
+    // 20 stables → headroom 26 ≥ RAMP → full chance either way.
+    expect(e.effectiveChance).toBe(FOUNDING_CHANCE);
+  });
+
+  it("does not flag JSA backing when the seed was already fundable", () => {
+    const world = worldWithParent({ funds: 10_000_000 }, 19);
+    const retiree = accomplished({
+      economics: { retirementFund: FOUNDING_SEED_FUNDS } as any,
+    });
+    const e = evaluateFoundingEligibility(world, retiree);
+    expect(e.canFound).toBe(true);
+    expect(e.jsaBacked).toBe(false); // self-funded — no underwriting needed
+  });
+
+  it("JSA backing never relaxes the elite dokuritsu career bar", () => {
+    const world = worldWithParent({ funds: 10_000_000 }, 19);
+    const careerMaegashira = accomplished({
+      rank: "maegashira",
+      careerWins: 250,
+      careerHistory: [
+        { rank: "maegashira", division: "makuuchi" },
+        { rank: "maegashira", division: "makuuchi" },
+      ],
+      economics: { retirementFund: 1_000_000 } as any,
+    });
+    expect(evaluateFoundingEligibility(world, careerMaegashira).canFound).toBe(false);
   });
 
   it("allows a personally solvent retiree (self-funded founding)", () => {

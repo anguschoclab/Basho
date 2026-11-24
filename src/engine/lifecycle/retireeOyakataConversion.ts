@@ -24,6 +24,7 @@ import {
   FOUNDING_FOLLOWER_MAX,
   FOUNDING_SEED_FUNDS,
   HEYA_SOFT_TARGET,
+  HEYA_COUNT_FLOOR,
   HEYA_FOUNDING_RAMP,
   MERGER_THRESHOLD,
   MYOSEKI_TOTAL_COUNT,
@@ -321,9 +322,11 @@ export function evaluateFoundingEligibility(
   canFound: boolean;
   effectiveChance: number;
   parentSponsors: boolean;
+  /** JSA establishment underwriting — active only below HEYA_COUNT_FLOOR. */
+  jsaBacked: boolean;
   parentHeyaId?: string;
 } {
-  const none = { canFound: false, effectiveChance: 0, parentSponsors: false };
+  const none = { canFound: false, effectiveChance: 0, parentSponsors: false, jsaBacked: false };
   const parentHeya = getHeya(world, retiree.heyaId);
   if (!parentHeya) return none;
 
@@ -332,12 +335,16 @@ export function evaluateFoundingEligibility(
     (parentHeya.funds ?? 0) > MERGER_THRESHOLD;
   if (!parentViable) return none;
 
-  const personallySolvent = (retiree.economics?.retirementFund ?? 0) >= FOUNDING_SEED_FUNDS;
-  const parentCanSponsor = (parentHeya.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2;
-  if (!personallySolvent && !parentCanSponsor) return none;
-
   const headroomToTarget = HEYA_SOFT_TARGET - world.heyas.size;
   if (headroomToTarget <= 0) return none;
+
+  // Below the league floor the JSA underwrites the founding — a shrinking
+  // stable count is institutional, so the association backs a qualified
+  // founder's branch when neither he nor the parent can fund the seed.
+  const jsaBacked = world.heyas.size < HEYA_COUNT_FLOOR;
+  const personallySolvent = (retiree.economics?.retirementFund ?? 0) >= FOUNDING_SEED_FUNDS;
+  const parentCanSponsor = (parentHeya.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2;
+  if (!personallySolvent && !parentCanSponsor && !jsaBacked) return none;
 
   // WS-6 — branch-out (bunke) is the ELITE tier of the eligibility ladder:
   // Yokozuna/Ōzeki peak, 12 sanyaku basho, or 25 makuuchi basho. A career
@@ -357,11 +364,15 @@ export function evaluateFoundingEligibility(
     return none;
   }
 
+  // Restoration pressure comes through eligibility — JSA underwriting
+  // widens who can found — while the headroom ramp stays a pure
+  // count-distance function either way.
   const effectiveChance = FOUNDING_CHANCE * Math.min(1, headroomToTarget / HEYA_FOUNDING_RAMP);
   return {
     canFound: effectiveChance > 0,
     effectiveChance,
     parentSponsors: !personallySolvent && parentCanSponsor,
+    jsaBacked: jsaBacked && !personallySolvent && !parentCanSponsor,
     parentHeyaId: parentHeya.id,
   };
 }
