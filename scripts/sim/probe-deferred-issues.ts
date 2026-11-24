@@ -27,6 +27,7 @@ import {
 } from "@/constants/engine/economic";
 import { FOREIGN_STALL_DIVISIONS, FOREIGN_STALL_BASHO } from "@/constants/engine/recruitment";
 import type { Rikishi } from "@/engine/types/rikishi";
+import { isYokozunaOrOzekiRank } from "@/constants/engine/rankDisplay";
 
 const SEED = "sim-25yr-diagnostic-v1";
 const yearsFlag = process.argv.indexOf("--years");
@@ -122,12 +123,32 @@ async function main() {
     );
 
     // ── C) Founding eligibility ──────────────────────────────────────────
-    const retirees = all.filter((r) => r.isRetired && r.retirementYear === Y);
+    // Retirees migrate to historicalRikishi at year-end pruning — union both
+    // maps. Summaries lack economics → only career-bar tallied (approx at
+    // year granularity), gate decomposition runs on full Rikishi only.
+    const retirees = [
+      ...all.filter((r) => r.isRetired && r.retirementYear === Y),
+      ...(cur.historicalRikishi
+        ? Array.from(cur.historicalRikishi.values()).filter(
+            (r) => r.isRetired && r.retirementYear === Y
+          )
+        : []),
+    ];
     const gateCounts = new Map<string, number>();
     const eligible: string[] = [];
     let careerEligible = 0;
     let maxLiquid = 0;
     for (const r of retirees) {
+      if ("yearlyAggregates" in r) {
+        const agg = r.yearlyAggregates;
+        const careerOk =
+          isYokozunaOrOzekiRank(r.peakRank) ||
+          agg.filter((y) => SANYAKU.has(y.rank)).length * 6 >= BRANCH_FOUNDING_SANYAKU_BASHO ||
+          agg.filter((y) => y.division === "makuuchi").length * 6 >= BRANCH_FOUNDING_MAKUUCHI_BASHO;
+        gateCounts.set("summary", (gateCounts.get("summary") ?? 0) + 1);
+        if (careerOk) careerEligible++;
+        continue;
+      }
       maxLiquid = Math.max(
         maxLiquid,
         (r.economics?.retirementFund ?? 0) + (r.economics?.cash ?? 0)

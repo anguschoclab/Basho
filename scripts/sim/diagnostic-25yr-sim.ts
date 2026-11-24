@@ -13,6 +13,7 @@
 import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { runAutoSim } from "@/engine/simulation/AutoSimService";
 import type { WorldState } from "@/engine/types/world";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { countsAsForeign } from "@/engine/utils/citizenshipUtils";
@@ -176,8 +177,21 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   // JSA career bar: peak Y/Ō (current or historical), 12+ san'yaku basho,
   // or 25+ makuuchi basho. fcandActive = bench depth, fcandRetirees = this
   // year's founder pool, felig = retirees clearing every gate.
+  // Retirees migrate to historicalRikishi at year-end pruning — must union
+  // both maps. Summaries lack careerHistory + economics, so their bar check
+  // approximates basho counts at year granularity (12 basho → 2 yr, 25 → 5)
+  // and felig only counts un-pruned full Rikishi.
   const SANYAKU = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
-  const meetsCareerBar = (r: (typeof allRikishi)[number]): boolean => {
+  type AnyRetiree = (typeof allRikishi)[number] | RetiredRikishiSummary;
+  const meetsCareerBar = (r: AnyRetiree): boolean => {
+    if ("yearlyAggregates" in r) {
+      const agg = r.yearlyAggregates;
+      return (
+        isYokozunaOrOzekiRank(r.peakRank) ||
+        agg.filter((y) => SANYAKU.has(y.rank)).length * 6 >= BRANCH_FOUNDING_SANYAKU_BASHO ||
+        agg.filter((y) => y.division === "makuuchi").length * 6 >= BRANCH_FOUNDING_MAKUUCHI_BASHO
+      );
+    }
     const hist = r.careerHistory ?? [];
     const sanyaku = hist.filter((h) => SANYAKU.has(h.rank)).length;
     const makuuchi = hist.filter((h) => h.division === "makuuchi").length;
@@ -189,10 +203,17 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     );
   };
   const founderBarActive = active.filter(meetsCareerBar).length;
-  const thisYearRetirees = allRikishi.filter((r) => r.isRetired && r.retirementYear === world.year);
+  const thisYearRetirees: AnyRetiree[] = [
+    ...allRikishi.filter((r) => r.isRetired && r.retirementYear === world.year),
+    ...(world.historicalRikishi
+      ? Array.from(world.historicalRikishi.values()).filter(
+          (r) => r.isRetired && r.retirementYear === world.year
+        )
+      : []),
+  ];
   const founderBarRetirees = thisYearRetirees.filter(meetsCareerBar).length;
   const founderEligible = thisYearRetirees.filter(
-    (r) => evaluateFoundingEligibility(world, r).canFound
+    (r) => !("yearlyAggregates" in r) && evaluateFoundingEligibility(world, r).canFound
   ).length;
   // WS-14 — tourDays lands on schedule entries post-reform; absent ⇒ 0.
   const jungyoTourDays = getExhibitionBashoSchedule(world.year).reduce(
