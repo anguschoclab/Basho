@@ -187,8 +187,12 @@ export function setTsukebito(world: WorldState, seniorId: Id, juniorId: Id): Sta
   if (!isEligibleForTsukebito(senior)) return builder.build();
   if (!isEligibleTsukebito(junior, senior)) return builder.build();
 
-  // Check if junior is already assigned to another senior
+  // Check if junior is already assigned to another senior. Tsukebito are
+  // heya-internal (isEligibleTsukebito requires same-heya), so only the
+  // junior's own stable can hold him — scoping the scan avoids a full
+  // world.rikishi walk per assignment.
   for (const r of world.rikishi.values()) {
+    if (r.heyaId !== junior.heyaId) continue;
     if (r.id !== seniorId && r.tsukebitoIds?.includes(juniorId)) {
       // Junior is already a tsukebito for another senior — refuse
       return builder.build();
