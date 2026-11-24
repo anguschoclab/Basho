@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { announceConditionalSansho } from "@/engine/basho/conditionalSansho";
 import { MockFactory } from "@tests/helpers/utils/MockFactory";
 import type { BashoState, MatchSchedule } from "@/engine/types/basho";
+import type { KimariteId } from "@/engine/types/combat";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -12,7 +13,7 @@ function resolvedBout(
   day: number,
   winnerId: string,
   loserId: string,
-  kimarite = "yorikiri"
+  kimarite: KimariteId = "yorikiri"
 ): MatchSchedule {
   return {
     boutId,
@@ -27,7 +28,7 @@ function resolvedBout(
       loserRikishiId: loserId,
       kimarite,
       isDraw: false,
-    },
+    } as MatchSchedule["result"],
   };
 }
 

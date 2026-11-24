@@ -56,7 +56,7 @@ function foundingGateBreakdown(
 }
 
 async function main() {
-  const world = generateInitialWorld({ seed: SEED });
+  const world = generateInitialWorld(SEED);
   let cur = world;
   const seen = new Set<string>(Array.from(cur.rikishi.keys()));
 
@@ -106,7 +106,8 @@ async function main() {
       maxRetirementFund = Math.max(maxRetirementFund, r.economics?.retirementFund ?? 0);
       const b = foundingGateBreakdown(cur, r);
       gateCounts.set(b.gate, (gateCounts.get(b.gate) ?? 0) + 1);
-      if (b.gate === "PASS") eligible.push(`${r.shikona ?? r.id}@${b.effectiveChance.toFixed(2)}`);
+      if (b.gate === "PASS" && "effectiveChance" in b)
+        eligible.push(`${r.shikona ?? r.id}@${b.effectiveChance.toFixed(2)}`);
     }
     const richParents = Array.from(cur.heyas.values()).filter((h) => (h.funds ?? 0) >= FOUNDING_SEED_FUNDS * 2).length;
 

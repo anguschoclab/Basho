@@ -14,6 +14,7 @@
 import type { Id } from "@/engine/types/common";
 import type { BashoState, MaezumoState, MatchSchedule } from "@/engine/types/basho";
 import type { BanzukeEntry } from "@/engine/types/banzuke";
+import { toRankPosition } from "@/engine/types/banzuke";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 import type { createImpactBuilder } from "@/engine/core/ImpactBuilder";
@@ -170,15 +171,16 @@ export function graduateMaezumoRikishi(
   let tdIdx = 0;
   for (const r of world.rikishi.values()) {
     if (r.isMaezumo !== true || r.maezumoCompleted !== true) continue;
+    if (r.rankNumber === undefined) continue; // TD credential is always a numbered slot
     builder.updateRikishi(r.id, { isMaezumo: false });
     tdEntries.push({
       rikishiId: r.id,
       division: r.division,
-      position: {
+      position: toRankPosition({
         rank: r.rank,
         rankNumber: r.rankNumber,
         side: r.side ?? (tdIdx++ % 2 === 0 ? "east" : "west"),
-      },
+      }),
     });
   }
 

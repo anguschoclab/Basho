@@ -48,7 +48,7 @@ describe("changeHeyaIchimon — voluntary defection", () => {
     const world = baseWorld();
     world.heyas.set("h1", MockFactory.createHeya("h1", { ichimon: "Dewanoumi" }));
     const impact = changeHeyaIchimon(world, "h1", "Dewanoumi");
-    expect(impact.updatedHeyas?.size ?? 0).toBe(0);
+    expect(impact.entities?.heyaUpdates?.size ?? 0).toBe(0);
   });
 });
 

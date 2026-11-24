@@ -71,7 +71,7 @@ export function announceConditionalSansho(world: WorldState, basho: BashoState):
       const r: Rikishi | undefined = world.rikishi.get(id);
       builder.logEvent(
         "SANSHO_CONDITIONAL",
-        "governance",
+        "banzuke_committee",
         {
           status: "sansho_conditional",
           condition: "secured",
@@ -80,7 +80,7 @@ export function announceConditionalSansho(world: WorldState, basho: BashoState):
           shikona: r?.shikona,
           day: 15,
         },
-        { rikishiId: id, heyaId: r?.heyaId, importance: "standard" }
+        { rikishiId: id, heyaId: r?.heyaId, importance: "minor" }
       );
     }
   }
@@ -95,7 +95,7 @@ export function announceConditionalSansho(world: WorldState, basho: BashoState):
       if ((winCounts.get(id) ?? 0) !== 7) continue;
       builder.logEvent(
         "SANSHO_CONDITIONAL",
-        "governance",
+        "banzuke_committee",
         {
           status: "sansho_conditional",
           condition: "needs_win",
@@ -103,7 +103,7 @@ export function announceConditionalSansho(world: WorldState, basho: BashoState):
           shikona: r.shikona,
           day: 15,
         },
-        { rikishiId: id, heyaId: r.heyaId, importance: "standard" }
+        { rikishiId: id, heyaId: r.heyaId, importance: "minor" }
       );
     }
   }

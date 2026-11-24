@@ -21,7 +21,7 @@ const YEAR = 2030;
 const SAMPLE = 60;
 
 function foreignPool(): TalentCandidate[] {
-  const rng = rngFromSeed("foreign-funnel-spec");
+  const rng = rngFromSeed("foreign-funnel-spec", "generation", "test");
   const out: TalentCandidate[] = [];
   for (let i = 0; i < SAMPLE; i++) {
     out.push(
@@ -47,26 +47,29 @@ describe("foreign candidate potential floor", () => {
     // maegashira-mean potential (real funnel survivors are sekitori-grade).
     const floor = PA_BY_RANK.maegashira.mean;
     for (const c of foreignPool()) {
+      const ps = c.potentialStats;
+      expect(ps).toBeDefined();
       for (const key of PA_KEYS) {
+        const value = ps?.[key] ?? -1;
         expect(
-          c.potentialStats[key],
-          `${c.candidateId}.${key}=${c.potentialStats[key]} below makuuchi-prospect floor ${floor}`
+          value,
+          `${c.candidateId}.${key}=${value} below makuuchi-prospect floor ${floor}`
         ).toBeGreaterThanOrEqual(floor);
       }
     }
   });
 
   it("domestic pool is untouched — foreigners alone carry the funnel floor", () => {
-    const rng = rngFromSeed("domestic-control-spec");
+    const rng = rngFromSeed("domestic-control-spec", "generation", "test");
     let minSeen = 200;
     for (let i = 0; i < SAMPLE; i++) {
       const c = generateCandidate({
         id: `d-${i}`,
         rng,
         currentYear: YEAR,
-        poolType: "highschool",
+        poolType: "high_school",
       });
-      for (const key of PA_KEYS) minSeen = Math.min(minSeen, c.potentialStats[key]);
+      for (const key of PA_KEYS) minSeen = Math.min(minSeen, c.potentialStats?.[key] ?? 200);
     }
     // Guard: domestic candidates still roll the raw jonokuchi distribution —
     // some must fall below the foreign floor or the floor leaked.

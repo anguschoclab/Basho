@@ -60,7 +60,7 @@ function skWindowRuns(hist: CareerSnapshot[]): number[] {
 }
 
 async function main() {
-  const world = generateInitialWorld({ seed: SEED });
+  const world = generateInitialWorld(SEED);
   let cur = world;
 
   // Win histograms by tier.
@@ -116,7 +116,11 @@ async function main() {
     sk3plus.push(...skWindowRuns(h));
   };
   for (const r of cur.rikishi.values()) scan(r);
-  for (const r of cur.historicalRikishi.values()) scan(r);
+  for (const r of cur.historicalRikishi.values()) {
+    // Archived summaries carry no per-basho snapshots — only full Rikishi
+    // records have careerHistory to scan.
+    if ("careerHistory" in r) scan(r);
+  }
 
   const runBuckets = new Map<string, number>();
   for (const L of tenureRuns) {

@@ -16,7 +16,7 @@ import { FOREIGN_BID_BLOCKING_QUIRKS } from "@/constants/engine/recruitment";
 const weeksFlag = process.argv.indexOf("--weeks");
 const WEEKS = weeksFlag !== -1 ? parseInt(process.argv[weeksFlag + 1]) : 30;
 
-const world = generateInitialWorld({ seed: "sim-25yr-diagnostic-v1" });
+const world = generateInitialWorld("sim-25yr-diagnostic-v1");
 const res = runAutoSim(world, {
   duration: { type: "weeks", count: WEEKS },
   stopConditions: [],

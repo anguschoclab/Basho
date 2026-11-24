@@ -72,7 +72,7 @@ function trajectoryReport(world: Map<string, Rikishi> | { rikishi: Map<string, R
 }
 
 async function main() {
-  const world = generateInitialWorld({ seed: SEED });
+  const world = generateInitialWorld(SEED);
   let cur = world;
   const seen = new Set<string>(Array.from(cur.rikishi.keys()));
 
