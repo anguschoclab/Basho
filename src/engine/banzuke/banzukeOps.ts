@@ -41,6 +41,9 @@ import { getOzekiStatus, type OzekiKadobanMap } from "@/engine/banzuke/ozekiLogi
 import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
 import {
   CROSS_DIVISION_WIN_BONUS,
+  DIVISION_QUOTA,
+  JONIDAN_MAX,
+  JONOKUCHI_MIN,
   MAKUSHITA_PROMOTION_ZONE,
   SEKITORI_INCUMBENT_BONUS,
 } from "@/constants/engine/banzuke";
@@ -243,7 +246,12 @@ export function updateBanzuke(
     }
   }
 
-  const sanyakuCounts = computeVariableSanyakuCounts(eligibleBanzuke, perfById, demotedOzeki);
+  const sanyakuCounts = computeVariableSanyakuCounts(
+    eligibleBanzuke,
+    perfById,
+    demotedOzeki,
+    reclaimableOzeki
+  );
   const fullTemplate = computeDivisionTemplate(
     eligibleBanzuke,
     sanyakuCounts,
@@ -271,7 +279,7 @@ export function updateBanzuke(
     );
   }
 
-  let assigned = assignBanzukeSlots(scored, fullTemplate, demotedOzeki);
+  let assigned = assignBanzukeSlots(scored, fullTemplate, demotedOzeki, perfById);
 
   // Demand-driven tail: the sheet never drops an active rikishi for lack
   // of a slot. Entries left unassigned — whether from boundary gates or
@@ -283,8 +291,43 @@ export function updateBanzuke(
       fullTemplate,
       scored.length - assigned.length
     );
-    assigned = assignBanzukeSlots(scored, template, demotedOzeki);
+    assigned = assignBanzukeSlots(scored, template, demotedOzeki, perfById);
   }
+
+  // HARD INVARIANT — the fixed tiers always meet quota
+  // (M42 / J28 / Ms120 / Sd160) while a LEGAL fill remains unseated: an
+  // active body (convention-promotable anywhere) or a kyūjō absentee
+  // whose landing floor reaches the division. A short sheet with a
+  // fillable body left over is the measured 38-man makuuchi bug —
+  // throw before it reaches the published banzuke. Kyūjō men whose
+  // floor sits BELOW the vacant tier can't legally take it (an
+  // absentee never promotes), so they don't count. Jonidan/jonokuchi
+  // are unfixed and exempt by design.
+  const SLOT_TIER_BY_DIVISION: Record<string, number> = {
+    makuuchi: 5,
+    juryo: 6,
+    makushita: 7,
+    sandanme: 8,
+  };
+  const seatedIds = new Set(assigned.map((a) => a.rikishiId));
+  for (const division of ["makuuchi", "juryo", "makushita", "sandanme"] as const) {
+    const actual = assigned.filter((e) => e.division === division).length;
+    if (actual >= DIVISION_QUOTA[division]) continue;
+    const tier = SLOT_TIER_BY_DIVISION[division];
+    const legalLeftover = scored.filter((c) => {
+      if (seatedIds.has(c.entry.rikishiId)) return false;
+      const p = perfById.get(c.entry.rikishiId);
+      const kyujo = (p?.absences ?? 0) > 0 && (p?.wins ?? 0) === 0;
+      return !kyujo || c.eligibleBestTier <= tier;
+    }).length;
+    if (legalLeftover > 0) {
+      throw new Error(
+        `banzuke quota violated: ${division} published ${actual}/${DIVISION_QUOTA[division]} ` +
+          `with ${legalLeftover} fillable bodies still unseated`
+      );
+    }
+  }
+
   markOverflowBanzukeGai(assigned, scored, banzukeGai, banzukeGaiReasons, banzukeGaiEvents);
 
   const events: MovementEvent[] = [
@@ -395,21 +438,29 @@ function computeDivisionTemplate(
   maxJonokuchiSlots?: number
 ): ReturnType<typeof buildFullSlotTemplate> {
   const fieldSize = currentBanzuke.length;
-  const elite = 42 + 28; // makuuchi + juryo fixed
+  const elite = DIVISION_QUOTA.makuuchi + DIVISION_QUOTA.juryo;
   const lowerPopulation = Math.max(0, fieldSize - elite);
-  const HEADROOM = 8;
-  const makushita = 120; // Fixed at 120 per real sumo
-  const sandanme = Math.max(60, Math.ceil(lowerPopulation * 0.25) + HEADROOM);
-  const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.4) + HEADROOM);
-  const uncappedJonokuchi =
-    Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
+  // FIXED membership per the real banzuke — these print at quota every
+  // time; the promotion bar flexes to meet them, never the reverse.
+  const makushita = DIVISION_QUOTA.makushita;
+  const sandanme = DIVISION_QUOTA.sandanme;
+  // Jonidan is UNFIXED (usually the largest division, ~200–250);
+  // jonokuchi is the unprinted valve absorbing the rest (~40–90 real).
+  const jonidan = Math.min(
+    JONIDAN_MAX,
+    Math.max(0, lowerPopulation - makushita - sandanme - JONOKUCHI_MIN)
+  );
+  const uncappedJonokuchi = Math.max(
+    JONOKUCHI_MIN,
+    lowerPopulation - (makushita + sandanme + jonidan)
+  );
   const jonokuchi =
     maxJonokuchiSlots !== undefined
       ? Math.max(0, Math.min(uncappedJonokuchi, maxJonokuchiSlots))
       : uncappedJonokuchi;
   return buildFullSlotTemplate(sanyakuCounts, {
-    makuuchi: 42,
-    juryo: 28,
+    makuuchi: DIVISION_QUOTA.makuuchi,
+    juryo: DIVISION_QUOTA.juryo,
     makushita,
     sandanme,
     jonidan,
@@ -418,17 +469,11 @@ function computeDivisionTemplate(
 }
 
 /**
- * WS-13 — kyūjō landing floors on the positionKey scale (tier*1000 +
- * num*2 + side). An absence-dominated record lands at the top of the next
- * band down: makuuchi → ~J5; juryo → ~Ms15; lower → ~one division.
+ * WS-13 — kyūjō landing semantics live in scoreBanzukeCandidates'
+ * placement pass (lands at a fixed depth in the next band down) and in
+ * bestTierAllowed's floor-tier branch (the absentee is ineligible for
+ * his own division's slots).
  */
-const KYUJO_LANDING_FLOOR: Record<string, number> = {
-  makuuchi: 5010,
-  juryo: 7030,
-  makushita: 8100,
-  sandanme: 9100,
-  jonidan: 10080,
-};
 
 /**
  * Appends `count` extra jonokuchi tail slots to a slot template —
@@ -557,7 +602,12 @@ function scoreBanzukeCandidates(
 
   const committeeRng = rngForWorld(world, "banzuke", "committee");
 
-  return currentBanzuke
+  const comparator = (a: ScoredCandidate, b: ScoredCandidate): number =>
+    a.desiredKey !== b.desiredKey
+      ? a.desiredKey - b.desiredKey
+      : resolveBanzukeTie(a as BanzukeCandidate, b as BanzukeCandidate, world, perfById);
+
+  const sorted = currentBanzuke
     .map((e) => {
       const p = perfById.get(e.rikishiId);
       const heya = heyaMap ? rikishiToHeyaMap.get(e.rikishiId) : undefined;
@@ -580,14 +630,6 @@ function scoreBanzukeCandidates(
 
       const oldKey = positionKey(e);
       let desiredKey = oldKey - cushionedMove * 1_000;
-
-      // WS-13 — kyūjō landing floor: an absence-dominated record lands in
-      // the next band down, not off the printed sheet. Makuuchi 0-0-15 →
-      // mid-juryo; juryo → makushita; lower divisions ≈ one division.
-      if (p && (p.absences ?? 0) >= 7 && (p.absences ?? 0) >= p.wins + p.losses) {
-        const floor = KYUJO_LANDING_FLOOR[e.division];
-        if (floor !== undefined) desiredKey = Math.min(desiredKey, floor);
-      }
 
       // WS-11 — promotion claims outrank incumbency: an in-zone makushita
       // promotable's desire scales toward the top of the zone, so Ms1 KK
@@ -629,19 +671,35 @@ function scoreBanzukeCandidates(
         ),
       };
     })
-    .sort((a, b) => {
-      // Primary sort: Desired Key (Movement + Political Weight)
-      if (a.desiredKey !== b.desiredKey) {
-        return a.desiredKey - b.desiredKey;
-      }
+    .sort(comparator);
 
-      // Secondary sort: Tiebreak Hierarchy
-      // Level 1: Previous Slot Closeness (oldKey)
-      // Level 2: H2H
-      // Level 3: SOS Proxy
-      // Level 4: Performance Quality
-      return resolveBanzukeTie(a as BanzukeCandidate, b as BanzukeCandidate, world, perfById);
-    });
+  // WS-13 — kyūjō landing floor (placement, not a bid): an absence-
+  // dominated record lands at a fixed depth in the next band down —
+  // makuuchi→~J5, juryo→~Ms15 — displacing everyone below rather than
+  // competing on a committee-shifted key he can never win. The anchor is
+  // the depth-th incumbent of the target band in the final ordering.
+  const KYUJO_TARGET: Record<string, { division: string; depth: number }> = {
+    makuuchi: { division: "juryo", depth: 5 },
+    juryo: { division: "makushita", depth: 15 },
+    makushita: { division: "sandanme", depth: 50 },
+    sandanme: { division: "jonidan", depth: 50 },
+    jonidan: { division: "jonokuchi", depth: 40 },
+  };
+  let kyujoAdjusted = false;
+  for (const c of sorted) {
+    const p = perfById.get(c.entry.rikishiId);
+    if (!p || (p.absences ?? 0) < 7 || (p.absences ?? 0) < p.wins + p.losses) continue;
+    const target = KYUJO_TARGET[c.entry.division];
+    if (!target) continue;
+    const anchor = sorted.filter(
+      (s) => s !== c && s.entry.division === target.division
+    )[target.depth - 1];
+    if (!anchor || c.desiredKey < anchor.desiredKey) continue;
+    c.desiredKey = anchor.desiredKey - 0.5;
+    kyujoAdjusted = true;
+  }
+  if (kyujoAdjusted) sorted.sort(comparator);
+  return sorted;
 }
 
 /**
@@ -654,7 +712,8 @@ function scoreBanzukeCandidates(
 function assignBanzukeSlots(
   scored: ScoredCandidate[],
   fullTemplate: ReturnType<typeof buildFullSlotTemplate>,
-  demotedOzeki: Set<string>
+  demotedOzeki: Set<string>,
+  perfById: Map<string, BashoPerformance>
 ): BanzukeEntry[] {
   const assigned: BanzukeEntry[] = [];
 
@@ -717,6 +776,73 @@ function assignBanzukeSlots(
           if (winnerIdx === -1 || candIdx < winnerIdx) winnerIdx = candIdx;
           break; // first passing candidate in this bucket = best in bucket
         }
+      }
+    }
+
+    // 3. QUOTA BACKSTOP (sekitori slots only): division membership is a
+    // fixed count — the committee never prints a short banzuke. When the
+    // earned fill and the tier-respecting fallback both fail, the vacancy
+    // promotes the best remaining candidate — the real "the bar flexes,
+    // the quota never does" rule. Preference order mirrors the actual
+    // convention: sanyaku vacancies are held by top maegashira (S/K are
+    // guaranteed ranks), makuuchi pulls from juryo, juryo from makushita.
+    // A full-kyūjō absentee is never promoted by quota — he lands at his
+    // floor; only when he's literally the last body does he fill.
+    if (winnerIdx === -1 && slotTier <= 6) {
+      // Per-rank fill ladder, in preference order. Real conventions:
+      //   yokozuna — only a yokozuna; unreachable in practice.
+      //   ōzeki — the ≥2 slot minimum is fulfilled by sanyaku-grade
+      //     promotee convention (a yokozuna-ōzeki designation or an
+      //     expedited JSA promotion); NEVER a juryo leap and never a
+      //     demoting rank-holder.
+      //   sekiwake/komusubi — guaranteed ranks held by top maegashira.
+      //   maegashira — pulls from juryo; juryo — from makushita.
+      const isSanyakuSlot = slotTier <= 4;
+      const SANYAKU_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
+      const rank = slot.position.rank;
+      const ladder: ReadonlyArray<(c: ScoredCandidate) => boolean> =
+        rank === "yokozuna"
+          ? [(c) => c.entry.position.rank === "yokozuna"]
+          : rank === "ozeki"
+          ? [
+              (c) =>
+                (c.entry.position.rank === "sekiwake" ||
+                  c.entry.position.rank === "komusubi") &&
+                c.eligibleBestTier <= 4,
+              (c) => c.entry.position.rank === "maegashira",
+              (c) => c.entry.division === "juryo",
+              () => true,
+            ]
+          : slotTier <= 4
+          ? [
+              (c) => c.entry.position.rank === "maegashira",
+              (c) => c.entry.division === "juryo",
+              (c) => !SANYAKU_RANKS.has(c.entry.position.rank),
+              () => true,
+            ]
+          : [
+              (c) =>
+                c.entry.division === (slotTier === 5 ? "juryo" : "makushita"),
+              () => true,
+            ];
+      for (let step = 0; step < ladder.length; step++) {
+        for (let i = 0; i < scored.length; i++) {
+          if (taken.has(i)) continue;
+          const cand = scored[i];
+          if (usedRikishiIds.has(cand.entry.rikishiId)) continue;
+          if (rank === "ozeki" && demotedOzeki.has(cand.entry.rikishiId)) continue;
+          if (!ladder[step](cand)) continue;
+          const p = perfById.get(cand.entry.rikishiId);
+          const fullKyujo = (p?.absences ?? 0) > 0 && (p?.wins ?? 0) === 0;
+          // An absentee never holds, never promotes — not even as last
+          // resort. He can only fill a vacancy AT or BELOW his landing
+          // floor (eligibleBestTier already encodes the kyūjō floor).
+          if (fullKyujo && (isSanyakuSlot || slotTier < cand.eligibleBestTier))
+            continue;
+          winnerIdx = i;
+          break;
+        }
+        if (winnerIdx !== -1) break;
       }
     }
 
@@ -825,7 +951,8 @@ function banzukeMovementEvents(
 export function computeVariableSanyakuCounts(
   current: BanzukeEntry[],
   perfById: Map<string, BashoPerformance>,
-  demoted: Set<string>
+  demoted: Set<string>,
+  reclaimable?: Set<string>
 ): BanzukeUpdateResult["sanyakuCounts"] {
   let yokozunaCount = 0;
   let promoteToYokozunaCount = 0;
@@ -857,7 +984,18 @@ export function computeVariableSanyakuCounts(
   }
 
   const yCount = Math.min(6, yokozunaCount + promoteToYokozunaCount);
-  let oCount = Math.max(2, Math.min(4, ozekiNotDemotedCount + sekiwakePromoteCount));
+  // Real rule (Makuuchi): "there must always be a minimum of two ōzeki
+  // on the banzuke" — fulfilled by real ōzeki where they exist, else by
+  // the yokozuna-ōzeki designation (Kakuryū '20, Terunofuji '23, Ōnosato
+  // '25) or an expedited promotion the JSA would force through. The
+  // SLOT minimum is hard; who holds it flexes.
+  let oCount = Math.max(
+    2,
+    Math.min(
+      4,
+      ozekiNotDemotedCount + sekiwakePromoteCount + (reclaimable?.size ?? 0)
+    )
+  );
   let sCount = Math.max(2, Math.min(6, 2 + demoted.size + komusubiPromoteCount));
   let kCount = Math.max(2, Math.min(6, 2 + maegashiraPromoteCount));
 

@@ -90,16 +90,55 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m10",
+              "shikona": "Wrestler-r_m10",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 10,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭10E",
+                  "toRank": "makuuchi:大関W",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
             "division": "makuuchi",
-            "rank": "maegashira",
-            "rankNumber": 2,
-            "side": "east",
+            "rank": "ozeki",
+            "side": "west",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
             "interventionUsedThisBasho": false,
+            "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -174,9 +213,47 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m5",
+              "shikona": "Wrestler-r_m5",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 5,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭5E",
+                  "toRank": "makuuchi:大関E",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
             "division": "makuuchi",
-            "rank": "maegashira",
-            "rankNumber": 1,
+            "rank": "ozeki",
             "side": "east",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
@@ -184,6 +261,7 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "currentLossStreak": 0,
             "isKyujo": false,
             "interventionUsedThisBasho": false,
+            "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -388,51 +466,11 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
-            "almanacRecord": {
-              "rikishiId": "r_sek",
-              "shikona": "Wrestler-r_sek",
-              "debutYear": 2011,
-              "debutBasho": "hatsu",
-              "totalWins": 20,
-              "totalLosses": 10,
-              "totalAbsences": 0,
-              "yushoCount": 0,
-              "junYushoCount": 0,
-              "sanshoCounts": {
-                "ginoSho": 0,
-                "kantosho": 0,
-                "shukunsho": 0
-              },
-              "kinboshiCount": 0,
-              "highestRank": "sekiwake",
-              "highestRankNumber": 5,
-              "ozekiRunCount": 0,
-              "bashoHistory": [],
-              "currentWinStreak": 0,
-              "longestWinStreak": 0,
-              "currentLossStreak": 0,
-              "isActive": true,
-              "notableBouts": [],
-              "narrativeHighlights": [],
-              "promotionHistory": [
-                {
-                  "year": 2025,
-                  "bashoName": "hatsu",
-                  "fromRank": "makuuchi:関脇E",
-                  "toRank": "makuuchi:前頭1W",
-                  "kind": "demotion",
-                  "isJump": false,
-                  "isSanyaku": false,
-                  "isSekitori": false
-                }
-              ]
-            },
             "consecutiveStrongSekiwake": 0,
             "sekiwakeThreeBashoWins": 7,
             "division": "makuuchi",
-            "rank": "maegashira",
-            "rankNumber": 1,
-            "side": "west",
+            "rank": "sekiwake",
+            "side": "east",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
             "currentWinStreak": 0,
@@ -541,6 +579,38 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
       "type": "BASHO_STATUS",
       "category": "promotion",
       "data": {
+        "status": "ozeki_promotion",
+        "description": "Wrestler-r_m5 has been promoted to Ozeki — a new pillar of the sumo world.",
+        "rikishiId": "r_m5",
+        "wins": 14,
+        "losses": 1,
+        "yusho": false,
+        "from": "makuuchi:前頭5E"
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "ozeki_promotion",
+        "description": "Wrestler-r_m10 has been promoted to Ozeki — a new pillar of the sumo world.",
+        "rikishiId": "r_m10",
+        "wins": 3,
+        "losses": 12,
+        "yusho": false,
+        "from": "makuuchi:前頭10E"
+      },
+      "heyaId": "heya-r_m10",
+      "rikishiId": "r_m10",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
         "status": "dohyo_iri_assignment",
         "description": "Wrestler-r_ozeki has been assigned the shiranui dohyo-iri style.",
         "rikishiId": "r_ozeki",
@@ -573,17 +643,35 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
       "category": "promotion",
       "data": {
         "status": "banzuke_movement",
-        "description": "[[rikishi:r_sek:Wrestler-r_sek]] pays the price for a make-koshi, demoted from makuuchi関脇E to makuuchi前頭1W.",
-        "rikishiId": "r_sek",
-        "from": "makuuchi:関脇E",
-        "to": "makuuchi:前頭1W",
-        "kind": "demotion",
-        "isJumpPromotion": false,
-        "isSanyakuPromotion": false,
+        "description": "[[rikishi:r_m5:Wrestler-r_m5]] rockets up the banzuke — from makuuchi前頭5E to makuuchi大関E, a jump promotion that turns heads.",
+        "rikishiId": "r_m5",
+        "from": "makuuchi:前頭5E",
+        "to": "makuuchi:大関E",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
         "isSekitoriPromotion": false
       },
-      "heyaId": "heya-r_sek",
-      "rikishiId": "r_sek",
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
+        "status": "banzuke_movement",
+        "description": "[[rikishi:r_m10:Wrestler-r_m10]] leaps up the rankings — makuuchi前頭10E to makuuchi大関W — a promotion that defies expectations.",
+        "rikishiId": "r_m10",
+        "from": "makuuchi:前頭10E",
+        "to": "makuuchi:大関W",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
+        "isSekitoriPromotion": false
+      },
+      "heyaId": "heya-r_m10",
+      "rikishiId": "r_m10",
       "importance": "notable"
     },
     {
@@ -618,6 +706,36 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
       },
       "heyaId": "heya-r_ozeki",
       "rikishiId": "r_ozeki",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "basho",
+      "data": {
+        "status": "early_promotion_announcement",
+        "rikishiId": "r_m5",
+        "shikona": "Wrestler-r_m5",
+        "kind": "sanyaku_promotion",
+        "title": "Promotion announced early",
+        "summary": "The JSA announces Wrestler-r_m5's promotion ahead of the banzuke reveal."
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "basho",
+      "data": {
+        "status": "early_promotion_announcement",
+        "rikishiId": "r_m10",
+        "shikona": "Wrestler-r_m10",
+        "kind": "sanyaku_promotion",
+        "title": "Promotion announced early",
+        "summary": "The JSA announces Wrestler-r_m10's promotion ahead of the banzuke reveal."
+      },
+      "heyaId": "heya-r_m10",
+      "rikishiId": "r_m10",
       "importance": "notable"
     },
     {
@@ -659,19 +777,16 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
               "side": "west"
             },
             {
-              "rank": "maegashira",
-              "side": "east",
-              "rankNumber": 1
+              "rank": "ozeki",
+              "side": "east"
             },
             {
-              "rank": "maegashira",
-              "side": "west",
-              "rankNumber": 1
+              "rank": "ozeki",
+              "side": "west"
             },
             {
-              "rank": "maegashira",
-              "side": "east",
-              "rankNumber": 2
+              "rank": "sekiwake",
+              "side": "east"
             }
           ],
           "assignments": [
@@ -692,25 +807,22 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
             {
               "rikishiId": "r_m5",
               "position": {
-                "rank": "maegashira",
-                "side": "east",
-                "rankNumber": 1
-              }
-            },
-            {
-              "rikishiId": "r_sek",
-              "position": {
-                "rank": "maegashira",
-                "side": "west",
-                "rankNumber": 1
+                "rank": "ozeki",
+                "side": "east"
               }
             },
             {
               "rikishiId": "r_m10",
               "position": {
-                "rank": "maegashira",
-                "side": "east",
-                "rankNumber": 2
+                "rank": "ozeki",
+                "side": "west"
+              }
+            },
+            {
+              "rikishiId": "r_sek",
+              "position": {
+                "rank": "sekiwake",
+                "side": "east"
               }
             }
           ]
@@ -770,19 +882,16 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                   "side": "west"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "east",
-                  "rankNumber": 1
+                  "rank": "ozeki",
+                  "side": "east"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "west",
-                  "rankNumber": 1
+                  "rank": "ozeki",
+                  "side": "west"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "east",
-                  "rankNumber": 2
+                  "rank": "sekiwake",
+                  "side": "east"
                 }
               ],
               "assignments": [
@@ -803,25 +912,22 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 {
                   "rikishiId": "r_m5",
                   "position": {
-                    "rank": "maegashira",
-                    "side": "east",
-                    "rankNumber": 1
-                  }
-                },
-                {
-                  "rikishiId": "r_sek",
-                  "position": {
-                    "rank": "maegashira",
-                    "side": "west",
-                    "rankNumber": 1
+                    "rank": "ozeki",
+                    "side": "east"
                   }
                 },
                 {
                   "rikishiId": "r_m10",
                   "position": {
-                    "rank": "maegashira",
-                    "side": "east",
-                    "rankNumber": 2
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
                   }
                 }
               ]
@@ -889,19 +995,16 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                   "side": "west"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "east",
-                  "rankNumber": 1
+                  "rank": "ozeki",
+                  "side": "east"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "west",
-                  "rankNumber": 1
+                  "rank": "ozeki",
+                  "side": "west"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "east",
-                  "rankNumber": 2
+                  "rank": "sekiwake",
+                  "side": "east"
                 }
               ],
               "assignments": [
@@ -922,25 +1025,22 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 {
                   "rikishiId": "r_m5",
                   "position": {
-                    "rank": "maegashira",
-                    "side": "east",
-                    "rankNumber": 1
-                  }
-                },
-                {
-                  "rikishiId": "r_sek",
-                  "position": {
-                    "rank": "maegashira",
-                    "side": "west",
-                    "rankNumber": 1
+                    "rank": "ozeki",
+                    "side": "east"
                   }
                 },
                 {
                   "rikishiId": "r_m10",
                   "position": {
-                    "rank": "maegashira",
-                    "side": "east",
-                    "rankNumber": 2
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_sek",
+                  "position": {
+                    "rank": "sekiwake",
+                    "side": "east"
                   }
                 }
               ]
@@ -1219,16 +1319,55 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m10",
+              "shikona": "Wrestler-r_m10",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 10,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭10E",
+                  "toRank": "makuuchi:関脇E",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
             "division": "makuuchi",
-            "rank": "maegashira",
-            "rankNumber": 1,
-            "side": "west",
+            "rank": "sekiwake",
+            "side": "east",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
             "interventionUsedThisBasho": false,
+            "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -1334,7 +1473,7 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                   "year": 2025,
                   "bashoName": "hatsu",
                   "fromRank": "makuuchi:前頭5E",
-                  "toRank": "makuuchi:関脇E",
+                  "toRank": "makuuchi:大関W",
                   "kind": "promotion",
                   "isJump": true,
                   "isSanyaku": true,
@@ -1343,8 +1482,8 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
               ]
             },
             "division": "makuuchi",
-            "rank": "sekiwake",
-            "side": "east",
+            "rank": "ozeki",
+            "side": "west",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
             "currentWinStreak": 0,
@@ -1509,51 +1648,11 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
-            "almanacRecord": {
-              "rikishiId": "r_sek",
-              "shikona": "Wrestler-r_sek",
-              "debutYear": 2011,
-              "debutBasho": "hatsu",
-              "totalWins": 20,
-              "totalLosses": 10,
-              "totalAbsences": 0,
-              "yushoCount": 0,
-              "junYushoCount": 0,
-              "sanshoCounts": {
-                "ginoSho": 0,
-                "kantosho": 0,
-                "shukunsho": 0
-              },
-              "kinboshiCount": 0,
-              "highestRank": "sekiwake",
-              "highestRankNumber": 5,
-              "ozekiRunCount": 0,
-              "bashoHistory": [],
-              "currentWinStreak": 0,
-              "longestWinStreak": 0,
-              "currentLossStreak": 0,
-              "isActive": true,
-              "notableBouts": [],
-              "narrativeHighlights": [],
-              "promotionHistory": [
-                {
-                  "year": 2025,
-                  "bashoName": "hatsu",
-                  "fromRank": "makuuchi:関脇E",
-                  "toRank": "makuuchi:前頭1E",
-                  "kind": "demotion",
-                  "isJump": false,
-                  "isSanyaku": false,
-                  "isSekitori": false
-                }
-              ]
-            },
             "consecutiveStrongSekiwake": 0,
             "sekiwakeThreeBashoWins": 7,
             "division": "makuuchi",
-            "rank": "maegashira",
-            "rankNumber": 1,
-            "side": "east",
+            "rank": "sekiwake",
+            "side": "west",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
             "currentWinStreak": 0,
@@ -1662,11 +1761,27 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
       "type": "BASHO_STATUS",
       "category": "promotion",
       "data": {
+        "status": "ozeki_promotion",
+        "description": "Wrestler-r_m5 has been promoted to Ozeki — a new pillar of the sumo world.",
+        "rikishiId": "r_m5",
+        "wins": 14,
+        "losses": 1,
+        "yusho": true,
+        "from": "makuuchi:前頭5E"
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
         "status": "banzuke_movement",
-        "description": "[[rikishi:r_m5:Wrestler-r_m5]] rockets up the banzuke — from makuuchi前頭5E to makuuchi関脇E, a jump promotion that turns heads.",
+        "description": "[[rikishi:r_m5:Wrestler-r_m5]] rockets up the banzuke — from makuuchi前頭5E to makuuchi大関W, a jump promotion that turns heads.",
         "rikishiId": "r_m5",
         "from": "makuuchi:前頭5E",
-        "to": "makuuchi:関脇E",
+        "to": "makuuchi:大関W",
         "kind": "promotion",
         "isJumpPromotion": true,
         "isSanyakuPromotion": true,
@@ -1681,17 +1796,17 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
       "category": "promotion",
       "data": {
         "status": "banzuke_movement",
-        "description": "[[rikishi:r_sek:Wrestler-r_sek]] pays the price for a make-koshi, demoted from makuuchi関脇E to makuuchi前頭1E.",
-        "rikishiId": "r_sek",
-        "from": "makuuchi:関脇E",
-        "to": "makuuchi:前頭1E",
-        "kind": "demotion",
-        "isJumpPromotion": false,
-        "isSanyakuPromotion": false,
+        "description": "[[rikishi:r_m10:Wrestler-r_m10]] leaps up the rankings — makuuchi前頭10E to makuuchi関脇E — a promotion that defies expectations.",
+        "rikishiId": "r_m10",
+        "from": "makuuchi:前頭10E",
+        "to": "makuuchi:関脇E",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
         "isSekitoriPromotion": false
       },
-      "heyaId": "heya-r_sek",
-      "rikishiId": "r_sek",
+      "heyaId": "heya-r_m10",
+      "rikishiId": "r_m10",
       "importance": "notable"
     },
     {
@@ -1704,10 +1819,25 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
         "description": "Banzuke committee (11–12): merit evidence +1.",
         "rikishiId": "r_m5",
         "from": "makuuchi:前頭5E",
-        "to": "makuuchi:関脇E",
+        "to": "makuuchi:大関W",
         "adjustment": 1,
         "votesFor": 11,
         "votesAgainst": 12
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "basho",
+      "data": {
+        "status": "early_promotion_announcement",
+        "rikishiId": "r_m5",
+        "shikona": "Wrestler-r_m5",
+        "kind": "sanyaku_promotion",
+        "title": "Promotion announced early",
+        "summary": "The JSA announces Wrestler-r_m5's promotion ahead of the banzuke reveal."
       },
       "heyaId": "heya-r_m5",
       "rikishiId": "r_m5",
@@ -1738,18 +1868,16 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
               "side": "east"
             },
             {
+              "rank": "ozeki",
+              "side": "west"
+            },
+            {
               "rank": "sekiwake",
               "side": "east"
             },
             {
-              "rank": "maegashira",
-              "side": "east",
-              "rankNumber": 1
-            },
-            {
-              "rank": "maegashira",
-              "side": "west",
-              "rankNumber": 1
+              "rank": "sekiwake",
+              "side": "west"
             }
           ],
           "assignments": [
@@ -1770,6 +1898,13 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             {
               "rikishiId": "r_m5",
               "position": {
+                "rank": "ozeki",
+                "side": "west"
+              }
+            },
+            {
+              "rikishiId": "r_m10",
+              "position": {
                 "rank": "sekiwake",
                 "side": "east"
               }
@@ -1777,17 +1912,8 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
             {
               "rikishiId": "r_sek",
               "position": {
-                "rank": "maegashira",
-                "side": "east",
-                "rankNumber": 1
-              }
-            },
-            {
-              "rikishiId": "r_m10",
-              "position": {
-                "rank": "maegashira",
-                "side": "west",
-                "rankNumber": 1
+                "rank": "sekiwake",
+                "side": "west"
               }
             }
           ]
@@ -1847,18 +1973,16 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                   "side": "east"
                 },
                 {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
                   "rank": "sekiwake",
                   "side": "east"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "east",
-                  "rankNumber": 1
-                },
-                {
-                  "rank": "maegashira",
-                  "side": "west",
-                  "rankNumber": 1
+                  "rank": "sekiwake",
+                  "side": "west"
                 }
               ],
               "assignments": [
@@ -1879,6 +2003,13 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 {
                   "rikishiId": "r_m5",
                   "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
                     "rank": "sekiwake",
                     "side": "east"
                   }
@@ -1886,17 +2017,8 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 {
                   "rikishiId": "r_sek",
                   "position": {
-                    "rank": "maegashira",
-                    "side": "east",
-                    "rankNumber": 1
-                  }
-                },
-                {
-                  "rikishiId": "r_m10",
-                  "position": {
-                    "rank": "maegashira",
-                    "side": "west",
-                    "rankNumber": 1
+                    "rank": "sekiwake",
+                    "side": "west"
                   }
                 }
               ]
@@ -1964,18 +2086,16 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                   "side": "east"
                 },
                 {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
                   "rank": "sekiwake",
                   "side": "east"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "east",
-                  "rankNumber": 1
-                },
-                {
-                  "rank": "maegashira",
-                  "side": "west",
-                  "rankNumber": 1
+                  "rank": "sekiwake",
+                  "side": "west"
                 }
               ],
               "assignments": [
@@ -1996,6 +2116,13 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 {
                   "rikishiId": "r_m5",
                   "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
                     "rank": "sekiwake",
                     "side": "east"
                   }
@@ -2003,17 +2130,8 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 {
                   "rikishiId": "r_sek",
                   "position": {
-                    "rank": "maegashira",
-                    "side": "east",
-                    "rankNumber": 1
-                  }
-                },
-                {
-                  "rikishiId": "r_m10",
-                  "position": {
-                    "rank": "maegashira",
-                    "side": "west",
-                    "rankNumber": 1
+                    "rank": "sekiwake",
+                    "side": "west"
                   }
                 }
               ]
@@ -2292,16 +2410,55 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
+            "almanacRecord": {
+              "rikishiId": "r_m10",
+              "shikona": "Wrestler-r_m10",
+              "debutYear": 2011,
+              "debutBasho": "hatsu",
+              "totalWins": 20,
+              "totalLosses": 10,
+              "totalAbsences": 0,
+              "yushoCount": 0,
+              "junYushoCount": 0,
+              "sanshoCounts": {
+                "ginoSho": 0,
+                "kantosho": 0,
+                "shukunsho": 0
+              },
+              "kinboshiCount": 0,
+              "highestRank": "maegashira",
+              "highestRankNumber": 10,
+              "ozekiRunCount": 0,
+              "bashoHistory": [],
+              "currentWinStreak": 0,
+              "longestWinStreak": 0,
+              "currentLossStreak": 0,
+              "isActive": true,
+              "notableBouts": [],
+              "narrativeHighlights": [],
+              "promotionHistory": [
+                {
+                  "year": 2025,
+                  "bashoName": "hatsu",
+                  "fromRank": "makuuchi:前頭10E",
+                  "toRank": "makuuchi:関脇E",
+                  "kind": "promotion",
+                  "isJump": true,
+                  "isSanyaku": true,
+                  "isSekitori": false
+                }
+              ]
+            },
             "division": "makuuchi",
-            "rank": "maegashira",
-            "rankNumber": 1,
-            "side": "west",
+            "rank": "sekiwake",
+            "side": "east",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
             "currentWinStreak": 0,
             "currentLossStreak": 0,
             "isKyujo": false,
             "interventionUsedThisBasho": false,
+            "sanyakuPromotionThisBasho": true,
             "economics": {
               "cash": 0,
               "retirementFund": 0,
@@ -2407,7 +2564,7 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                   "year": 2025,
                   "bashoName": "hatsu",
                   "fromRank": "makuuchi:前頭5E",
-                  "toRank": "makuuchi:関脇E",
+                  "toRank": "makuuchi:大関W",
                   "kind": "promotion",
                   "isJump": true,
                   "isSanyaku": true,
@@ -2416,8 +2573,8 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
               ]
             },
             "division": "makuuchi",
-            "rank": "sekiwake",
-            "side": "east",
+            "rank": "ozeki",
+            "side": "west",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
             "currentWinStreak": 0,
@@ -2582,51 +2739,11 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
-            "almanacRecord": {
-              "rikishiId": "r_sek",
-              "shikona": "Wrestler-r_sek",
-              "debutYear": 2011,
-              "debutBasho": "hatsu",
-              "totalWins": 20,
-              "totalLosses": 10,
-              "totalAbsences": 0,
-              "yushoCount": 0,
-              "junYushoCount": 0,
-              "sanshoCounts": {
-                "ginoSho": 0,
-                "kantosho": 0,
-                "shukunsho": 0
-              },
-              "kinboshiCount": 0,
-              "highestRank": "sekiwake",
-              "highestRankNumber": 5,
-              "ozekiRunCount": 0,
-              "bashoHistory": [],
-              "currentWinStreak": 0,
-              "longestWinStreak": 0,
-              "currentLossStreak": 0,
-              "isActive": true,
-              "notableBouts": [],
-              "narrativeHighlights": [],
-              "promotionHistory": [
-                {
-                  "year": 2025,
-                  "bashoName": "hatsu",
-                  "fromRank": "makuuchi:関脇E",
-                  "toRank": "makuuchi:前頭1E",
-                  "kind": "demotion",
-                  "isJump": false,
-                  "isSanyaku": false,
-                  "isSekitori": false
-                }
-              ]
-            },
             "consecutiveStrongSekiwake": 0,
             "sekiwakeThreeBashoWins": 7,
             "division": "makuuchi",
-            "rank": "maegashira",
-            "rankNumber": 1,
-            "side": "east",
+            "rank": "sekiwake",
+            "side": "west",
             "currentBashoWins": 0,
             "currentBashoLosses": 0,
             "currentWinStreak": 0,
@@ -2735,11 +2852,27 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
       "type": "BASHO_STATUS",
       "category": "promotion",
       "data": {
+        "status": "ozeki_promotion",
+        "description": "Wrestler-r_m5 has been promoted to Ozeki — a new pillar of the sumo world.",
+        "rikishiId": "r_m5",
+        "wins": 14,
+        "losses": 1,
+        "yusho": true,
+        "from": "makuuchi:前頭5E"
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "headline"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "promotion",
+      "data": {
         "status": "banzuke_movement",
-        "description": "[[rikishi:r_m5:Wrestler-r_m5]] rockets up the banzuke — from makuuchi前頭5E to makuuchi関脇E, a jump promotion that turns heads.",
+        "description": "[[rikishi:r_m5:Wrestler-r_m5]] rockets up the banzuke — from makuuchi前頭5E to makuuchi大関W, a jump promotion that turns heads.",
         "rikishiId": "r_m5",
         "from": "makuuchi:前頭5E",
-        "to": "makuuchi:関脇E",
+        "to": "makuuchi:大関W",
         "kind": "promotion",
         "isJumpPromotion": true,
         "isSanyakuPromotion": true,
@@ -2754,17 +2887,17 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
       "category": "promotion",
       "data": {
         "status": "banzuke_movement",
-        "description": "[[rikishi:r_sek:Wrestler-r_sek]] pays the price for a make-koshi, demoted from makuuchi関脇E to makuuchi前頭1E.",
-        "rikishiId": "r_sek",
-        "from": "makuuchi:関脇E",
-        "to": "makuuchi:前頭1E",
-        "kind": "demotion",
-        "isJumpPromotion": false,
-        "isSanyakuPromotion": false,
+        "description": "[[rikishi:r_m10:Wrestler-r_m10]] leaps up the rankings — makuuchi前頭10E to makuuchi関脇E — a promotion that defies expectations.",
+        "rikishiId": "r_m10",
+        "from": "makuuchi:前頭10E",
+        "to": "makuuchi:関脇E",
+        "kind": "promotion",
+        "isJumpPromotion": true,
+        "isSanyakuPromotion": true,
         "isSekitoriPromotion": false
       },
-      "heyaId": "heya-r_sek",
-      "rikishiId": "r_sek",
+      "heyaId": "heya-r_m10",
+      "rikishiId": "r_m10",
       "importance": "notable"
     },
     {
@@ -2777,10 +2910,25 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
         "description": "Banzuke committee (11–12): merit evidence +1.",
         "rikishiId": "r_m5",
         "from": "makuuchi:前頭5E",
-        "to": "makuuchi:関脇E",
+        "to": "makuuchi:大関W",
         "adjustment": 1,
         "votesFor": 11,
         "votesAgainst": 12
+      },
+      "heyaId": "heya-r_m5",
+      "rikishiId": "r_m5",
+      "importance": "notable"
+    },
+    {
+      "type": "BASHO_STATUS",
+      "category": "basho",
+      "data": {
+        "status": "early_promotion_announcement",
+        "rikishiId": "r_m5",
+        "shikona": "Wrestler-r_m5",
+        "kind": "sanyaku_promotion",
+        "title": "Promotion announced early",
+        "summary": "The JSA announces Wrestler-r_m5's promotion ahead of the banzuke reveal."
       },
       "heyaId": "heya-r_m5",
       "rikishiId": "r_m5",
@@ -2811,18 +2959,16 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
               "side": "east"
             },
             {
+              "rank": "ozeki",
+              "side": "west"
+            },
+            {
               "rank": "sekiwake",
               "side": "east"
             },
             {
-              "rank": "maegashira",
-              "side": "east",
-              "rankNumber": 1
-            },
-            {
-              "rank": "maegashira",
-              "side": "west",
-              "rankNumber": 1
+              "rank": "sekiwake",
+              "side": "west"
             }
           ],
           "assignments": [
@@ -2843,6 +2989,13 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             {
               "rikishiId": "r_m5",
               "position": {
+                "rank": "ozeki",
+                "side": "west"
+              }
+            },
+            {
+              "rikishiId": "r_m10",
+              "position": {
                 "rank": "sekiwake",
                 "side": "east"
               }
@@ -2850,17 +3003,8 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
             {
               "rikishiId": "r_sek",
               "position": {
-                "rank": "maegashira",
-                "side": "east",
-                "rankNumber": 1
-              }
-            },
-            {
-              "rikishiId": "r_m10",
-              "position": {
-                "rank": "maegashira",
-                "side": "west",
-                "rankNumber": 1
+                "rank": "sekiwake",
+                "side": "west"
               }
             }
           ]
@@ -2920,18 +3064,16 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                   "side": "east"
                 },
                 {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
                   "rank": "sekiwake",
                   "side": "east"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "east",
-                  "rankNumber": 1
-                },
-                {
-                  "rank": "maegashira",
-                  "side": "west",
-                  "rankNumber": 1
+                  "rank": "sekiwake",
+                  "side": "west"
                 }
               ],
               "assignments": [
@@ -2952,6 +3094,13 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 {
                   "rikishiId": "r_m5",
                   "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
                     "rank": "sekiwake",
                     "side": "east"
                   }
@@ -2959,17 +3108,8 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 {
                   "rikishiId": "r_sek",
                   "position": {
-                    "rank": "maegashira",
-                    "side": "east",
-                    "rankNumber": 1
-                  }
-                },
-                {
-                  "rikishiId": "r_m10",
-                  "position": {
-                    "rank": "maegashira",
-                    "side": "west",
-                    "rankNumber": 1
+                    "rank": "sekiwake",
+                    "side": "west"
                   }
                 }
               ]
@@ -3037,18 +3177,16 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                   "side": "east"
                 },
                 {
+                  "rank": "ozeki",
+                  "side": "west"
+                },
+                {
                   "rank": "sekiwake",
                   "side": "east"
                 },
                 {
-                  "rank": "maegashira",
-                  "side": "east",
-                  "rankNumber": 1
-                },
-                {
-                  "rank": "maegashira",
-                  "side": "west",
-                  "rankNumber": 1
+                  "rank": "sekiwake",
+                  "side": "west"
                 }
               ],
               "assignments": [
@@ -3069,6 +3207,13 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 {
                   "rikishiId": "r_m5",
                   "position": {
+                    "rank": "ozeki",
+                    "side": "west"
+                  }
+                },
+                {
+                  "rikishiId": "r_m10",
+                  "position": {
                     "rank": "sekiwake",
                     "side": "east"
                   }
@@ -3076,17 +3221,8 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 {
                   "rikishiId": "r_sek",
                   "position": {
-                    "rank": "maegashira",
-                    "side": "east",
-                    "rankNumber": 1
-                  }
-                },
-                {
-                  "rikishiId": "r_m10",
-                  "position": {
-                    "rank": "maegashira",
-                    "side": "west",
-                    "rankNumber": 1
+                    "rank": "sekiwake",
+                    "side": "west"
                   }
                 }
               ]

@@ -107,3 +107,26 @@ export const SEKITORI_INCUMBENT_BONUS = 250;
  * who held serve has proven he belongs.
  */
 export const CROSS_DIVISION_WIN_BONUS = 150;
+
+/**
+ * HARD INVARIANT — fixed division membership per the real banzuke
+ * (Professional_sumo_divisions): the sheet ALWAYS prints these counts.
+ * The promotion bar flexes to meet the quota, never the reverse
+ * (measured: makuuchi sagged to 38 late in a 25yr sim — an invalid sheet).
+ *   makuuchi 42 · juryo 28 · makushita 120 · sandanme 160
+ * Sandanme was reduced from 180 to 160 as of the January 2025 banzuke.
+ * Jonidan (~200–250, usually the largest division) and jonokuchi
+ * (~40–90 new wrestlers + fallen veterans) are UNFIXED — they flex with
+ * the population and absorb whatever the fixed tiers can't.
+ */
+export const DIVISION_QUOTA = {
+  makuuchi: 42,
+  juryo: 28,
+  makushita: 120,
+  sandanme: 160,
+} as const;
+
+/** Jonidan — unfixed, usually the largest division at ~200–250. */
+export const JONIDAN_MAX = 250;
+/** Jonokuchi — unfixed, ~40–90 new wrestlers; the sheet's overflow valve. */
+export const JONOKUCHI_MIN = 40;

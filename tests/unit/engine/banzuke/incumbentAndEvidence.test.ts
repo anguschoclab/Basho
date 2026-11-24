@@ -137,8 +137,14 @@ describe("cross-division merit evidence", () => {
 
   it("in-zone makushita callup wins strengthen the promotion claim", () => {
     // Two identical in-zone promotables; only A has crossover evidence.
+    // Full makuuchi sheet so the fixed-quota invariant doesn't pull
+    // promotee bodies up into makuuchi vacancies.
     const entries: BanzukeEntry[] = [];
     const perfs = new Map<string, BashoPerformance>();
+    for (let i = 1; i <= 42; i++) {
+      entries.push(entry(`m${i}`, "maegashira", i, i % 2 ? "east" : "west", "makuuchi"));
+      perfs.set(`m${i}`, perf(`m${i}`, 8, 7));
+    }
     for (let i = 1; i <= 28; i++) {
       entries.push(entry(`j${i}`, "juryo", i, i % 2 ? "east" : "west", "juryo"));
       perfs.set(`j${i}`, perf(`j${i}`, 7, 8)); // all juryo MK → slots open

@@ -13,6 +13,19 @@ import {
 } from "@/constants/engine/banzuke";
 
 /**
+ * WS-13 — full-kyūjō landing tiers by prior division (mirrors
+ * KYUJO_LANDING_FLOOR in banzukeOps): one band down, floored.
+ */
+const KYUJO_FLOOR_TIER_BY_DIVISION: Record<string, number> = {
+  makuuchi: 6,
+  juryo: 7,
+  makushita: 8,
+  sandanme: 9,
+  jonidan: 10,
+  jonokuchi: 10,
+};
+
+/**
  * Whether a Yokozuna candidate's recent yusho/jun-yusho record constitutes a
  * stat-eligible strong case (2+ yusho, or 1 yusho + 1 jun-yusho). Shared by
  * lifecycle deliberation records and UI promotion projections so the rule
@@ -104,6 +117,21 @@ export function bestTierAllowed(
     const threshold = kachiKoshiThreshold(rank);
     if (perf?.yusho) return JONOKUCHI_YUSHO_TIER;
     if (wins >= threshold) return JONOKUCHI_KACHI_TIER;
+  }
+
+  // WS-13 — a full-kyūjō (absence-dominated) record is demotion-bound:
+  // the landing floor maps one band down (makuuchi→~J5, juryo→~Ms15…).
+  // An absentee never holds his division nor promotes — not even via
+  // the quota backstop, which pulls the next ACTIVE body instead.
+  // Yokozuna and non-demoted ōzeki retain rank via their own machinery.
+  if (
+    tier > 2 &&
+    perf &&
+    (perf.absences ?? 0) > 0 &&
+    (perf.wins ?? 0) === 0
+  ) {
+    const floorTier = KYUJO_FLOOR_TIER_BY_DIVISION[entry.division];
+    if (floorTier !== undefined && floorTier > tier) return floorTier;
   }
 
   return tier;

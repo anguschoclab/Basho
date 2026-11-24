@@ -42,7 +42,10 @@ describe("computeVariableSanyakuCounts — ozeki slot cap", () => {
     expect(result.ozeki).toBeGreaterThanOrEqual(2);
   });
 
-  it("ensures minimum 2 ozeki slots even with no ozeki", () => {
+  it("ensures minimum 2 ozeki slots — the banzuke always lists two", () => {
+    // Real rule (Makuuchi §Ōzeki): "there must always be a minimum of
+    // two ōzeki on the banzuke" — fulfilled by real ōzeki, else the
+    // yokozuna-ōzeki designation or an expedited promotion.
     const entries: BanzukeEntry[] = [
       makeEntry("s1", "sekiwake", undefined, "east"),
       makeEntry("s2", "sekiwake", undefined, "west"),
