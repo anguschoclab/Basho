@@ -25,7 +25,7 @@ import { createKoenkai } from "@/engine/economy/SponsorshipService";
 import { generateHeyaBrandIdentities } from "@/engine/keshoMawashi/HeyaBrandGenerator";
 import type { BashoName, BashoState } from "@/engine/types/basho";
 import type { Faction, IchimonName } from "@/engine/types/economy";
-import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
+import { getHeyaRosterTarget } from "@/engine/generation/RecruitmentController";
 import { getBashoNumber } from "@/engine/calendar/calendar";
 import { rollDohyoCondition } from "@/engine/basho/dohyo";
 import { initMaezumoState } from "@/engine/basho/maezumoPrelims";
@@ -127,8 +127,8 @@ export function generateInitialWorld(seed: string): WorldState {
     // Officials: gyoji and shimpan pools for bout officiation
     gyojiPool: generateInitialGyojiPool(seed),
     shimpanPool: generateInitialShimpanPool(seed),
-    // Elder share market: JSA-held pool + per-oyakata assignments
-    myosekiMarket: generateMyosekiMarket(seed, oyakataMap, heyaMap),
+    // Elder share market: JSA-held pool + per-oyakata assignments + sekitori reserves
+    myosekiMarket: generateMyosekiMarket(seed, oyakataMap, heyaMap, rikishiMap),
   };
 
   // 3. Generate Heya Brand Identities (for kesho-mawashi designs)
@@ -160,14 +160,14 @@ export function generateInitialWorld(seed: string): WorldState {
   // Initialize candidate pool (NPC watchlist)
   world.candidatePool = ensureCandidatePoolState(world); // @world-builder
 
-  // Capture equilibrium active population target for the replacement-rate controller.
-  // The initial roster is intentionally small (~440); recruitment fills stables to
-  // TARGET_ROSTER_SIZE over the first year. The target is the total NPC stable capacity
-  // so the gap controller maintains the population at the intended equilibrium.
+  // Capture equilibrium active population target for the replacement-rate
+  // controller. Genesis already fields ~590 (real-2026 distribution); the
+  // target is the Σ of NPC per-heya rosterTargets so the gap controller
+  // holds the population at the intended equilibrium from day one.
   let targetPop = 0;
   for (const heya of world.heyas.values()) {
     if (heya.id === world.playerHeyaId) continue;
-    targetPop += TARGET_ROSTER_SIZE;
+    targetPop += getHeyaRosterTarget(heya);
   }
   world._populationTarget = targetPop; // @world-builder
 

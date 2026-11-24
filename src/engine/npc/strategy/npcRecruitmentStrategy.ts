@@ -11,7 +11,6 @@ import {
   RECRUITMENT_AMBITION_THRESHOLD_RISK,
   RECRUITMENT_RISK_THRESHOLD_RISK,
   RECRUITMENT_RISK_TAKER_BONUS,
-  RECRUITMENT_BASE_TARGET_SIZE,
   RECRUITMENT_AMBITION_THRESHOLD_SIZE,
   RECRUITMENT_AMBITIOUS_SIZE_BONUS,
   RECRUITMENT_TRADITION_THRESHOLD_SIZE,
@@ -20,6 +19,7 @@ import {
   RECRUITMENT_SPITE_PREMIUM_MULTIPLIER,
   RECRUITMENT_MIN_BID,
 } from "@/constants/engine/economy";
+import { getHeyaRosterTarget } from "@/engine/generation/RecruitmentController";
 
 interface RecruitmentStrategy {
   evaluateVacancies: (
@@ -40,7 +40,7 @@ interface RecruitmentStrategy {
  * Calculates a sustainable max bid based on yearly runway.
  */
 function calculateRunwayAwareMaxBid(heya: Heya, oyakata: Oyakata, baseMultiplier: number): number {
-  const monthlyBurn = new Set(heya.rikishiIds ?? []).size * MONTHLY_BURN_PER_RIKISHI;
+  const monthlyBurn = (heya.rikishiIds ?? []).length * MONTHLY_BURN_PER_RIKISHI;
   const yearlyBurn = monthlyBurn * MONTHS_PER_YEAR;
   const surplus = Math.max(0, heya.funds - yearlyBurn);
 
@@ -65,13 +65,16 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
     if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
 
-    let targetSize = RECRUITMENT_BASE_TARGET_SIZE;
+    // Organic appetite aims at the stable's own roster target (real-2026
+    // per-heya size), nudged by personality — ambitious masters overreach,
+    // traditionalist masters carry a couple extra deshi.
+    let targetSize = getHeyaRosterTarget(heya);
     if (oyakata.traits.ambition > RECRUITMENT_AMBITION_THRESHOLD_SIZE)
       targetSize += RECRUITMENT_AMBITIOUS_SIZE_BONUS;
     if (oyakata.traits.tradition > RECRUITMENT_TRADITION_THRESHOLD_SIZE)
       targetSize += RECRUITMENT_TRADITIONALIST_SIZE_BONUS;
 
-    const currentSize = new Set(heya.rikishiIds ?? []).size;
+    const currentSize = (heya.rikishiIds ?? []).length;
     const count = Math.max(0, targetSize - currentSize);
 
     return { impact: builder.build(), count };

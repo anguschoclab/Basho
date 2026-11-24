@@ -36,6 +36,7 @@ function buildWorldWithPool(opts: {
       MockFactory.createHeya(heyaId, {
         oyakataId: `oyakata-${heyaId}` as Id,
         rikishiIds: ids,
+        rosterTarget: 30,
       })
     );
   }

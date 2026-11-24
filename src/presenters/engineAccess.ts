@@ -34,7 +34,7 @@ export {
   computeSignChance,
   deriveScoutStats,
 } from "@/engine/recruitment/scoutMissions";
-export { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
+export { getHeyaRosterTarget } from "@/engine/generation/RecruitmentController";
 export { calculateGains } from "@/engine/training/TrainingMath";
 export { DRILL_STAT_HINTS } from "@/constants/engine/training";
 export type { BoutContext } from "@/engine/bout/boutPhysics";

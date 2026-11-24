@@ -264,6 +264,54 @@ describe("processRetireeOyakataConversion — myoseki market", () => {
     expect(tx!.fromId).toBe("JSA");
   });
 
+  it("re-seats a sekitori reserve share onto the new oyakata (not the JSA pool)", () => {
+    const retiree = mockRikishi("reserved", {
+      heyaId: "h1",
+      rank: "ozeki",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 300,
+      nationality: "Japan",
+    });
+    const heya = makeMockHeya("h1", { rikishiIds: ["reserved"] });
+    const world = makeMockWorld({
+      year: 2025,
+      rikishi: new Map([["reserved", retiree]]),
+      heyas: new Map([["h1", heya]]),
+      myosekiMarket: {
+        stocks: {
+          "MY-reserve": {
+            id: "MY-reserve",
+            name: "ReserveElder",
+            prestigeTier: "respected",
+            ownerId: "reserved",
+            holderId: "reserved",
+            status: "held",
+            ichimon: "Dewanoumi",
+          },
+        },
+        history: [],
+      } as any,
+    });
+    const builder = createImpactBuilder("test");
+
+    processRetireeOyakataConversion(world, retiree, builder);
+    const next = resolveImpacts(world, [builder.build()]);
+
+    const stock = next.myosekiMarket?.stocks["MY-reserve"];
+    expect(stock).toBeDefined();
+    expect(stock!.status).toBe("held");
+    expect(stock!.ownerId).not.toBe("JSA");
+    expect(stock!.ownerId).not.toBe("reserved");
+    const holder = next.oyakata?.get(stock!.holderId);
+    expect(holder).toBeDefined();
+    expect(stock!.ichimon).toBe("Dewanoumi");
+    // No purchase — he already held the share.
+    const tx = next.myosekiMarket?.history[0];
+    expect(tx!.amount).toBe(0);
+    expect(tx!.fromId).toBe("reserved");
+  });
+
   it("uses retirementFund for transaction amount when available", () => {
     const retiree = mockRikishi("legend4", {
       heyaId: "h1",

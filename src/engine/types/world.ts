@@ -314,7 +314,7 @@ export interface WorldState {
 
   /**
    * Worldgen seed for the active-rikishi demographic floor
-   * (NPC heyas × TARGET_ROSTER_SIZE at generation time).
+   * (Σ of NPC per-heya rosterTargets at generation time, ~585).
    * RecruitmentController computes the live target from current heyas each
    * tick; this field is only the fallback for degenerate worlds with no
    * heyas (and a persisted record of the worldgen seed).

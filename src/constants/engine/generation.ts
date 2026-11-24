@@ -3,6 +3,7 @@
  */
 
 import type { IchimonName } from "@/engine/types/economy";
+import type { StatureBand } from "@/engine/types/narrative";
 
 /** Makushita tier count */
 export const MAKUSHITA_TIER_COUNT = 150;
@@ -922,3 +923,84 @@ export const HEYA_ICHIMON: Record<string, IchimonName> = {
   Hakkaku: "Takasago",
   Nishikido: "Takasago",
 };
+
+/**
+ * Per-heya active-roster targets (JSA 2026 tallies, Σ = 588).
+ *
+ * Replaces the flat TARGET_ROSTER_SIZE demographic floor: real stable
+ * sizes are heavy-tailed — Isegahama fields 33 while the newest rooms
+ * hold ~5 — so the population controller, vacancy allocator, and NPC
+ * appetite all key off this map. Genesis stamps each stable's value onto
+ * `heya.rosterTarget`; a stable absent from the map (a mid-game founding)
+ * draws from `ROSTER_TARGET_BY_STATURE` instead.
+ */
+export const HEYA_ROSTER_TARGETS: Record<string, number> = {
+  // — Nishonoseki ichimon (17) —
+  Nishonoseki: 23,
+  Hanaregoma: 7,
+  Hidenoyama: 7,
+  Kataonami: 12,
+  Minato: 6,
+  Minatogawa: 6,
+  Nakamura: 6,
+  Naruto: 15,
+  Nishiiwa: 6,
+  Onomatsu: 8,
+  Oshiogawa: 8,
+  Sadogatake: 22,
+  Shibatayama: 12,
+  Tagonoura: 13,
+  Takadagawa: 19,
+  Takekuma: 6,
+  Tokiwayama: 6,
+  // — Dewanoumi ichimon (14) —
+  Dewanoumi: 17,
+  Fujishima: 16,
+  Futagoyama: 18,
+  Ikazuchi: 9,
+  Kasugano: 18,
+  Kise: 18,
+  Musashigawa: 14,
+  Onoe: 15,
+  Otowayama: 8,
+  Sakaigawa: 24,
+  Shikihide: 9,
+  Tamanoi: 24,
+  Tatsunami: 16,
+  Yamahibiki: 11,
+  // — Isegahama ichimon (5) —
+  Isegahama: 33,
+  Ajigawa: 12,
+  Asahiyama: 7,
+  Asakayama: 13,
+  Oshima: 7,
+  // — Tokitsukaze ichimon (5) —
+  Tokitsukaze: 14,
+  Arashio: 8,
+  Isenoumi: 8,
+  Oitekaze: 21,
+  Shikoroyama: 7,
+  // — Takasago ichimon (4) —
+  Takasago: 26,
+  Kokonoe: 19,
+  Hakkaku: 9,
+  Nishikido: 5,
+};
+
+/**
+ * Roster target for a stable with no entry in `HEYA_ROSTER_TARGETS`
+ * (a mid-game founding) — stature is the best proxy for how big a new
+ * room plausibly grows. A fresh dokuritsu branch starts at the bottom
+ * (real branch stables open with a handful of deshi).
+ */
+export const ROSTER_TARGET_BY_STATURE: Record<StatureBand, number> = {
+  legendary: 24,
+  powerful: 18,
+  established: 12,
+  rebuilding: 8,
+  fragile: 5,
+  new: 4,
+};
+
+/** Fallback target for a heya missing `rosterTarget` entirely (≈ league mean). */
+export const DEFAULT_ROSTER_TARGET = 13;

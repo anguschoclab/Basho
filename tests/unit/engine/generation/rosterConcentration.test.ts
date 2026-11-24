@@ -32,6 +32,16 @@ describe("genesis roster concentration", () => {
     expect(housed.size).toBe(world.rikishi.size);
   });
 
+  it("fields a real-scale genesis population (~590)", () => {
+    for (const seed of SEEDS) {
+      const world = generateInitialWorld(seed);
+      let total = 0;
+      for (const h of world.heyas.values()) total += (h.rikishiIds ?? []).length;
+      expect(total).toBeGreaterThanOrEqual(545);
+      expect(total).toBeLessThanOrEqual(620);
+    }
+  });
+
   it("stature correlates with roster size — top-band stables out-recruit fragile ones", () => {
     const world = generateInitialWorld(SEEDS[1]);
     const BAND_ORDER = [

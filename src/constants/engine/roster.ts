@@ -12,9 +12,6 @@
 export const TRANSFER_RATIO_STANDARD = 0.5;
 export const TRANSFER_RATIO_SCANDAL = 0.2;
 
-// Roster vacancy target
-export const ROSTER_VACANCY_TARGET = 15;
-
 // Risk score calculation
 export const RISK_SCORE_CONDITION_WEIGHT = 0.6;
 export const RISK_SCORE_FATIGUE_WEIGHT = 0.4;

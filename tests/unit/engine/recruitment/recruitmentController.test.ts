@@ -3,10 +3,24 @@ import {
   computeReplacementGap,
   allocateVacancies,
 } from "@/engine/generation/RecruitmentController";
+import { HEYA_ROSTER_TARGETS } from "@/constants/engine/generation";
+import { TOTAL_ACTIVE_THRESHOLD } from "@/constants/engine/recruitmentExtended";
 import { makeMockWorld, makeMockHeya } from "@tests/unit/engine/utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
-import { TARGET_ROSTER_SIZE, TOTAL_ACTIVE_THRESHOLD } from "@/constants/engine/recruitmentExtended";
+
+// Test stables get explicit per-heya targets — the controller sums
+// `heya.rosterTarget`, not a flat constant.
+const TARGET_A = 20;
+const TARGET_B = 10;
+
+function targetedHeya(
+  id: string,
+  target: number,
+  overrides?: Partial<Heya>
+): Heya {
+  return makeMockHeya(id, { rosterTarget: target, ...overrides });
+}
 
 describe("computeReplacementGap", () => {
   it("returns target - active when active is below target", () => {
@@ -34,42 +48,42 @@ describe("computeReplacementGap", () => {
     expect(computeReplacementGap(world)).toBe(0);
   });
 
-  it("tracks live heya count — a new stable raises the floor by TARGET_ROSTER_SIZE", () => {
+  it("sums per-heya roster targets — a new stable raises the floor by its own target", () => {
     const heyas = new Map<string, Heya>();
-    heyas.set("npc-a", makeMockHeya("npc-a"));
-    heyas.set("npc-b", makeMockHeya("npc-b"));
+    heyas.set("npc-a", targetedHeya("npc-a", TARGET_A));
+    heyas.set("npc-b", targetedHeya("npc-b", TARGET_B));
     const world = makeMockWorld({ heyas, playerHeyaId: "player-x" } as Partial<WorldState>);
 
-    // 2 NPC heyas × 30 = 60 target, 0 active → gap 60
-    expect(computeReplacementGap(world)).toBe(60);
+    // 20 + 10 = 30 target, 0 active → gap 30
+    expect(computeReplacementGap(world)).toBe(30);
 
-    // A just-founded empty stable joins the league → floor rises to 90
+    // A just-founded stable joins with its own (small) target → floor +8
     const grown = new Map(world.heyas);
-    grown.set("npc-new", makeMockHeya("npc-new"));
+    grown.set("npc-new", targetedHeya("npc-new", 8));
     world.heyas = grown;
-    expect(computeReplacementGap(world)).toBe(90);
+    expect(computeReplacementGap(world)).toBe(38);
   });
 
-  it("tracks live heya count — a merger drops the floor by TARGET_ROSTER_SIZE", () => {
+  it("a merger drops the floor by the departed stable's target", () => {
     const heyas = new Map<string, Heya>();
-    heyas.set("npc-a", makeMockHeya("npc-a"));
-    heyas.set("npc-b", makeMockHeya("npc-b"));
-    heyas.set("npc-c", makeMockHeya("npc-c"));
+    heyas.set("npc-a", targetedHeya("npc-a", TARGET_A));
+    heyas.set("npc-b", targetedHeya("npc-b", TARGET_B));
+    heyas.set("npc-c", targetedHeya("npc-c", 6));
     const world = makeMockWorld({ heyas, playerHeyaId: "player-x" } as Partial<WorldState>);
-    expect(computeReplacementGap(world)).toBe(90);
+    expect(computeReplacementGap(world)).toBe(36);
 
     const shrunk = new Map(world.heyas);
     shrunk.delete("npc-c");
     world.heyas = shrunk;
-    expect(computeReplacementGap(world)).toBe(60);
+    expect(computeReplacementGap(world)).toBe(30);
   });
 
   it("counts sanctioned heyas toward the target (slots exist even when unreachable)", () => {
     const heyas = new Map<string, Heya>();
-    heyas.set("npc-a", makeMockHeya("npc-a"));
+    heyas.set("npc-a", targetedHeya("npc-a", TARGET_A));
     heyas.set(
       "npc-sanc",
-      makeMockHeya("npc-sanc", {
+      targetedHeya("npc-sanc", TARGET_B, {
         welfareState: {
           welfareRisk: 90,
           activeDiet: "maintenance",
@@ -80,21 +94,21 @@ describe("computeReplacementGap", () => {
       })
     );
     const world = makeMockWorld({ heyas, playerHeyaId: "player-x" } as Partial<WorldState>);
-    expect(computeReplacementGap(world)).toBe(60);
+    expect(computeReplacementGap(world)).toBe(30);
   });
 
   it("excludes the player heya from the target", () => {
     const heyas = new Map<string, Heya>();
-    heyas.set("player", makeMockHeya("player"));
-    heyas.set("npc-a", makeMockHeya("npc-a"));
+    heyas.set("player", targetedHeya("player", 30));
+    heyas.set("npc-a", targetedHeya("npc-a", TARGET_A));
     const world = makeMockWorld({ heyas, playerHeyaId: "player" } as Partial<WorldState>);
-    expect(computeReplacementGap(world)).toBe(30);
+    expect(computeReplacementGap(world)).toBe(20);
   });
 });
 
 describe("allocateVacancies", () => {
   function buildWorld(
-    heyaRosters: Array<{ id: string; rosterSize: number; sanctioned?: boolean }>,
+    heyaRosters: Array<{ id: string; rosterSize: number; target?: number; sanctioned?: boolean }>,
     playerHeyaId?: string
   ): WorldState {
     const heyas = new Map<string, Heya>();
@@ -104,6 +118,7 @@ describe("allocateVacancies", () => {
       heyas.set(
         h.id,
         makeMockHeya(h.id, {
+          rosterTarget: h.target ?? TARGET_A,
           rikishiIds: ids,
           welfareState: h.sanctioned
             ? {
@@ -153,33 +168,45 @@ describe("allocateVacancies", () => {
   });
 
   it("sums to min(gap, total headroom) and never exceeds per-heya headroom", () => {
-    // TARGET_ROSTER_SIZE = 30; npc-a has 10 (headroom 20), npc-b has 25 (headroom 5)
+    // npc-a target 20, roster 10 → headroom 10; npc-b target 10, roster 9 → headroom 1
     const world = buildWorld(
       [
-        { id: "npc-a", rosterSize: 10 },
-        { id: "npc-b", rosterSize: 25 },
+        { id: "npc-a", rosterSize: 10, target: 20 },
+        { id: "npc-b", rosterSize: 9, target: 10 },
       ],
       "player-x"
     );
     const vacancies = allocateVacancies(world, 50);
     const total = (Object.values(vacancies) as number[]).reduce((a, b) => a + b, 0);
-    // total headroom = 20 + 5 = 25, gap 50 → capped at 25
-    expect(total).toBe(25);
-    expect(vacancies["npc-a"]).toBeLessThanOrEqual(20);
-    expect(vacancies["npc-b"]).toBeLessThanOrEqual(5);
+    expect(total).toBe(11);
+    expect(vacancies["npc-a"]).toBeLessThanOrEqual(10);
+    expect(vacancies["npc-b"]).toBeLessThanOrEqual(1);
   });
 
-  it("gives more vacancies to the most-depleted stable (deterministic)", () => {
-    // npc-a: 5 active (headroom 25), npc-b: 20 active (headroom 10)
+  it("allocates by per-heya headroom, not a flat ceiling", () => {
+    // Same roster size, different targets: the growth-target stable gets the
+    // larger share even though a flat cap would treat them identically.
     const world = buildWorld(
       [
-        { id: "npc-a", rosterSize: 5 },
-        { id: "npc-b", rosterSize: 20 },
+        { id: "npc-big", rosterSize: 8, target: 30 }, // headroom 22
+        { id: "npc-small", rosterSize: 8, target: 12 }, // headroom 4
       ],
       "player-x"
     );
     const vacancies = allocateVacancies(world, 10);
-    // npc-a has 2.5× the headroom of npc-b → should get more
+    expect(vacancies["npc-big"]).toBeGreaterThan(vacancies["npc-small"]);
+  });
+
+  it("gives more vacancies to the most-depleted stable (deterministic)", () => {
+    // npc-a: 5 active (headroom 15), npc-b: 15 active (headroom 5) — same target
+    const world = buildWorld(
+      [
+        { id: "npc-a", rosterSize: 5, target: TARGET_A },
+        { id: "npc-b", rosterSize: 15, target: TARGET_A },
+      ],
+      "player-x"
+    );
+    const vacancies = allocateVacancies(world, 10);
     expect(vacancies["npc-a"]).toBeGreaterThan(vacancies["npc-b"]);
     // Deterministic: same input → same output
     const vacancies2 = allocateVacancies(world, 10);
@@ -195,8 +222,8 @@ describe("allocateVacancies", () => {
   it("returns empty when all stables are at target", () => {
     const world = buildWorld(
       [
-        { id: "npc-a", rosterSize: 30 },
-        { id: "npc-b", rosterSize: 30 },
+        { id: "npc-a", rosterSize: 20, target: TARGET_A },
+        { id: "npc-b", rosterSize: 20, target: TARGET_A },
       ],
       "player-x"
     );
@@ -206,12 +233,16 @@ describe("allocateVacancies", () => {
 });
 
 describe("roster constants equilibrium invariant", () => {
-  it("TARGET_ROSTER_SIZE >= ceil(1084 / 45) ≈ 25", () => {
-    expect(TARGET_ROSTER_SIZE).toBeGreaterThanOrEqual(Math.ceil(1084 / 45));
+  it("per-heya targets sum near the real ~590 population", () => {
+    const total = Object.values(HEYA_ROSTER_TARGETS).reduce((a, b) => a + b, 0);
+    expect(total).toBeGreaterThanOrEqual(580);
+    expect(total).toBeLessThanOrEqual(610);
   });
 
-  it("TOTAL_ACTIVE_THRESHOLD is in (600, 1084)", () => {
-    expect(TOTAL_ACTIVE_THRESHOLD).toBeGreaterThan(600);
-    expect(TOTAL_ACTIVE_THRESHOLD).toBeLessThan(1084);
+  it("TOTAL_ACTIVE_THRESHOLD sits below the NPC equilibrium floor", () => {
+    // The emergency dump must only fire if the controller itself fails —
+    // well under the ~585 NPC-stable target (genesis Σ minus any one stable).
+    expect(TOTAL_ACTIVE_THRESHOLD).toBeGreaterThan(300);
+    expect(TOTAL_ACTIVE_THRESHOLD).toBeLessThan(550);
   });
 });

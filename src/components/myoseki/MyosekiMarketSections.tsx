@@ -95,7 +95,9 @@ function StockCard({ stock, market }: { stock: MyosekiStock; market: Market }) {
                 size="xs"
                 fallback={stock.ownerId}
               />
-              {market.world?.oyakata.get(stock.ownerId)?.name ?? stock.ownerId}
+              {market.world?.oyakata.get(stock.ownerId)?.name ??
+                market.world?.rikishi.get(stock.ownerId)?.shikona ??
+                stock.ownerId}
             </>
           )}
         </CardDescription>

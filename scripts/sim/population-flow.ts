@@ -16,8 +16,8 @@ import {
   computeReplacementGap,
   allocateVacancies,
   computePopulationTarget,
+  getHeyaRosterTarget,
 } from "@/engine/generation/RecruitmentController";
-import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 import type { WorldState } from "@/engine/types/world";
 import type { TalentPoolType } from "@/engine/types/talent";
 
@@ -62,9 +62,9 @@ function heyaStats(world: WorldState) {
     if (heya.id === world.playerHeyaId) continue;
     npcCount++;
     if (heya.welfareState?.complianceState === "sanctioned") sanctioned++;
-    const size = new Set(heya.rikishiIds ?? []).size;
+    const size = (heya.rikishiIds ?? []).length;
     rostered += size;
-    headroom += Math.max(0, TARGET_ROSTER_SIZE - size);
+    headroom += Math.max(0, getHeyaRosterTarget(heya) - size);
   }
   return { headroom, sanctioned, rostered, npcCount };
 }

@@ -78,9 +78,9 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
 
   // 4. NPC Replacement Recruitment — runs EVERY weekly tick via gap controller.
   // The controller computes a global replacement target from active population vs
-  // the live equilibrium target (NPC heyas × TARGET_ROSTER_SIZE), then allocates
-  // vacancies across eligible NPC stables by depletion. This runs outside interim
-  // and above the old 800 emergency floor, closing the erosion band (1084→763).
+  // the live equilibrium target (Σ of NPC per-heya rosterTargets, ~585), then
+  // allocates vacancies across eligible NPC stables by depletion. This runs
+  // outside interim and above the 450 emergency floor.
   const gap = computeReplacementGap(world);
   if (gap > 0) {
     const vacancies = allocateVacancies(world, gap);

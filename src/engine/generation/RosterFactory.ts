@@ -24,6 +24,7 @@ import {
   GENESIS_FOREIGN_DIVISION_TABLE,
 } from "@/constants/engine/recruitment";
 import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
+import { getHeyaRosterTarget } from "@/engine/generation/RecruitmentController";
 
 /**
  * Draws the genesis foreign-host set (~`GENESIS_FOREIGN_HEYA_OCCUPANCY`
@@ -80,6 +81,57 @@ function markGenesisForeignHosts(
   return { markedForForeign, foreignDivisionByHeya };
 }
 
+const STABLE_TIER_VALUE: Record<string, number> = {
+  legendary: 5,
+  powerful: 4,
+  established: 3,
+  rebuilding: 2,
+  fragile: 1,
+  new: 0,
+};
+
+/**
+ * Prestige pull: real rosters are heavy-tailed (Isegahama 33, Takasago 26 —
+ * JSA 2026) because stature attracts recruits at every level. Weight the
+ * draw by band² + 4 so powerhouse rooms emerge while every stable still
+ * houses a few members — but cap each stable at its rosterTarget: the
+ * unbounded pull overshoots the real ceiling (~33) and starves the tail
+ * stables empty. On a full draw, retry (bounded — a late tail draw can
+ * still land somewhere when everyone is full).
+ */
+function pickGenesisStable(
+  heyaByTier: Heya[],
+  heyaList: Heya[],
+  config: { tierWeight: number },
+  worldRng: SeededRNG
+): { heya: Heya; eligibleStables: Heya[] } {
+  const eligibleStables = heyaByTier.filter((h) => {
+    const stableTier = STABLE_TIER_VALUE[h.statureBand] ?? 0;
+    return (
+      stableTier >= config.tierWeight - 1 ||
+      (stableTier >= config.tierWeight - 2 && worldRng.next() > ROSTER_TIER_FALLBACK_CHANCE)
+    );
+  });
+
+  const prestigePool = (pool: Heya[]): Heya[] =>
+    pool.flatMap((h) => {
+      const t = STABLE_TIER_VALUE[h.statureBand] ?? 0;
+      return new Array(t * t + 4).fill(h);
+    });
+
+  const drawPool = eligibleStables.length > 0 ? eligibleStables : heyaList;
+  const rosteredPool = prestigePool(drawPool);
+  let heya = worldRng.pick(rosteredPool);
+  for (
+    let tries = 0;
+    tries < 8 && heya && (heya.rikishiIds?.length ?? 0) >= getHeyaRosterTarget(heya);
+    tries++
+  ) {
+    heya = worldRng.pick(rosteredPool);
+  }
+  return { heya, eligibleStables };
+}
+
 export function createRosters(
   worldRng: SeededRNG,
   heyaMap: Map<string, Heya>,
@@ -129,9 +181,12 @@ export function createRosters(
     { rank: "maegashira", division: "makuuchi", count: 34, tierWeight: 3 },
     { rank: "juryo", division: "juryo", count: 28, tierWeight: 2 },
     { rank: "makushita", division: "makushita", count: 120, tierWeight: 1 },
-    { rank: "sandanme", division: "sandanme", count: 110, tierWeight: 0 },
-    { rank: "jonidan", division: "jonidan", count: 90, tierWeight: 0 },
-    { rank: "jonokuchi", division: "jonokuchi", count: 50, tierWeight: 0 },
+    // Real-2026 sheet: sandanme fields a full 160; jonidan flexes under its
+    // 250 cap at ~195; jonokuchi is a thin 45-man class. Genesis total ~590,
+    // matching the Σ of per-heya roster targets.
+    { rank: "sandanme", division: "sandanme", count: 160, tierWeight: 0 },
+    { rank: "jonidan", division: "jonidan", count: 195, tierWeight: 0 },
+    { rank: "jonokuchi", division: "jonokuchi", count: 45, tierWeight: 0 },
   ];
 
   rankConfigs.forEach((config) => {
@@ -148,39 +203,12 @@ export function createRosters(
           : 1;
 
       const rikishiId = worldRng.uuid("RK");
-
-      const STABLE_TIER_VALUE: Record<string, number> = {
-        legendary: 5,
-        powerful: 4,
-        established: 3,
-        rebuilding: 2,
-        fragile: 1,
-        new: 0,
-      };
-
-      const eligibleStables = heyaByTier.filter((h) => {
-        const stableTier = STABLE_TIER_VALUE[h.statureBand] ?? 0;
-        return (
-          stableTier >= config.tierWeight - 1 ||
-          (stableTier >= config.tierWeight - 2 && worldRng.next() > ROSTER_TIER_FALLBACK_CHANCE)
-        );
-      });
-
-      // Prestige pull: real rosters are heavy-tailed (Isegahama 33,
-      // Takasago 26 — JSA 2026) because stature attracts recruits at
-      // every level. Weight the draw by band^2 + 4 so powerhouse rooms
-      // emerge while every stable still houses a few members.
-      const prestigePool = (pool: Heya[]): Heya[] =>
-        pool.flatMap((h) => {
-          const t = STABLE_TIER_VALUE[h.statureBand] ?? 0;
-          return new Array(t * t + 4).fill(h);
-        });
-
-      const heya =
-        eligibleStables.length > 0
-          ? worldRng.pick(prestigePool(eligibleStables))
-          : worldRng.pick(prestigePool(heyaList));
-
+      const { heya, eligibleStables } = pickGenesisStable(
+        heyaByTier,
+        heyaList,
+        config,
+        worldRng
+      );
       const oyakata = oyakataMap.get(heya?.oyakataId || "");
 
       const r = generateFullRikishi({

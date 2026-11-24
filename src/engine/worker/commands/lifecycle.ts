@@ -11,7 +11,7 @@ import { generateInitialWorld } from "@/engine/generation/WorldFactory";
 import { isForeign } from "@/engine/utils/identity";
 import { shouldHaltAdvance } from "@/engine/npc/decision/shouldHaltAdvance";
 import { clearQueryCaches } from "@/engine/core/queries";
-import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
+import { getHeyaRosterTarget } from "@/engine/generation/RecruitmentController";
 import { applyOyakataCreationConfig } from "@/engine/generation/applyOyakataConfig";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
 import type { CommandHandlerMap } from "@/engine/worker/commands/types";
@@ -41,7 +41,7 @@ function generateWorld(opts: {
     // player's actual stable is the excluded one in the persisted seed.
     let targetPop = 0;
     for (const h of world.heyas.values()) {
-      if (h.id !== world.playerHeyaId) targetPop += TARGET_ROSTER_SIZE;
+      if (h.id !== world.playerHeyaId) targetPop += getHeyaRosterTarget(h);
     }
     world._populationTarget = targetPop; // @world-builder
   }

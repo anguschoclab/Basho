@@ -5,6 +5,8 @@
  * economics.ts, phase01_economy.ts, and any future finance systems.
  */
 
+import type { IchimonName } from "@/engine/types/economy";
+
 /** Standard oyakata monthly salary (¥). Weekly slice = /4. */
 export const OYAKATA_SALARY_MONTHLY = 1_200_000;
 
@@ -343,6 +345,32 @@ export const BACKSTORY_STARTING_FUNDS: Record<string, number> = {
 /** Total number of myoseki in the world. The JSA's elder stock is a fixed
  *  kabu pool — merit may claim an unclaimed share but never mint a 106th. */
 export const MYOSEKI_TOTAL_COUNT = 105;
+
+/**
+ * Clan distribution of the 105 kabu (JSA 2026): ~35/29/16/11/11 across the
+ * five ichimon, the remaining 3 unattributed. Covers ALL shares — held and
+ * JSA-pooled alike — so the electorate can seat clan quotas off `stock.ichimon`.
+ */
+export const KABU_ICHIMON_DISTRIBUTION: Record<IchimonName, number> = {
+  Dewanoumi: 35,
+  Nishonoseki: 29,
+  Tokitsukaze: 16,
+  Takasago: 11,
+  Isegahama: 11,
+};
+
+/**
+ * Held-share target per clan at genesis — the distribution table scaled to
+ * the ~85 occupied shares (45 stablemaster kabu + ~39 sekitori reserves);
+ * the ~21-share remainder stays JSA-available on the market.
+ */
+export const KABU_HELD_DISTRIBUTION: Record<IchimonName, number> = {
+  Dewanoumi: 29,
+  Nishonoseki: 24,
+  Tokitsukaze: 12,
+  Takasago: 9,
+  Isegahama: 10,
+};
 
 /**
  * Elder statuses available when no stock is obtainable.

@@ -10,14 +10,14 @@ import type { Id } from "@/engine/types/common";
 
 const POPULATION_TARGET = 120;
 const NPC_HEYAS = 5;
-const ROSTER_PER_HEYA = 20; // >15 organic target, <30 backfill cap — the stall zone
+const HEYA_TARGET = 24;
+const ROSTER_PER_HEYA = 20; // above organic appetite, below the 24 backfill target — the stall zone
 
 /**
- * Steady-state world: every NPC stable sits at 20 rostered rikishi — above the
- * organic recruitment target (MAX_ROSTER_SIZE=15) but below the backfill cap
- * (TARGET_ROSTER_SIZE=30). The weekly NPC AI has therefore written
- * `shouldBid: false` into every heya's bid policy, exactly as it does in live
- * sims once rosters pass 15.
+ * Steady-state world: every NPC stable sits at 20 rostered rikishi — above a
+ * typical organic appetite but below its per-heya rosterTarget (24). The
+ * weekly NPC AI has therefore written `shouldBid: false` into every heya's
+ * bid policy, exactly as it does in live sims once rosters feel full.
  */
 function buildStallWorld(): WorldState {
   const heyas = new Map<Id, Heya>();
@@ -39,6 +39,7 @@ function buildStallWorld(): WorldState {
     const heya = MockFactory.createHeya(heyaId, {
       oyakataId: `oyakata-${heyaId}` as Id,
       rikishiIds: ids,
+      rosterTarget: HEYA_TARGET,
     });
     heyas.set(heyaId, heya);
     oyakata.set(heya.oyakataId, MockFactory.createOyakata(heya.oyakataId, { heyaId }));
@@ -130,11 +131,12 @@ describe("backfill intake vs. organic bid policies", () => {
 
   it("a just-founded empty stable is seeded by backfill (dynamic target raises the floor)", () => {
     let world = buildStallWorld();
-    // Found a new NPC stable — empty roster, non-sanctioned, headroom 30.
+    // Found a new NPC stable — empty roster, non-sanctioned, own small target.
     const newId = "heya-new" as Id;
     const newHeya = MockFactory.createHeya(newId, {
       oyakataId: "oyakata-new" as Id,
       rikishiIds: [],
+      rosterTarget: 10,
     });
     const heyas = new Map(world.heyas);
     heyas.set(newId, newHeya);
@@ -142,8 +144,8 @@ describe("backfill intake vs. organic bid policies", () => {
     oyakata.set(newHeya.oyakataId, MockFactory.createOyakata(newHeya.oyakataId, { heyaId: newId }));
     world = { ...world, heyas, oyakata };
 
-    // Live target: 6 NPC × 30 = 180 vs 100 active → gap 80; the empty stable
-    // has the most headroom and must receive a proportional share.
+    // Live target: 5×24 + 10 = 130 vs 100 active → gap 30; the empty stable
+    // has 10 headroom vs 4 each for the incumbents → largest share.
     const impact = phase01_week_recruitment(world);
     const next = resolveImpacts(world, [impact]);
 

@@ -101,6 +101,15 @@ export interface Heya {
   descriptor?: string;
   ichimon?: IchimonName;
   /**
+   * The stable's organic roster target (JSA-2026 per-heya sizes, Σ ≈ 588).
+   * Not a cap — the demographic controller sums this across NPC heyas for
+   * the population floor, the vacancy allocator splits by per-heya
+   * headroom, and NPC recruiting appetite aims here. Stamped at genesis
+   * from `HEYA_ROSTER_TARGETS`; founded stables take
+   * `ROSTER_TARGET_BY_STATURE`; unset → `DEFAULT_ROSTER_TARGET`.
+   */
+  rosterTarget?: number;
+  /**
    * WS-4 — JSA-mandated absorptions may leave a heya holding more than one
    * foreign-slot rikishi (Miyagino→Isegahama: Toshinofuji + Asahifuji).
    * The excess is stamped here so foreign recruitment stays frozen and the

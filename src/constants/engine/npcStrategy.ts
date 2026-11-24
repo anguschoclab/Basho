@@ -179,7 +179,6 @@ export const POST_BASHO_DAYS = 7;
 
 // NPC weekly decision constants
 export const TOP_RIKISHI_COUNT = 5;
-export const MAX_ROSTER_SIZE = 15;
 export const RISK_CONDITION_WEIGHT = 0.6;
 export const RISK_FATIGUE_WEIGHT = 0.4;
 export const HIGH_RISK_THRESHOLD = 60;

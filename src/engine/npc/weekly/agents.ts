@@ -10,7 +10,8 @@ import { getRikishi } from "@/engine/core/queries";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { MONTHLY_BURN_PER_RIKISHI } from "@/constants/engine/economy";
-import { TOP_RIKISHI_COUNT, MAX_ROSTER_SIZE } from "@/constants/engine/npcStrategy";
+import { TOP_RIKISHI_COUNT } from "@/constants/engine/npcStrategy";
+import { getHeyaRosterTarget } from "@/engine/generation/RecruitmentController";
 import {
   spawnFinanceAgent,
   spawnGovernanceAgent,
@@ -50,7 +51,7 @@ export function runAgentLayer(
 
   // Roster-derived monthly burn — same convention as NPCFinanceCalculator /
   // npcRecruitmentStrategy (MONTHLY_BURN_PER_RIKISHI per roster member).
-  const monthlyBurn = new Set(heya?.rikishiIds ?? []).size * MONTHLY_BURN_PER_RIKISHI;
+  const monthlyBurn = (heya?.rikishiIds ?? []).length * MONTHLY_BURN_PER_RIKISHI;
   const financeCtx: FinanceAgentContext = {
     oyakata,
     world,
@@ -230,8 +231,8 @@ function runRecruitmentPass(
   oyakata: Oyakata
 ): RecruitmentAgentResult {
   const { perception, heya, reasoning } = ctx;
-  const rosterSize = new Set(heya?.rikishiIds ?? []).size || 0;
-  const vacancies = Math.max(0, MAX_ROSTER_SIZE - rosterSize);
+  const rosterSize = (heya?.rikishiIds ?? []).length || 0;
+  const vacancies = heya ? Math.max(0, getHeyaRosterTarget(heya) - rosterSize) : 0;
   if (vacancies <= 0 || !world.talentPool) return noVacancyResult();
 
   // Evaluate the strongest available candidate, not an arbitrary key.

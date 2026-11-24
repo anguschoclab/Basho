@@ -131,8 +131,14 @@ export function processRetireeOyakataConversion(
   newOyakata.elderStatus = elderStatus;
   if (elderExpiryYear !== undefined) newOyakata.elderExpiryYear = elderExpiryYear;
 
-  if (availableStock)
-    queueMeritStockTransfer(world, market, availableStock, newOyakataId, retiree, rng, builder);
+  if (availableStock) {
+    const isOwnShare =
+      availableStock.ownerId === id || availableStock.holderId === id;
+    queueMeritStockTransfer(world, market, availableStock, newOyakataId, rng, builder, {
+      fromId: isOwnShare ? id : "JSA",
+      amount: isOwnShare ? 0 : retiree.economics?.retirementFund || 150000000,
+    });
+  }
 
   // Queue Oyakata add (newly generated, not an update)
   builder.addOyakata(newOyakata);
@@ -201,11 +207,17 @@ function resolveElderShare(
   elderExpiryYear?: number;
 } {
   const id = retiree.id;
+  // Sekitori reserve: a stock the retiree already held as an active rikishi
+  // reseats onto his oyakata name — his elder life was pre-secured.
+  const ownShare = Object.values(market.stocks).find(
+    (s) => s.ownerId === retiree.id || s.holderId === retiree.id
+  );
   const existing = Object.values(market.stocks).find(
     (s) => s.status === "available" && s.ownerId === "JSA"
   );
   const canMint = Object.keys(market.stocks).length < MYOSEKI_TOTAL_COUNT;
   const availableStock: Stock | null =
+    ownShare ??
     existing ??
     (canMint
       ? {
@@ -257,9 +269,9 @@ function queueMeritStockTransfer(
   market: Market,
   availableStock: Stock,
   newOyakataId: string,
-  retiree: Rikishi,
   rng: Rng,
-  builder: ImpactBuilder
+  builder: ImpactBuilder,
+  txSpec: { fromId: string; amount: number }
 ): void {
   const nextStocks = { ...market.stocks };
   // availableStock may be freshly minted above (not yet in market.stocks), so
@@ -277,9 +289,9 @@ function queueMeritStockTransfer(
     date: `${world.year}-W${world.week || 1}`,
     myosekiId: availableStock.id,
     type: "sale" as const,
-    fromId: "JSA",
+    fromId: txSpec.fromId,
     toId: newOyakataId,
-    amount: retiree.economics?.retirementFund || 150000000,
+    amount: txSpec.amount,
   };
 
   builder.updateWorldField("myosekiMarket", {
@@ -402,7 +414,8 @@ function maybeFoundStable(
     parentPatch.funds = (parent?.funds ?? 0) - FOUNDING_SEED_FUNDS;
   }
   if (followerIds.length > 0) {
-    parentPatch.rikishiIds = (parent?.rikishiIds ?? []).filter((id) => !followerIds.includes(id));
+    const followerSet = new Set(followerIds);
+    parentPatch.rikishiIds = (parent?.rikishiIds ?? []).filter((id) => !followerSet.has(id));
   }
   if (Object.keys(parentPatch).length > 0) {
     builder.updateHeya(eligibility.parentHeyaId, parentPatch);

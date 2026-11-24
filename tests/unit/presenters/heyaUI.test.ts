@@ -443,7 +443,26 @@ describe("heyaUI - projectHeya", () => {
   });
 
   describe("Recruitment Calculation", () => {
-    it("should calculate openSlots as Math.max(0, 30 - roster.length)", () => {
+    it("should calculate openSlots as Math.max(0, rosterTarget - roster.length)", () => {
+      const rikishi1 = mockRikishi("r1", { shikona: "Rikishi A", heyaId: "h1" });
+      const rikishi2 = mockRikishi("r2", { shikona: "Rikishi B", heyaId: "h1" });
+
+      const heya = makeMockHeya("h1", { rikishiIds: ["r1", "r2"], rosterTarget: 30 });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          ["r1", rikishi1],
+          ["r2", rikishi2],
+        ]),
+      });
+
+      setupMocks();
+
+      const result = projectHeya(heya, world);
+
+      expect(result.recruitment.openSlots).toBe(28); // 30 - 2
+    });
+
+    it("should fall back to the default target when rosterTarget is unset", () => {
       const rikishi1 = mockRikishi("r1", { shikona: "Rikishi A", heyaId: "h1" });
       const rikishi2 = mockRikishi("r2", { shikona: "Rikishi B", heyaId: "h1" });
 
@@ -459,7 +478,7 @@ describe("heyaUI - projectHeya", () => {
 
       const result = projectHeya(heya, world);
 
-      expect(result.recruitment.openSlots).toBe(28); // 30 - 2
+      expect(result.recruitment.openSlots).toBe(11); // DEFAULT_ROSTER_TARGET 13 - 2
     });
 
     it("should set targetStyle to neutral (hardcoded)", () => {
@@ -496,7 +515,7 @@ describe("heyaUI - projectHeya", () => {
         rikishiIds.push(id);
       }
 
-      const heya = makeMockHeya("h1", { rikishiIds });
+      const heya = makeMockHeya("h1", { rikishiIds, rosterTarget: 30 });
       const world = makeMockWorld({ rikishi: rikishiMap });
 
       setupMocks();
@@ -516,7 +535,7 @@ describe("heyaUI - projectHeya", () => {
         rikishiIds.push(id);
       }
 
-      const heya = makeMockHeya("h1", { rikishiIds });
+      const heya = makeMockHeya("h1", { rikishiIds, rosterTarget: 30 });
       const world = makeMockWorld({ rikishi: rikishiMap });
 
       setupMocks();
@@ -599,7 +618,7 @@ describe("heyaUI - projectHeya", () => {
 
       expect(result.roster).toHaveLength(0);
       expect(result.rosterSize).toBe(0);
-      expect(result.recruitment.openSlots).toBe(30);
+      expect(result.recruitment.openSlots).toBe(13); // DEFAULT_ROSTER_TARGET
     });
 
     it("should handle empty staffIds array", () => {

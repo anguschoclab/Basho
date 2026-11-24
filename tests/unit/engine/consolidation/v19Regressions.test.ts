@@ -489,8 +489,8 @@ describe("#1201 — allocateVacancies invariants", () => {
   const mkWorld = () => {
     const w = MockFactory.createWorld({ playerHeyaId: "player" });
     w.heyas.set("player", MockFactory.createHeya("player", { rikishiIds: [] }));
-    w.heyas.set("h-a", MockFactory.createHeya("h-a", { rikishiIds: Array(28).fill("x") }));
-    w.heyas.set("h-b", MockFactory.createHeya("h-b", { rikishiIds: Array(29).fill("x") }));
+    w.heyas.set("h-a", MockFactory.createHeya("h-a", { rosterTarget: 30, rikishiIds: Array(28).fill("x") }));
+    w.heyas.set("h-b", MockFactory.createHeya("h-b", { rosterTarget: 30, rikishiIds: Array(29).fill("x") }));
     w.heyas.set(
       "h-sanct",
       MockFactory.createHeya("h-sanct", {

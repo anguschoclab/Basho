@@ -34,6 +34,8 @@ import {
   HEYA_STATURE_TIER_FRAGILE,
   HEYA_ELITE_TIER_THRESHOLD,
   HEYA_ICHIMON,
+  HEYA_ROSTER_TARGETS,
+  ROSTER_TARGET_BY_STATURE,
 } from "@/constants/engine/generation";
 
 export function createHeyaWithOyakata(args: {
@@ -77,23 +79,28 @@ export function createHeyaWithOyakata(args: {
     HEYA_SIGNATURE_PREFIXES[name] ??
     (oyakata.formerShikona ? extractPrefixFromShikona(oyakata.formerShikona) : undefined);
 
+  const statureBand: Heya["statureBand"] =
+    tier < HEYA_STATURE_TIER_LEGENDARY
+      ? "legendary"
+      : tier < HEYA_STATURE_TIER_POWERFUL
+        ? "powerful"
+        : tier < HEYA_STATURE_TIER_ESTABLISHED
+          ? "established"
+          : tier < HEYA_STATURE_TIER_REBUILDING
+            ? "rebuilding"
+            : tier < HEYA_STATURE_TIER_FRAGILE
+              ? "fragile"
+              : "new";
+
   const heya: Heya = {
     id,
     name,
     oyakataId,
     shikonaPrefix,
-    statureBand:
-      tier < HEYA_STATURE_TIER_LEGENDARY
-        ? "legendary"
-        : tier < HEYA_STATURE_TIER_POWERFUL
-          ? "powerful"
-          : tier < HEYA_STATURE_TIER_ESTABLISHED
-            ? "established"
-            : tier < HEYA_STATURE_TIER_REBUILDING
-              ? "rebuilding"
-              : tier < HEYA_STATURE_TIER_FRAGILE
-                ? "fragile"
-                : "new",
+    statureBand,
+    // Real per-stable roster size (JSA 2026) — a founded stable falls back
+    // to its stature band's target.
+    rosterTarget: HEYA_ROSTER_TARGETS[name] ?? ROSTER_TARGET_BY_STATURE[statureBand],
     prestigeBand: tier < HEYA_ELITE_TIER_THRESHOLD ? "elite" : "respected",
     facilitiesBand: "adequate",
     koenkaiBand: "moderate",

@@ -13,8 +13,8 @@ import { refreshAllPools } from "@/engine/generation/TalentPoolStateService";
 import {
   computeReplacementGap,
   allocateVacancies,
+  getHeyaRosterTarget,
 } from "@/engine/generation/RecruitmentController";
-import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
 
 let world = generateInitialWorld("intake-probe-seed");
 
@@ -58,7 +58,7 @@ let headroom = 0;
 for (const heya of world.heyas.values()) {
   if (heya.id === world.playerHeyaId) continue;
   if (heya.welfareState?.complianceState === "sanctioned") continue;
-  headroom += Math.max(0, TARGET_ROSTER_SIZE - (heya.rikishiIds ?? []).length);
+  headroom += Math.max(0, getHeyaRosterTarget(heya) - (heya.rikishiIds ?? []).length);
 }
 
 const tpNow = world.talentPool;

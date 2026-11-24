@@ -2,8 +2,8 @@
  * RecruitmentController — closed-loop replacement-rate controller.
  *
  * Computes the weekly global replacement gap from the active population vs the
- * live demographic floor (`computePopulationTarget` — all current NPC heyas
- * × TARGET_ROSTER_SIZE, so the floor breathes with league metabolism: stable
+ * live demographic floor (`computePopulationTarget` — Σ of current NPC heyas'
+ * rosterTargets, so the floor breathes with league metabolism: stable
  * foundings raise it, mergers/closures lower it). The gap is then allocated
  * across NPC stables by `allocateVacancies`.
  *
@@ -13,10 +13,22 @@
  */
 
 import type { WorldState } from "@/engine/types/world";
-import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
+import type { Heya } from "@/engine/types/heya";
+import { DEFAULT_ROSTER_TARGET } from "@/constants/engine/generation";
 
 /**
- * Live demographic floor: all NPC stables × TARGET_ROSTER_SIZE, computed
+ * The stable's organic roster target — stamped at genesis from
+ * `HEYA_ROSTER_TARGETS` (real 2026 per-stable sizes), drawn from
+ * `ROSTER_TARGET_BY_STATURE` for mid-game foundings, and defaulted for
+ * bare fixtures. One accessor so the controller, allocator, NPC appetite,
+ * and UI all read the same number.
+ */
+export function getHeyaRosterTarget(heya: Heya): number {
+  return heya.rosterTarget ?? DEFAULT_ROSTER_TARGET;
+}
+
+/**
+ * Live demographic floor: Σ of NPC stables' `rosterTarget`, computed
  * each tick so the target breathes with league metabolism — stable
  * foundings raise it, mergers/closures lower it. Sanctioned stables count
  * toward the target (their slots exist even when unreachable; the allocator
@@ -26,11 +38,11 @@ import { TARGET_ROSTER_SIZE } from "@/constants/engine/recruitmentExtended";
  */
 export function computePopulationTarget(world: WorldState): number {
   if (world.heyas.size === 0) return world._populationTarget ?? 0;
-  let npcCount = 0;
+  let target = 0;
   for (const h of world.heyas.values()) {
-    if (h.id !== world.playerHeyaId) npcCount++;
+    if (h.id !== world.playerHeyaId) target += getHeyaRosterTarget(h);
   }
-  return npcCount * TARGET_ROSTER_SIZE;
+  return target;
 }
 
 /**
@@ -51,7 +63,7 @@ export function computeReplacementGap(world: WorldState): number {
  * - Excludes sanctioned heyas (`welfareState.complianceState === "sanctioned"`).
  *
  * Distribution:
- * - Each heya's headroom = `max(0, TARGET_ROSTER_SIZE - roster.length)`.
+ * - Each heya's headroom = `max(0, getHeyaRosterTarget(heya) - roster.length)`.
  * - Gap is distributed proportionally to headroom via largest-remainder,
  *   capped at each heya's headroom. Sum = `min(gap, total headroom)`.
  * - Deterministic: iteration order follows `world.heyas` insertion order
@@ -74,7 +86,7 @@ export function allocateVacancies(world: WorldState, gap: number): Record<string
     // so allocating to it wastes the share other heyas could have used.
     if ((heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0) > 0) continue;
     const currentCount = (heya.rikishiIds ?? []).length;
-    const headroom = Math.max(0, TARGET_ROSTER_SIZE - currentCount);
+    const headroom = Math.max(0, getHeyaRosterTarget(heya) - currentCount);
     if (headroom > 0) {
       eligible.push({ heyaId: heya.id, headroom });
       totalHeadroom += headroom;

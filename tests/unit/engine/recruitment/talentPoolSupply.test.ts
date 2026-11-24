@@ -127,8 +127,8 @@ describe("tickWeekTalentPool - emergency logging", () => {
     // hidden candidates for the emergency dump to move — the warn fires only
     // when the dump actually moved candidates.
     const world = buildWorldWithHiddenPool({
-      activeCount: 600, // below TOTAL_ACTIVE_THRESHOLD (800)
-      populationTarget: 600,
+      activeCount: 300, // below TOTAL_ACTIVE_THRESHOLD (450)
+      populationTarget: 300, // gap=0 → baseline reveal only; emergency does the moving
       hiddenPerPool: 50,
     });
 
@@ -145,8 +145,8 @@ describe("tickWeekTalentPool - emergency logging", () => {
     // Below-threshold population but nothing to move — the warn is gated on
     // moved > 0, so an exhausted hidden pool must not spam the log.
     const world = buildWorldWithHiddenPool({
-      activeCount: 600,
-      populationTarget: 600,
+      activeCount: 300,
+      populationTarget: 300,
       hiddenPerPool: 10, // drained entirely by the 20–30 baseline reveal
     });
 
@@ -157,7 +157,7 @@ describe("tickWeekTalentPool - emergency logging", () => {
 
   it("does not warn when population is above emergency threshold", () => {
     const world = buildWorldWithHiddenPool({
-      activeCount: 800, // at TOTAL_ACTIVE_THRESHOLD — not below, so no emergency
+      activeCount: 600, // above TOTAL_ACTIVE_THRESHOLD (450) — no emergency
       populationTarget: 950,
       hiddenPerPool: 50,
     });
