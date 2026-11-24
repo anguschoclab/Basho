@@ -38,6 +38,7 @@ import {
   YOKOZUNA_YOKOZUNA_CLASH_START_DAY,
   SWISS_PHASE1_END_DAY,
   SWISS_PHASE3_DAY,
+  SWISS_KOREYORI_START_DAY,
   RANK_NUMBER_MULTIPLIER,
   SIDE_EAST_OFFSET,
   SIDE_WEST_OFFSET,
@@ -438,6 +439,154 @@ function phase2(
   return pairings;
 }
 
+/** Unpaired yokozuna/ozeki in banzuke order — the kore-yori block pool. */
+function remainingElites(pool: Rikishi[], paired: Set<string>): Rikishi[] {
+  const elites: Rikishi[] = [];
+  for (const r of pool) {
+    if (isYokozunaOrOzekiRank(r.rank) && !paired.has(r.id)) elites.push(r);
+  }
+  elites.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+  return elites;
+}
+
+/**
+ * The pairing the committee protects for musubi-no-ichiban: the first
+ * pairable elite clash in banzuke order — i.e. what phase3 would headline.
+ * On days 13–14 that exact bout is skipped so senshuraku keeps its finale.
+ */
+function findReservedFinaleKey(
+  basho: BashoState,
+  elites: Rikishi[],
+  facedSet: Set<string>,
+  paired: Set<string>,
+  day: number,
+  rivalriesState?: RivalriesState
+): string | null {
+  for (let i = 0; i < elites.length; i++) {
+    for (let j = i + 1; j < elites.length; j++) {
+      const p = tryPair(basho, elites[i], elites[j], facedSet, paired, {
+        rivalriesState,
+        day,
+      });
+      if (p) return pairKey(elites[i].id, elites[j].id);
+    }
+  }
+  return null;
+}
+
+/**
+ * Kore-yori sanyaku: pair the elite block among itself, highest rank first.
+ * Shared by the day 13–14 contender phase and senshuraku phase3 (which adds
+ * the finale tag on top of the same pairings). `reservedPairKey` skips one
+ * specific clash — the musubi pairing held back for day 15.
+ */
+function pairEliteBlock(
+  basho: BashoState,
+  elites: Rikishi[],
+  facedSet: Set<string>,
+  paired: Set<string>,
+  day: number,
+  rivalriesState?: RivalriesState,
+  reservedPairKey?: string | null
+): { koreyoriPairings: MatchPairing[]; elitesLeft: Rikishi[] } {
+  const koreyoriPairings: MatchPairing[] = [];
+
+  while (elites.length >= 2) {
+    const e1 = elites[0];
+    let didPair = false;
+
+    for (let i = 1; i < elites.length; i++) {
+      const e2 = elites[i];
+      if (paired.has(e2.id)) continue;
+      if (reservedPairKey && pairKey(e1.id, e2.id) === reservedPairKey) continue;
+
+      const p = tryPair(basho, e1, e2, facedSet, paired, { rivalriesState, day });
+      if (p) {
+        koreyoriPairings.push({ ...p, reasons: [...p.reasons, "kore_yori_sanyaku"] });
+        paired.add(e1.id);
+        paired.add(e2.id);
+        const nextElites: Rikishi[] = [];
+        for (const r of elites) {
+          if (r.id !== e1.id && r.id !== e2.id) nextElites.push(r);
+        }
+        elites = nextElites;
+        didPair = true;
+        break;
+      }
+    }
+
+    if (!didPair) {
+      elites = elites.slice(1);
+    }
+  }
+
+  return { koreyoriPairings, elitesLeft: elites };
+}
+
+// ── Phase 2.5 — Days 13–14 (kore-yori begins) ─────────────────────────────────
+//
+// The committee does not wait for senshuraku to start contender pairings.
+// From day 13 the elite block already pairs kore-yori, and a runaway sole
+// leader with no one within a win is fed to the strongest available elite —
+// the musubi-no-ichiban finale tag alone stays reserved for day 15.
+
+function phaseContenders(
+  basho: BashoState,
+  pool: Rikishi[],
+  facedSet: Set<string>,
+  day: number,
+  rivalriesState?: RivalriesState
+): MatchPairing[] {
+  const standings = basho.standings;
+  const paired = new Set<string>();
+  const stepUpPairings: MatchPairing[] = [];
+
+  let maxWins = 0;
+  for (const [, rec] of standings ?? []) {
+    if (rec.wins > maxWins) maxWins = rec.wins;
+  }
+
+  const leaders: Rikishi[] = [];
+  for (const r of pool) {
+    if ((standings?.get(r.id)?.wins ?? 0) >= maxWins) leaders.push(r);
+  }
+
+  // A lone leader who is not himself an elite steps up to the top of the
+  // kore-yori block — the day-13 "leader vs ozeki" card the committee posts
+  // when the yusho race has already broken open.
+  if (leaders.length === 1 && !isYokozunaOrOzekiRank(leaders[0].rank)) {
+    const leader = leaders[0];
+    const gatekeeper = remainingElites(pool, paired)[0];
+    if (gatekeeper) {
+      const p = tryPair(basho, leader, gatekeeper, facedSet, paired, {
+        rivalriesState,
+        day,
+      });
+      if (p) {
+        stepUpPairings.push({ ...p, reasons: [...p.reasons, "leader_steps_up"] });
+        paired.add(leader.id);
+        paired.add(gatekeeper.id);
+      }
+    }
+  }
+
+  const elites = remainingElites(pool, paired);
+  // The would-be musubi clash stays unposted until senshuraku — on 13–14 the
+  // kore-yori block runs around it, matching the real committee's habit of
+  // holding the top unfaced bout for the final day.
+  const reservedKey = findReservedFinaleKey(basho, elites, facedSet, paired, day, rivalriesState);
+  const { koreyoriPairings } = pairEliteBlock(
+    basho, elites, facedSet, paired, day, rivalriesState, reservedKey
+  );
+
+  const swissPool: Rikishi[] = [];
+  for (const r of pool) {
+    if (!paired.has(r.id)) swissPool.push(r);
+  }
+  const swissPairings = phase2(basho, swissPool, facedSet, day, rivalriesState);
+  return [...stepUpPairings, ...koreyoriPairings, ...swissPairings];
+}
+
 // ── Phase 3 — Day 15 (Senshuraku) ─────────────────────────────────────────────
 
 function phase3(
@@ -450,7 +599,6 @@ function phase3(
   const standings = basho.standings;
   const paired = new Set<string>();
   const yushoExceptionPairings: MatchPairing[] = [];
-  const koreyoriPairings: MatchPairing[] = [];
 
   let maxWins = 0;
   for (const [, rec] of standings ?? []) {
@@ -480,39 +628,10 @@ function phase3(
     }
   }
 
-  let elites: Rikishi[] = [];
-  for (const r of pool) {
-    if (isYokozunaOrOzekiRank(r.rank) && !paired.has(r.id)) elites.push(r);
-  }
-  elites.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
-
-  while (elites.length >= 2) {
-    const e1 = elites[0];
-    let didPair = false;
-
-    for (let i = 1; i < elites.length; i++) {
-      const e2 = elites[i];
-      if (paired.has(e2.id)) continue;
-
-      const p = tryPair(basho, e1, e2, facedSet, paired, { rivalriesState, day });
-      if (p) {
-        koreyoriPairings.push({ ...p, reasons: [...p.reasons, "kore_yori_sanyaku"] });
-        paired.add(e1.id);
-        paired.add(e2.id);
-        const nextElites: Rikishi[] = [];
-        for (const r of elites) {
-          if (r.id !== e1.id && r.id !== e2.id) nextElites.push(r);
-        }
-        elites = nextElites;
-        didPair = true;
-        break;
-      }
-    }
-
-    if (!didPair) {
-      elites = elites.slice(1);
-    }
-  }
+  const elites = remainingElites(pool, paired);
+  const { koreyoriPairings } = pairEliteBlock(
+    basho, elites, facedSet, paired, day, rivalriesState
+  );
 
   if (koreyoriPairings.length > 0) {
     const finaleIdx = FINALE_INDEX;
@@ -603,6 +722,8 @@ export function buildSwissTorikumi(
   if (day <= SWISS_PHASE1_END_DAY) raw = phase1(basho, pool, facedSet, day, options.rivalriesState);
   else if (day === SWISS_PHASE3_DAY)
     raw = phase3(basho, pool, facedSet, day, options.rivalriesState);
+  else if (day >= SWISS_KOREYORI_START_DAY)
+    raw = phaseContenders(basho, pool, facedSet, day, options.rivalriesState);
   else raw = phase2(basho, pool, facedSet, day, options.rivalriesState);
 
   // Apply drama budget post-processing to maximize narrative value

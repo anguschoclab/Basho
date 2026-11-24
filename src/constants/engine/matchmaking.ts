@@ -9,6 +9,9 @@ export const SWISS_PHASE_START_DAY = 8;
 export const SWISS_PHASE_END_DAY = 14;
 export const SWISS_PHASE1_END_DAY = 7;
 export const SWISS_PHASE3_DAY = 15;
+/** Kore-yori contender pairing begins — the committee posts elite blocks
+ *  and steps a runaway leader up from day 13, not only on senshuraku. */
+export const SWISS_KOREYORI_START_DAY = 13;
 
 // Division pairing weights
 export const SEKIWAKE_PAIRING_WEIGHT = 200;
