@@ -52,6 +52,7 @@ import {
   LEGACY_MODIFIER_DURATION_BASHO,
   SUCCESSION_CLOSURE_MAX_ROSTER,
   SUCCESSION_COLLAPSE_MAX_ROSTER,
+  FOUNDING_GRACE_YEARS,
   SUCCESSION_CLOSURE_SANCTION_WEEKS,
 } from "@/constants/engine/succession";
 
@@ -755,12 +756,17 @@ function closeIfHeirlessAndDying(world: WorldState, heya: Heya, builder: ImpactB
   const persistentlySanctioned =
     heya.welfareState?.complianceState === "sanctioned" &&
     (heya.welfareState?.weeksInState ?? 0) >= SUCCESSION_CLOSURE_SANCTION_WEEKS;
+  // Founding grace: a new branch's thin roster is the design, not decline —
+  // inside the window only persistent sanction still counts as dying.
+  const inFoundingGrace =
+    heya.foundedYear !== undefined && world.year - heya.foundedYear < FOUNDING_GRACE_YEARS;
   const dying =
     persistentlySanctioned ||
-    ((heya.funds ?? 0) <= MERGER_THRESHOLD && rosterSize <= SUCCESSION_COLLAPSE_MAX_ROSTER) ||
-    (heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
-      rosterSize <= SUCCESSION_COLLAPSE_MAX_ROSTER) ||
-    rosterSize <= SUCCESSION_CLOSURE_MAX_ROSTER;
+    (!inFoundingGrace &&
+      (((heya.funds ?? 0) <= MERGER_THRESHOLD && rosterSize <= SUCCESSION_COLLAPSE_MAX_ROSTER) ||
+        (heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
+          rosterSize <= SUCCESSION_COLLAPSE_MAX_ROSTER) ||
+        rosterSize <= SUCCESSION_CLOSURE_MAX_ROSTER));
   if (!dying) return false;
 
   // Branches fold back into the mother line when the parent can absorb;

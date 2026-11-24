@@ -246,8 +246,11 @@ export const HEYA_FLOOR = 10;
 export const HEYA_COUNT_FLOOR = 45;
 
 /** Base probability that an accomplished, approved, solvent retiree founds a
- *  new stable — scaled down by league fullness via HEYA_SOFT_TARGET/RAMP. */
-export const FOUNDING_CHANCE = 0.35;
+ *  new stable — scaled down by league fullness via HEYA_SOFT_TARGET/RAMP.
+ *  Bumped 0.35 → 0.45: post-JSA-underwriting the career bar (not the money
+ *  gate) limits candidates, and below the floor a wasted roll costs a rare
+ *  qualified founder — the league can't afford to leave recovery to luck. */
+export const FOUNDING_CHANCE = 0.45;
 
 /** Basho of consecutive make-koshi / underperformance before non-financial merger is considered. */
 export const CHRONIC_UNDERPERFORMANCE_BASHO = 6;

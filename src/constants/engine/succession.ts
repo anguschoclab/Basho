@@ -26,6 +26,11 @@ export const UNDERPERFORMANCE_MIN_BOUTS = 5;
  *  prestige collapse, or a roster too thin to sustain keiko), rather than
  *  keeping it alive under an appointed trustee. */
 export const SUCCESSION_CLOSURE_MAX_ROSTER = 8;
+/** A freshly-founded stable keeps a thin roster BY DESIGN (≤3 deshi) — the
+ *  roster-thinness "dying" clauses can't fire inside this window, else the
+ *  first master vacancy folds a branch the league just chartered. The JSA
+ *  appoints a trustee instead (the caretaker path). */
+export const FOUNDING_GRACE_YEARS = 3;
 /** Sanction must persist this many weeks to count as terminal — a transient
  *  sanction week at the master's 65th birthday does not close a stable. */
 export const SUCCESSION_CLOSURE_SANCTION_WEEKS = 26;

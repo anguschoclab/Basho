@@ -413,6 +413,7 @@ export function maybeFoundStable(
     { parentHeyaId: eligibility.parentHeyaId }
   );
   if (!result) return false;
+  result.heya.foundedYear = world.year;
 
   const parent = getHeya(world, eligibility.parentHeyaId);
 

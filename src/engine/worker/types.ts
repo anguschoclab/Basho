@@ -194,7 +194,8 @@ export type EngineCommand =
       type: "VOTE_COUNCIL_MOTION";
       motionId: string;
       vote: "for" | "against";
-    };
+    }
+  | { type: "PLAYER_FOUND_STABLE" };
 
 /** Worker -> UI Events */
 export type WorkerEvent =

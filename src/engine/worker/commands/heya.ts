@@ -21,6 +21,7 @@ import { updateHeyaInWorld } from "@/engine/core/queries";
 import { retireRikishiImpact, createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { buyPhysioSession } from "@/engine/health/physioPurchase";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { foundPlayerStable } from "@/engine/lifecycle/playerFounding";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import type { WorkerRuntime } from "@/engine/worker/runtime";
 import type { CommandHandlerMap } from "@/engine/worker/commands/types";
@@ -306,5 +307,14 @@ export function heyaCommands(rt: WorkerRuntime): CommandHandlerMap {
     REMOVE_TSUKEBITO: (cmd) => removeTsukebitoCmd(rt, cmd),
     SET_TRAINING_STATE: (cmd) => setTrainingStateCmd(rt, cmd),
     SET_KESHO_CONFIG: (cmd) => setKeshoConfigCmd(rt, cmd),
+    PLAYER_FOUND_STABLE: () => {
+      if (rt.world) {
+        const builder = createImpactBuilder("playerFoundStable");
+        if (foundPlayerStable(rt.world, builder)) {
+          rt.world = resolveImpacts(rt.world, [builder.build()]);
+          rt.syncAndDigest();
+        }
+      }
+    },
   };
 }

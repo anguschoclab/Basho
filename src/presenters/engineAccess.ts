@@ -98,6 +98,7 @@ export { DynastyService } from "@/engine/legacy/DynastyService";
 export { MentorshipService } from "@/engine/training/MentorshipService";
 export { SparringService } from "@/engine/training/SparringService";
 export { computeDisplayTrainingMultiplier } from "@/engine/training/TrainingMath";
+export { evaluatePlayerFounding } from "@/engine/lifecycle/playerFounding";
 export { NarrativeService } from "@/engine/narrative/NarrativeService";
 export { error, warn } from "@/engine/utils/Logger";
 export { getHeyaForeignUsage, NATURALIZATION_YEARS } from "@/engine/utils/citizenshipUtils";

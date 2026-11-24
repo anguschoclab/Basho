@@ -5,12 +5,24 @@
  * assignment, stable health panel, tsukebito attendants, and youth academy.
  */
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/state/game/useGame";
 import { useGameStore } from "@/state/stores/gameStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { TabsContent } from "@/components/ui/tabs";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { AlertTriangle, Users } from "lucide-react";
@@ -35,6 +47,8 @@ import type { WorldState } from "@/presenters/uiDigest";
 import type { projectRikishi } from "@/presenters/rikishi/index";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
+import { evaluatePlayerFounding } from "@/presenters/engineAccess";
+import { FOUNDING_SEED_FUNDS, FOUNDING_FOLLOWER_MAX } from "@/constants/engine/economic";
 import { activationKeyHandler } from "@/lib/a11y";
 
 type RikishiDTO = ReturnType<typeof projectRikishi>;
@@ -178,7 +192,70 @@ export function HeyaTab({ world, heya }: { world: WorldState; heya: Heya }) {
         oyakataTraits={data.oyakataTraits ?? null}
         custodyHostName={data.custodyHostName}
       />
+      {heya.id === world.playerHeyaId && <FoundBranchSection world={world} />}
     </TabsContent>
+  );
+}
+
+/** Dokuritsu branching — the master leaves to open a new stable and the
+ *  player goes with it. Parent bankrolls the seed; the JSA seats a
+ *  caretaker on the old chair. One-way action, so it asks first. */
+function FoundBranchSection({ world }: { world: WorldState }) {
+  const sendCommand = useGameStore((s) => s.sendCommand);
+  const [confirming, setConfirming] = useState(false);
+  const eligibility = evaluatePlayerFounding(world);
+
+  return (
+    <Card className="paper">
+      <CardContent className="p-4 flex items-center justify-between gap-4">
+        <div className="space-y-1">
+          <p className="text-sm font-display font-black uppercase tracking-tight">
+            Found a Branch Stable
+          </p>
+          <p className="text-xs text-muted-foreground max-w-md">
+            Your master leaves this stable to open a new heya under your control —
+            taking up to {FOUNDING_FOLLOWER_MAX} unsalaried deshi and the{" "}
+            {FOUNDING_SEED_FUNDS.toLocaleString()} seed from this stable's funds.
+            The JSA seats a caretaker here.
+          </p>
+          {!eligibility.canFound && (
+            <p className="text-[10px] font-bold uppercase tracking-widest text-destructive">
+              {eligibility.reason === "insufficient_funds"
+                ? "Stable funds cannot cover the founding seed"
+                : eligibility.reason === "sanctioned"
+                  ? "A sanctioned stable cannot charter a branch"
+                  : eligibility.reason === "league_full"
+                    ? "The association is at its stable-count limit"
+                    : "Founding is not currently available"}
+            </p>
+          )}
+        </div>
+        <AlertDialog open={confirming} onOpenChange={setConfirming}>
+          <AlertDialogTrigger asChild>
+            <Button size="sm" variant="outline" disabled={!eligibility.canFound}>
+              Found Stable
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Found a branch stable?</AlertDialogTitle>
+              <AlertDialogDescription>
+                You will leave this stable and take over the new heya. Up to{" "}
+                {FOUNDING_FOLLOWER_MAX} of your unsalaried deshi follow you; the old
+                stable pays the seed and gets a JSA caretaker master. This cannot be
+                undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => sendCommand({ type: "PLAYER_FOUND_STABLE" })}>
+                Found the stable
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
+    </Card>
   );
 }
 

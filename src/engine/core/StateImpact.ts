@@ -134,6 +134,7 @@ export type WritableWorldFields = Pick<
   | "pendingCrisis"
   | "pendingDecisions"
   | "resolvedDecisionIds"
+  | "playerHeyaId"
   | "activeChains"
   | "chainCooldowns"
   | "activeScoutMissions"

@@ -145,6 +145,14 @@ export interface Heya {
   branchedFromHeyaId?: string;
 
   /**
+   * Year the stable was founded in-sim (undefined on worldgen stables).
+   * A new branch starts with a thin roster by design — this stamp gives the
+   * succession door a grace window so an early master vacancy draws a
+   * trustee, not a folding verdict.
+   */
+  foundedYear?: number;
+
+  /**
    * Signature shikona prefix for the stable — most wrestlers inherit this
    * (stronger at junior ranks). E.g. "Chiyo" for Kokonoe, "Koto" for Sadogatake.
    */
