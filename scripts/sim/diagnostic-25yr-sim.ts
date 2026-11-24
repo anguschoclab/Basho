@@ -123,6 +123,16 @@ interface YearSnapshot {
   jsaBoardElectedYear: number;
   /** Unresolved pendingDecisions — the backlog-treadmill fix keeps this ~0. */
   pendingDecisions: number;
+  // ── Kimarite & roster trajectory ─────────────────────────────────────────
+  /** All-time winning-technique counts (world.allTimeKimariteStats copy —
+   *  globalKimariteStats is era-scoped and resets at year boundary).
+   *  Year-over-year diff shows style drift as physiques/archetypes shift. */
+  kimariteStats: Record<string, number>;
+  /** Active roster size per heya — rise/fall trajectories. */
+  rosterByHeya: Record<string, number>;
+  rosterMedian: number;
+  rosterMin: number;
+  rosterMax: number;
   errors: string[];
 }
 
@@ -325,6 +335,17 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   }
   const jsaBoardElectedYear = world.jsaBoard?.electedYear ?? 0;
 
+  // ── Kimarite & roster trajectory ────────────────────────────────────────
+  const kimariteStats = { ...(world.allTimeKimariteStats ?? {}) };
+  // Recount actives per heya — heya.rikishiIds can drift from reality (the
+  // main loop's integrity pass exists because they do).
+  const rosterByHeya: Record<string, number> = {};
+  for (const h of heyas) rosterByHeya[h.id] = 0;
+  for (const r of active) {
+    if (r.heyaId && r.heyaId in rosterByHeya) rosterByHeya[r.heyaId]++;
+  }
+  const rosterSizes = Object.values(rosterByHeya).filter((n) => n > 0);
+
   return {
     year: world.year,
     rikishiTotal: allRikishi.length,
@@ -376,6 +397,11 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     ichimonCounts,
     jsaBoardElectedYear,
     pendingDecisions: world.pendingDecisions?.length ?? 0,
+    kimariteStats,
+    rosterByHeya,
+    rosterMedian: median(rosterSizes),
+    rosterMin: rosterSizes.length ? Math.min(...rosterSizes) : 0,
+    rosterMax: rosterSizes.length ? Math.max(...rosterSizes) : 0,
     errors: [...errors],
   };
 }
@@ -422,6 +448,9 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
   // A clan dying out means defections/closures erased an ichimon line.
   for (const [clan, n] of Object.entries(snap.ichimonCounts))
     if (n === 0) issues.push(`WARN: ichimon ${clan} has no active heyas`);
+  // A stable with zero actives is one retirement from folding.
+  if (snap.rosterMin === 0 && snap.heyaCount > 0)
+    issues.push("WARN: a heya has 0 active rikishi — collapse imminent");
 
   if (prev) {
     const rikishiDelta = snap.rikishiActive - prev.rikishiActive;
@@ -720,6 +749,53 @@ function lifecycleAudit(world: WorldState, snaps: YearSnapshot[]): void {
       `    ${r.shikona ?? r.id} — CA ${currentAbility(r).toFixed(0)} | ${r.isRetired ? "retired" : "active"} | ${yrs}`
     );
   }
+
+  // ── 8. Kimarite drift — style evolution over the sim ────────────────────
+  const first = snaps.at(0);
+  const lastSnap = snaps.at(-1);
+  if (first && lastSnap && lastSnap !== first) {
+    const deltas = Object.keys(lastSnap.kimariteStats).flatMap((id) => {
+      const total = (lastSnap.kimariteStats[id] ?? 0) - (first.kimariteStats[id] ?? 0);
+      return total > 0 ? [{ id, total }] : [];
+    });
+    const totalWins = deltas.reduce((a, k) => a + k.total, 0);
+    const top = [...deltas].sort((a, b) => b.total - a.total).slice(0, 8);
+    console.log(`\nKimarite drift (${first.year}→${lastSnap.year}, ${totalWins} wins):`);
+    for (const k of top) {
+      const share = ((k.total / (totalWins || 1)) * 100).toFixed(1);
+      const firstShare =
+        (((first.kimariteStats[k.id] ?? 0) /
+          (Object.values(first.kimariteStats).reduce((a, n) => a + n, 0) || 1)) *
+          100) || 0;
+      console.log(
+        `    ${k.id.padEnd(14)} ${share}% of wins (was ${firstShare.toFixed(1)}% at start)`
+      );
+    }
+    const variety = deltas.length;
+    console.log(`  Techniques used as winning move: ${variety} distinct`);
+  }
+
+  // ── 9. Roster rise & fall — stable trajectories ─────────────────────────
+  if (first && lastSnap && lastSnap !== first) {
+    const heyaById = new Map(heyas.map((h) => [h.id, h]));
+    const rows = Object.entries(lastSnap.rosterByHeya).flatMap(([id, n]) => {
+      const start = first.rosterByHeya[id];
+      return start != null ? [{ id, start, end: n, delta: n - start }] : [];
+    });
+    const risers = [...rows].sort((a, b) => b.delta - a.delta).slice(0, 4);
+    const fallers = [...rows].sort((a, b) => a.delta - b.delta).slice(0, 4);
+    console.log(`\nRoster rise & fall (heya present at both ends):`);
+    const name = (id: string) => heyaById.get(id)?.name ?? id;
+    console.log(
+      `    Risers: ${risers.map((r) => `${name(r.id)} ${r.start}→${r.end}`).join(", ") || "—"}`
+    );
+    console.log(
+      `    Fallers: ${fallers.map((r) => `${name(r.id)} ${r.start}→${r.end}`).join(", ") || "—"}`
+    );
+    const empties = Object.entries(lastSnap.rosterByHeya).filter(([, n]) => n === 0);
+    if (empties.length)
+      console.log(`    Empty stables at end: ${empties.map(([id]) => name(id)).join(", ")}`);
+  }
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -844,10 +920,19 @@ for (let yr = 0; yr < YEARS; yr++) {
   const clans = Object.entries(snap.ichimonCounts)
     .map(([c, n]) => `${c.slice(0, 3)}:${n}`)
     .join(" ");
+  // This year's kimarite leaders — diff the cumulative counters vs last year.
+  const kimDelta = Object.entries(snap.kimariteStats)
+    .map(([id, n]) => ({ id, n: n - (prev?.kimariteStats[id] ?? 0) }))
+    .filter((k) => k.n > 0)
+    .sort((a, b) => b.n - a.n)
+    .slice(0, 3)
+    .map((k) => `${k.id.slice(0, 6)}:${k.n}`)
+    .join(" ");
   console.log(
     `    fun | ${div} gai=${snap.banzukeGai} | debuts=${snap.debutsThisYear} ` +
       `kadoban=${snap.kadobanOzeki} pend=${snap.pendingDecisions} | ` +
-      `board@${snap.jsaBoardElectedYear || "—"} clans ${clans}`
+      `board@${snap.jsaBoardElectedYear || "—"} clans ${clans} | ` +
+      `kim ${kimDelta || "—"} | ros=${snap.rosterMedian}/${snap.rosterMin}-${snap.rosterMax}`
   );
 
   for (const a of anomalies) console.log(`    ${a}`);
