@@ -306,6 +306,7 @@ export function generateFullRikishi(args: {
       peakAgeOffset: potentialPkg.peakAgeOffset,
       ceilingFraction: potentialPkg.ceilingFraction,
       profile: potentialPkg.profile,
+      bustFraction: potentialPkg.bustFraction,
     },
     heyaHistory: [],
     lineage: {},
@@ -421,6 +422,7 @@ export function convertCandidateToRikishi(args: {
           developmentSpeed: candidate.developmentSpeed ?? 1.0,
           peakAgeOffset: candidate.peakAgeOffset ?? 0,
           ceilingFraction: candidate.ceilingFraction ?? 1.0,
+          bustFraction: candidate.bustFraction,
           profile: candidate.developmentProfile ?? "standard",
         }
       : undefined,

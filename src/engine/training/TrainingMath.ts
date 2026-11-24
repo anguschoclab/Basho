@@ -88,7 +88,7 @@ export function getEffectiveCeiling(
   let baseCeiling: number;
   if (potential?.stats && stat in potential.stats) {
     const pa = (potential.stats[stat] as number) ?? 0;
-    baseCeiling = pa * (potential.ceilingFraction ?? 1.0);
+    baseCeiling = pa * reachableFraction(potential);
   } else {
     baseCeiling = getStatCeiling(talentSeed, stat);
   }
@@ -105,6 +105,21 @@ export function getEffectiveCeiling(
   }
 
   return Math.round(baseCeiling);
+}
+
+/**
+ * The share of PA actually reachable — generation profile (journeymen cap
+ * out), hidden busts, and cumulative injury derailment all compound into a
+ * single fraction. Scouted PA is untouched: the fantasy ceiling stays what
+ * it always was; only the reachable share shrinks.
+ */
+export function reachableFraction(potential: Rikishi["potential"]): number {
+  if (!potential) return 1.0;
+  return (
+    (potential.ceilingFraction ?? 1.0) *
+    (potential.bustFraction ?? 1.0) *
+    (potential.injuryDerailment ?? 1.0)
+  );
 }
 
 /**

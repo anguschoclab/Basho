@@ -335,6 +335,12 @@ function applyFreshBoutInjury(
 
 const SEVERITY_RANK: Record<string, number> = { none: 0, minor: 1, moderate: 2, serious: 3 };
 
+/** Reachable-ceiling loss per serious injury: a 5-20% permanent shave,
+ *  compounding on recurrence, floor so careers aren't zeroed outright. */
+export const SERIOUS_INJURY_DERAIL_MIN = 0.05;
+export const SERIOUS_INJURY_DERAIL_MAX = 0.2;
+export const SERIOUS_INJURY_DERAIL_FLOOR = 0.5;
+
 /**
  * Aggravation roll for a rikishi who competed while already injured.
  * Chance scales with the existing severity and any override multiplier
@@ -450,6 +456,30 @@ function applyInBoutInjury(
       type: "strain",
       weeksOut: weeks,
       weekOccurred: world.week ?? 0,
+    });
+  }
+
+  // Career derailment — a serious injury doesn't just cost weeks, it can
+  // permanently shave the reachable ceiling (the never-recovered-knee
+  // career). Compounds multiplicatively on recurrence; scouted PA is
+  // untouched — the wrestler was still *meant* to be that good.
+  const appliedSeverity = victim.injured
+    ? ((SEVERITY_RANK[inj.severity] ?? 0) >
+      (SEVERITY_RANK[victim.injuryStatus?.severity ?? "moderate"] ?? 0)
+        ? inj.severity
+        : victim.injuryStatus?.severity)
+    : inj.severity;
+  if (appliedSeverity === "serious" && victim.potential) {
+    const prior = victim.potential.injuryDerailment ?? 1.0;
+    const loss =
+      SERIOUS_INJURY_DERAIL_MIN +
+      rng.next() * (SERIOUS_INJURY_DERAIL_MAX - SERIOUS_INJURY_DERAIL_MIN);
+    builder.updateRikishiNestedField(victim.id, "potential", {
+      ...victim.potential,
+      injuryDerailment: Math.max(
+        SERIOUS_INJURY_DERAIL_FLOOR,
+        prior * (1 - loss)
+      ),
     });
   }
 

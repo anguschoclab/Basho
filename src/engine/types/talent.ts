@@ -163,6 +163,8 @@ export interface TalentCandidate {
   peakAgeOffset?: number;
   /** Fraction of potential ceiling reachable. */
   ceilingFraction?: number;
+  /** Hidden bust trait — elite-PA candidates who never develop. */
+  bustFraction?: number;
   /** Optional bloodline trait if inherited. */
   bloodlineTrait?: import("@/engine/types/dynasty").BloodlineTrait;
   /**

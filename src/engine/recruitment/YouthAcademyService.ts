@@ -477,6 +477,7 @@ function buildPromotedRikishi(
     peakAgeOffset: potentialPkg.peakAgeOffset,
     ceilingFraction: potentialPkg.ceilingFraction,
     profile: potentialPkg.profile,
+    bustFraction: potentialPkg.bustFraction,
   };
 
   const newRikishi = {

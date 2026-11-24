@@ -16,6 +16,7 @@ import { NUTRITION_MULTIPLIERS } from "@/constants/engine/multipliers";
 import { DEFAULT_FACILITY_LEVEL } from "@/constants/engine/rikishi";
 import { clamp, finiteOr } from "@/engine/utils/math";
 import { maturityFactor, ATTRIBUTE_PEAK } from "@/constants/engine/development";
+import { reachableFraction } from "@/engine/training/TrainingMath";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -248,7 +249,9 @@ export function applyPhysicalMaturationTick(
       developmentSpeed: devSpeed,
       peakAgeOffset: peakOffset,
     });
-    const naturalTarget = potential.weightKg * weightM;
+    // Reachable ceiling truncates the natural target the same way it
+    // truncates stats — a busted/derailed body stops responding too.
+    const naturalTarget = potential.weightKg * weightM * reachableFraction(potential);
     const current = stats.weight;
     if (naturalTarget > current) {
       const gain = Math.min(

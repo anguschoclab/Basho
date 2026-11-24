@@ -70,7 +70,19 @@ interface PotentialPackage {
   peakAgeOffset: number;
   ceilingFraction: number;
   profile: DevelopmentProfile;
+  /** Set only when the elite-PA bust roll fires — hidden derailment trait. */
+  bustFraction?: number;
 }
+
+/** Rolled PA mean (8 trainables) at which a candidate is "elite" enough to
+ *  be able to bust — a modest prospect can't flop, only hyped talent can. */
+export const BUST_ELITE_PA_MEAN = 65;
+/** Share of elite-PA candidates carrying the hidden bust trait (FM's
+ *  wonderkid-flop ballpark). */
+export const BUST_CHANCE = 0.12;
+/** Reachable-ceiling truncation for busts: they top out at 35-65% of PA. */
+export const BUST_FRACTION_MIN = 0.35;
+export const BUST_FRACTION_MAX = 0.65;
 
 /**
  * Rolls age from a Gaussian biased by rank, clamped to rank-specific plausibility bounds.
@@ -207,6 +219,18 @@ export function rollPotential(args: {
     SIZE_POTENTIAL.weightKg.max
   );
 
+  // Bust roll — only elite-PA candidates can "bust" (a low-PA recruit was
+  // never supposed to make it). ~12% of elite talent carries a hidden
+  // bustFraction that truncates the reachable ceiling to 35-65% of PA;
+  // scouts still see the full PA — you only learn he busted in retrospect.
+  const paMean =
+    (paStats.power + paStats.technique + paStats.speed + paStats.stamina +
+      paStats.mental + paStats.adaptability + paStats.balance + paStats.aggression) / 8;
+  const bustFraction =
+    paMean >= BUST_ELITE_PA_MEAN && rng.next() < BUST_CHANCE
+      ? BUST_FRACTION_MIN + rng.next() * (BUST_FRACTION_MAX - BUST_FRACTION_MIN)
+      : undefined;
+
   return {
     stats: paStats,
     heightCm,
@@ -215,6 +239,7 @@ export function rollPotential(args: {
     peakAgeOffset: preset.peakAgeOffset,
     ceilingFraction: preset.ceilingFraction,
     profile: developmentProfile,
+    bustFraction,
   };
 }
 

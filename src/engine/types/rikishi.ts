@@ -296,6 +296,12 @@ export interface Rikishi {
     peakAgeOffset: number;
     /** Max fraction of PA actually reachable (journeymen < 1.0) */
     ceilingFraction: number;
+    /** Hidden bust flag (0.35-0.65) — elite-PA recruits who never develop;
+     *  multiplies the reachable ceiling. Only knowable in retrospect. */
+    bustFraction?: number;
+    /** Cumulative derailment (0<x≤1) from serious injuries — recurring
+     *  damage compounds toward a permanently truncated ceiling. */
+    injuryDerailment?: number;
     /** Hidden label for narrative/debug — do not expose in UI directly */
     profile: "prodigy" | "standard" | "late_bloomer" | "journeyman" | "early_peaker";
   };

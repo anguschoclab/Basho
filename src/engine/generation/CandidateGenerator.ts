@@ -295,6 +295,7 @@ export function generateCandidate(args: {
     developmentSpeed: paPkg.developmentSpeed,
     peakAgeOffset: paPkg.peakAgeOffset,
     ceilingFraction: paPkg.ceilingFraction,
+    bustFraction: paPkg.bustFraction,
     bloodlineTrait: legacyTrait ?? undefined,
     // Generate deterministic scouting bias that skews initial stat readings
     scoutingBias: generateScoutingBias(id, currentYear),
