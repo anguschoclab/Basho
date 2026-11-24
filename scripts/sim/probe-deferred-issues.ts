@@ -72,11 +72,21 @@ function foundingGateBreakdown(
   const parent = getHeya(world, r.heyaId);
   const careerEligible = (() => {
     const hist = r.careerHistory ?? [];
-    const sanyaku = hist.filter((h) => SANYAKU.has(h.rank)).length;
-    const makuuchi = hist.filter((h) => h.division === "makuuchi").length;
+    // Lifetime counters are authoritative — the bounded history window
+    // (last 6 basho) can never reach the 12/25 basho bars on its own.
+    const sanyaku = Math.max(
+      r.sanyakuBashoCount ?? 0,
+      hist.filter((h) => SANYAKU.has(h.rank)).length
+    );
+    const makuuchi = Math.max(
+      r.makuuchiBashoCount ?? 0,
+      hist.filter((h) => h.division === "makuuchi").length
+    );
     const peak =
       r.rank === "yokozuna" ||
       r.rank === "ozeki" ||
+      r.careerPeakRank === "yokozuna" ||
+      r.careerPeakRank === "ozeki" ||
       hist.some((h) => h.rank === "yokozuna" || h.rank === "ozeki");
     return (
       peak || sanyaku >= BRANCH_FOUNDING_SANYAKU_BASHO || makuuchi >= BRANCH_FOUNDING_MAKUUCHI_BASHO

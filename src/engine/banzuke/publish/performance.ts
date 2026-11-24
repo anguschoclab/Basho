@@ -1,6 +1,8 @@
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState, MatchSchedule } from "@/engine/types/basho";
 import type { BashoPerformance } from "@/engine/types/banzuke";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import { currentAbility } from "@/engine/development/caPa";
 import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { getRikishi } from "@/engine/core/queries";
@@ -307,6 +309,25 @@ export function recordBashoPerformance(
     );
   }
 
+  // Lifetime career bookkeeping — careerHistory truncates to the last 6
+  // basho, so the founding bar (12 sanyaku / 25 makuuchi basho) and any
+  // archive of a career's peak must be carried on the rikishi itself.
+  const SANYAKU_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
+  let careerPeakRank = rikishi.careerPeakRank;
+  let careerPeakYear = rikishi.careerPeakYear;
+  let careerPeakDivision = rikishi.careerPeakDivision;
+  let peakTier = careerPeakRank ? (RANK_HIERARCHY[careerPeakRank]?.tier ?? 99) : 99;
+  // Seed legacy objects from the bounded window before it scrolls away.
+  for (const e of updatedHistory) {
+    const t = RANK_HIERARCHY[e.rank]?.tier ?? 99;
+    if (t < peakTier) {
+      peakTier = t;
+      careerPeakRank = e.rank;
+      careerPeakYear = e.year;
+      careerPeakDivision = e.division;
+    }
+  }
+
   builder.updateRikishi(id, {
     consecutiveStrongOzeki: tracked.consecutiveStrongOzeki,
     consecutiveMakeKoshi: tracked.consecutiveMakeKoshi,
@@ -317,6 +338,17 @@ export function recordBashoPerformance(
     councilWarnings: tracked.councilWarnings,
     stats: nextStats,
     careerHistory: updatedHistory.slice(-6),
+    careerPeakRank,
+    careerPeakYear,
+    careerPeakDivision,
+    sanyakuBashoCount:
+      (rikishi.sanyakuBashoCount ?? 0) + (SANYAKU_RANKS.has(historyEntry.rank) ? 1 : 0),
+    makuuchiBashoCount:
+      (rikishi.makuuchiBashoCount ?? 0) + (historyEntry.division === "makuuchi" ? 1 : 0),
+    careerPeakCA: Math.max(
+      rikishi.careerPeakCA ?? 0,
+      currentAbility({ stats: nextStats })
+    ),
     careerAbsences: (rikishi.careerAbsences ?? 0) + stats.absences,
     absentFinalDay,
     kihakuIsenScore,

@@ -364,10 +364,19 @@ export function evaluateFoundingEligibility(
   // sekiwake cannot found a stable no matter his bank balance.
   const SANYAKU = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
   const history = retiree.careerHistory ?? [];
-  const sanyakuBasho = history.filter((h) => SANYAKU.has(h.rank)).length;
-  const makuuchiBasho = history.filter((h) => h.division === "makuuchi").length;
+  // careerHistory is bounded to the last 6 basho — the lifetime counters on
+  // the rikishi carry the real totals; the window count is a legacy floor.
+  const sanyakuBasho = Math.max(
+    retiree.sanyakuBashoCount ?? 0,
+    history.filter((h) => SANYAKU.has(h.rank)).length
+  );
+  const makuuchiBasho = Math.max(
+    retiree.makuuchiBashoCount ?? 0,
+    history.filter((h) => h.division === "makuuchi").length
+  );
   const peakElite =
     isYokozunaOrOzekiRank(retiree.rank) ||
+    (retiree.careerPeakRank != null && isYokozunaOrOzekiRank(retiree.careerPeakRank)) ||
     history.some((h) => isYokozunaOrOzekiRank(h.rank));
   if (
     !peakElite &&

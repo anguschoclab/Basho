@@ -25,12 +25,21 @@ import {
   BRANCH_FOUNDING_SANYAKU_BASHO,
   BRANCH_FOUNDING_MAKUUCHI_BASHO,
 } from "@/constants/engine/economic";
+import { currentAbility, potentialAbility } from "@/engine/development/caPa";
+import { reachableFraction } from "@/engine/training/TrainingMath";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 const SEED = "sim-25yr-diagnostic-v1";
 const DEFAULT_YEARS = 25;
 
 const durationFlagIdx = process.argv.indexOf("--duration");
 const YEARS = durationFlagIdx !== -1 ? parseInt(process.argv[durationFlagIdx + 1]) : DEFAULT_YEARS;
+
+const median = (xs: number[]): number => {
+  if (!xs.length) return 0;
+  const s = [...xs].sort((a, b) => a - b);
+  return s[Math.floor(s.length / 2)];
+};
 
 // ── Snapshot ────────────────────────────────────────────────────────────────
 
@@ -82,6 +91,18 @@ interface YearSnapshot {
   founderEligible: number;
   /** WS-14 — annual jungyō tour days (~90 pre-2027, ~70s post). */
   jungyoTourDays: number;
+  // ── Development-spectrum tracking (busts/derailment/maturation) ──────────
+  /** Actives by dev profile — prodigy/standard/late_bloomer/journeyman/early_peaker. */
+  profileCounts: Record<string, number>;
+  /** Actives carrying injuryDerailment < 0.99 (career-limiting damage). */
+  derailedActive: number;
+  /** Actives flagged busts (bustFraction set — elite-PA packages that flop). */
+  bustsActive: number;
+  /** Median CA/reachablePA across prime-age (24-30) actives with potential. */
+  medRealizationPrime: number;
+  /** Median stats.height / potential.heightCm among actives ≤19 — maturation
+   *  telemetry: ~0.88 at intake, should climb toward 1.0 through teens. */
+  teenHeightRatio: number;
   errors: string[];
 }
 
@@ -188,15 +209,30 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
       const agg = r.yearlyAggregates;
       return (
         isYokozunaOrOzekiRank(r.peakRank) ||
-        agg.filter((y) => SANYAKU.has(y.rank)).length * 6 >= BRANCH_FOUNDING_SANYAKU_BASHO ||
-        agg.filter((y) => y.division === "makuuchi").length * 6 >= BRANCH_FOUNDING_MAKUUCHI_BASHO
+        Math.max(
+          r.sanyakuBashoCount ?? 0,
+          agg.filter((y) => SANYAKU.has(y.rank)).length * 6
+        ) >= BRANCH_FOUNDING_SANYAKU_BASHO ||
+        Math.max(
+          r.makuuchiBashoCount ?? 0,
+          agg.filter((y) => y.division === "makuuchi").length * 6
+        ) >= BRANCH_FOUNDING_MAKUUCHI_BASHO
       );
     }
     const hist = r.careerHistory ?? [];
-    const sanyaku = hist.filter((h) => SANYAKU.has(h.rank)).length;
-    const makuuchi = hist.filter((h) => h.division === "makuuchi").length;
+    // Lifetime counters are authoritative — careerHistory is the last 6
+    // basho only, so window counts can never reach the 12/25 basho bars.
+    const sanyaku = Math.max(
+      r.sanyakuBashoCount ?? 0,
+      hist.filter((h) => SANYAKU.has(h.rank)).length
+    );
+    const makuuchi = Math.max(
+      r.makuuchiBashoCount ?? 0,
+      hist.filter((h) => h.division === "makuuchi").length
+    );
     return (
       isYokozunaOrOzekiRank(r.rank) ||
+      (r.careerPeakRank != null && isYokozunaOrOzekiRank(r.careerPeakRank)) ||
       hist.some((h) => isYokozunaOrOzekiRank(h.rank)) ||
       sanyaku >= BRANCH_FOUNDING_SANYAKU_BASHO ||
       makuuchi >= BRANCH_FOUNDING_MAKUUCHI_BASHO
@@ -220,6 +256,32 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     (a, t) => a + ((t as { tourDays?: number }).tourDays ?? 0),
     0
   );
+
+  // ── Development-spectrum tracking ─────────────────────────────────────
+  // bustFraction/injuryDerailment live on potential (hidden). Realization is
+  // CA ÷ PA×reachableFraction — the ceiling development actually chases.
+  const profileCounts: Record<string, number> = {};
+  let derailedActive = 0;
+  let bustsActive = 0;
+  const primeRealizations: number[] = [];
+  const teenHeightRatios: number[] = [];
+  for (const r of active) {
+    const pot = r.potential;
+    if (!pot) continue;
+    profileCounts[pot.profile] = (profileCounts[pot.profile] ?? 0) + 1;
+    if ((pot.injuryDerailment ?? 1) < 0.99) derailedActive++;
+    if (pot.bustFraction != null) bustsActive++;
+    const age = r.birthYear ? world.year - r.birthYear : (r.age ?? 0);
+    const reach = reachableFraction(pot);
+    if (age >= 24 && age <= 30 && reach > 0) {
+      const reachPA = potentialAbility(r) * reach;
+      if (reachPA > 0) primeRealizations.push(Math.min(1, currentAbility(r) / reachPA));
+    }
+    const cHeight = r.stats?.height;
+    if (age <= 19 && pot.heightCm > 0 && cHeight != null && cHeight > 0) {
+      teenHeightRatios.push(cHeight / pot.heightCm);
+    }
+  }
 
   return {
     year: world.year,
@@ -259,6 +321,11 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     founderBarRetirees,
     founderEligible,
     jungyoTourDays,
+    profileCounts,
+    derailedActive,
+    bustsActive,
+    medRealizationPrime: median(primeRealizations),
+    teenHeightRatio: median(teenHeightRatios),
     errors: [...errors],
   };
 }
@@ -303,6 +370,242 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
   }
 
   return issues;
+}
+
+// ── Lifecycle & development audit ────────────────────────────────────────────
+// One end-of-run pass over every career the sim produced. Verifies the
+// development-spectrum work: prodigy/late-bloomer arcs, busts, injury
+// derailment, physical maturation, and the founding-eligibility pipeline.
+
+const SANYAKU_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
+const SEKITORI_DIVS = new Set(["makuuchi", "juryo"]);
+const PROFILES = ["prodigy", "standard", "late_bloomer", "journeyman", "early_peaker"] as const;
+
+function lifecycleAudit(world: WorldState): void {
+  const all = Array.from(world.rikishi.values());
+  const active = all.filter((r) => !r.isRetired);
+  const retiredFull = all.filter((r) => r.isRetired);
+  const summaries = world.historicalRikishi
+    ? Array.from(world.historicalRikishi.values()).filter((r) => r.isRetired)
+    : [];
+  const Y = world.year;
+
+  const ageOf = (r: { birthYear?: number; age?: number }, at = Y) =>
+    r.birthYear ? at - r.birthYear : (r.age ?? 0);
+  const peakDiv = (r: Rikishi) => r.careerPeakDivision ?? r.division;
+  const peakCA = (r: Rikishi) => r.careerPeakCA ?? currentAbility(r);
+  const reachPA = (r: Rikishi) =>
+    r.potential ? potentialAbility(r) * reachableFraction(r.potential) : 0;
+  /** Realization vs the ceiling development actually chased (post-bust/derail). */
+  const reachRealization = (r: Rikishi) => {
+    const pa = reachPA(r);
+    return pa > 0 ? Math.min(1, peakCA(r) / pa) : 0;
+  };
+  /** Realization vs the fantasy PA scouts saw — busts show up here. */
+  const rawRealization = (r: Rikishi) => {
+    const pa = r.potential ? potentialAbility(r) : 0;
+    return pa > 0 ? Math.min(1, peakCA(r) / pa) : 0;
+  };
+
+  console.log(`\n${"═".repeat(70)}`);
+  console.log("  LIFECYCLE & DEVELOPMENT AUDIT");
+  console.log(`${"═".repeat(70)}`);
+
+  // ── 1. Career outcomes — every retirement incl. archived summaries ──────
+  const careerLen = (r: { retirementYear: number; debutYear?: number; yearlyAggregates?: { year: number }[] }) =>
+    r.debutYear ? Math.max(1, r.retirementYear - r.debutYear) : (r.yearlyAggregates?.length ?? 0);
+  const allRetired = [...retiredFull, ...summaries];
+  const lens = allRetired.map(careerLen).filter((n) => n > 0);
+  const retireAges = allRetired
+    .map((r) => r.retirementYear - r.birthYear)
+    .filter((n) => n > 0 && n < 60);
+  const sekitori = allRetired.filter((r) => SEKITORI_DIVS.has(r.peakDivision));
+  const makuuchi = allRetired.filter((r) => r.peakDivision === "makuuchi");
+  const sanyaku = allRetired.filter((r) => SANYAKU_RANKS.has(r.peakRank));
+  const yokozunaEver = allRetired.filter((r) => r.peakRank === "yokozuna");
+
+  const realizations: number[] = [];
+  for (const r of retiredFull) {
+    if (!r.potential) continue;
+    const pa = potentialAbility(r) * reachableFraction(r.potential);
+    if (pa > 0) realizations.push(Math.min(1, peakCA(r) / pa));
+  }
+  for (const s of summaries) {
+    if (s.peakAbility != null && s.potentialAbility != null && s.potentialAbility > 0) {
+      realizations.push(Math.min(1, s.peakAbility / s.potentialAbility));
+    }
+  }
+  const bucket = (lo: number, hi: number) =>
+    realizations.filter((x) => x >= lo && x < hi).length;
+
+  console.log(`\nCareer outcomes (${allRetired.length} careers):`);
+  console.log(
+    `  Median career length: ${median(lens).toFixed(0)}y | median retire age: ${median(retireAges).toFixed(0)}`
+  );
+  console.log(
+    `  Sekitori rate: ${sekitori.length}/${allRetired.length} (${((sekitori.length / (allRetired.length || 1)) * 100).toFixed(1)}% — real ~5-11%) | ` +
+      `makuuchi: ${((makuuchi.length / (allRetired.length || 1)) * 100).toFixed(1)}% | ` +
+      `sanyaku: ${((sanyaku.length / (allRetired.length || 1)) * 100).toFixed(1)}% | ` +
+      `ever-yokozuna: ${yokozunaEver.length}`
+  );
+  console.log(
+    `  Realization at career end (peak CA ÷ reachable PA): med=${median(realizations).toFixed(2)} | ` +
+      `<50%:${bucket(0, 0.5)} 50-75%:${bucket(0.5, 0.75)} 75-90%:${bucket(0.75, 0.9)} ≥90%:${bucket(0.9, 2)}`
+  );
+
+  // ── 2. Development-profile arcs (full rikishi with potential) ───────────
+  const withPot = all.filter(
+    (r): r is Rikishi & { potential: NonNullable<Rikishi["potential"]> } => r.potential != null
+  );
+  console.log(`\nDevelopment profiles (${withPot.length} tracked careers — active + un-pruned):`);
+  console.log(
+    `  ${"profile".padEnd(13)} ${"n".padStart(4)} ${"sekitori%".padStart(10)} ${"medReal".padStart(8)} ${"peakAge".padStart(8)} ${"debutAge".padStart(9)}`
+  );
+  for (const p of PROFILES) {
+    const cohort = withPot.filter((r) => r.potential.profile === p);
+    if (!cohort.length) continue;
+    const sek = cohort.filter((r) => SEKITORI_DIVS.has(peakDiv(r)));
+    const peakAges = cohort.flatMap((r) =>
+      r.careerPeakYear != null ? [r.careerPeakYear - (r.birthYear ?? Y - 25)] : []
+    );
+    const debutAges = cohort.flatMap((r) =>
+      r.debutYear != null && r.birthYear != null ? [r.debutYear - r.birthYear] : []
+    );
+    console.log(
+      `  ${p.padEnd(13)} ${String(cohort.length).padStart(4)} ` +
+        `${((sek.length / cohort.length) * 100).toFixed(0).padStart(9)}% ` +
+        `${median(cohort.map(reachRealization)).toFixed(2).padStart(8)} ` +
+        `${(peakAges.length ? median(peakAges).toFixed(0) : "—").padStart(8)} ` +
+        `${(debutAges.length ? median(debutAges).toFixed(0) : "—").padStart(9)}`
+    );
+  }
+
+  // ── 3. Busts — elite-PA recruits who never developed ────────────────────
+  const ELITE_PA = 140;
+  const elite = withPot.filter((r) => potentialAbility(r) >= ELITE_PA);
+  const busts = withPot.filter((r) => r.potential.bustFraction != null);
+  const eliteBusts = elite.filter((r) => r.potential.bustFraction != null);
+  console.log(`\nBust audit (elite = PA ≥ ${ELITE_PA}):`);
+  console.log(
+    `  Elite-PA tracked: ${elite.length} | busts: ${busts.length} total, ${eliteBusts.length} elite ` +
+      `(rate ${((eliteBusts.length / (elite.length || 1)) * 100).toFixed(0)}% — design ~12%)`
+  );
+  if (busts.length) {
+    const eliteNonBust = elite.filter((r) => r.potential.bustFraction == null);
+    const bustFractions = busts.flatMap((r) =>
+      r.potential.bustFraction != null ? [r.potential.bustFraction] : []
+    );
+    console.log(
+      `  Raw-PA realization (fantasy ceiling): busts med=${median(busts.map(rawRealization)).toFixed(2)} ` +
+        `vs elite non-busts med=${median(eliteNonBust.map(rawRealization)).toFixed(2)} — ` +
+        `busts should cluster ~0.4-0.6`
+    );
+    console.log(
+      `  Bust fractions: med=${median(bustFractions).toFixed(2)} | ` +
+        `elite-bust sekitori rate: ${((eliteBusts.filter((r) => SEKITORI_DIVS.has(peakDiv(r))).length / (eliteBusts.length || 1)) * 100).toFixed(0)}%`
+    );
+  }
+
+  // ── 4. Injury derailment — serious injuries shaving ceilings ────────────
+  const derailed = withPot.filter((r) => (r.potential.injuryDerailment ?? 1) < 0.99);
+  if (derailed.length) {
+    const severe = derailed.filter((r) => (r.potential.injuryDerailment ?? 1) < 0.85);
+    const notDerailed = withPot.filter((r) => (r.potential.injuryDerailment ?? 1) >= 0.99);
+    const derailFactors = derailed.flatMap((r) =>
+      r.potential.injuryDerailment != null ? [r.potential.injuryDerailment] : []
+    );
+    console.log(`\nDerailment audit:`);
+    console.log(
+      `  Derailed: ${derailed.length}/${withPot.length} (${((derailed.length / withPot.length) * 100).toFixed(1)}%) | ` +
+        `severe (<0.85): ${severe.length} | med factor: ${median(derailFactors).toFixed(2)}`
+    );
+    console.log(
+      `  Raw-PA realization: derailed med=${median(derailed.map(rawRealization)).toFixed(2)} ` +
+        `vs healthy med=${median(notDerailed.map(rawRealization)).toFixed(2)}`
+    );
+  }
+
+  // ── 5. Physical maturation — height/weight fill toward potential ────────
+  const bands: [string, number, number][] = [
+    ["≤17", 0, 17],
+    ["18-19", 18, 19],
+    ["20-21", 20, 21],
+    ["22-23", 22, 23],
+    ["24+", 24, 99],
+  ];
+  console.log(`\nMaturation (actives — ratio of current ÷ potential):`);
+  console.log(`  ${"age".padEnd(6)} ${"n".padStart(4)} ${"height".padStart(8)} ${"weight".padStart(8)}`);
+  for (const [label, lo, hi] of bands) {
+    const cohort = active.filter((r) => {
+      const a = ageOf(r);
+      return a >= lo && a <= hi && r.potential;
+    });
+    const hRatios = cohort.flatMap((r) => {
+      const h = r.stats?.height;
+      const p = r.potential?.heightCm;
+      return p != null && p > 0 && h != null && h > 0 ? [h / p] : [];
+    });
+    const wRatios = cohort.flatMap((r) => {
+      const w = r.stats?.weight;
+      const p = r.potential?.weightKg;
+      return p != null && p > 0 && w != null && w > 0 ? [w / p] : [];
+    });
+    console.log(
+      `  ${label.padEnd(6)} ${String(cohort.length).padStart(4)} ` +
+        `${(hRatios.length ? median(hRatios).toFixed(2) : "—").padStart(8)} ` +
+        `${(wRatios.length ? median(wRatios).toFixed(2) : "—").padStart(8)}`
+    );
+  }
+  // Late bloomers should lag prodigies on the height curve into their 20s.
+  const matAt = (p: string, lo: number, hi: number) =>
+    active.flatMap((r) => {
+      const a = ageOf(r);
+      const h = r.stats?.height;
+      const ph = r.potential?.heightCm;
+      return r.potential?.profile === p && a >= lo && a <= hi && ph != null && ph > 0 && h != null && h > 0
+        ? [h / ph]
+        : [];
+    });
+  const prod20 = matAt("prodigy", 20, 23);
+  const late20 = matAt("late_bloomer", 20, 23);
+  if (prod20.length && late20.length) {
+    console.log(
+      `  Height ratio @20-23: prodigy=${median(prod20).toFixed(2)} vs late_bloomer=${median(late20).toFixed(2)} ` +
+        `(late bloomers should trail — they keep growing longer)`
+    );
+  }
+
+  // ── 6. Heya founding & survival ─────────────────────────────────────────
+  const heyas = Array.from(world.heyas.values());
+  const branches = heyas.filter((h) => h.branchedFromHeyaId != null);
+  const closed = world.closedHeyas ? Array.from(world.closedHeyas.values()) : [];
+  const closedBranches = closed.filter((h) => h.branchedFromHeyaId != null);
+  const earlyDeaths = closedBranches.filter(
+    (h) => h.foundedYear != null && h.closedAtYear - h.foundedYear <= 3
+  );
+  console.log(`\nHeya founding & survival:`);
+  console.log(
+    `  Active: ${heyas.length} (branches: ${branches.length}) | closed: ${closed.length} ` +
+      `(branches: ${closedBranches.length}, died ≤3y after founding: ${earlyDeaths.length})`
+  );
+  if (closedBranches.length) {
+    const spans = closedBranches.flatMap((h) =>
+      h.foundedYear != null ? [h.closedAtYear - h.foundedYear] : []
+    );
+    if (spans.length) console.log(`  Branch lifespans (closed): med=${median(spans).toFixed(0)}y`);
+  }
+
+  // ── 7. Yokozuna lineage — who ever held the rope ────────────────────────
+  const yokozunaEverAll = [...retiredFull, ...active].filter(
+    (r) => r.careerPeakRank === "yokozuna" || r.rank === "yokozuna"
+  );
+  console.log(`\nYokozuna lineage: ${yokozunaEverAll.length} rikishi ever held the rank`);
+  for (const r of yokozunaEverAll.slice(0, 8)) {
+    const yrs = r.careerPeakYear != null ? `peak Y${r.careerPeakYear}` : "—";
+    console.log(
+      `    ${r.shikona ?? r.id} — CA ${currentAbility(r).toFixed(0)} | ${r.isRetired ? "retired" : "active"} | ${yrs}`
+    );
+  }
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -412,6 +715,14 @@ for (let yr = 0; yr < YEARS; yr++) {
       `fcand=${snap.founderBarActive}/${snap.founderBarRetirees} felig=${snap.founderEligible} ` +
       `jungyo=${snap.jungyoTourDays}d`
   );
+  // Dev-spectrum line: profile mix + derailment/bust counts + maturation.
+  const prof = ["prodigy", "standard", "late_bloomer", "journeyman", "early_peaker"]
+    .map((p) => `${p.slice(0, 2)}=${snap.profileCounts[p] ?? 0}`)
+    .join(" ");
+  console.log(
+    `    dev | ${prof} | derailed=${snap.derailedActive} busts=${snap.bustsActive} | ` +
+      `real@prime=${snap.medRealizationPrime.toFixed(2)} teenHt=${snap.teenHeightRatio.toFixed(2)}`
+  );
 
   for (const a of anomalies) console.log(`    ${a}`);
   for (const e of yearErrors.slice(0, 5)) console.log(`    ERR: ${e}`);
@@ -473,6 +784,10 @@ if (yearSnapshots.length > 1) {
 }
 
 console.log(`\nWeekly tick verified: ${weeklyTickVerified ? "✓ YES" : "✗ NO — income never ran"}`);
+
+// Lifecycle & development audit — one pass over the final world before the
+// extra tuning year mutates anything.
+lifecycleAudit(currentWorld);
 
 // ── Tuning Summary (from last year's result) ────────────────────────────────
 

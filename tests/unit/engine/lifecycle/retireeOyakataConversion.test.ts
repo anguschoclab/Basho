@@ -594,6 +594,54 @@ describe("evaluateFoundingEligibility — JSA branching gates", () => {
     const e = evaluateFoundingEligibility(crowded, retiree);
     expect(e.effectiveChance).toBeCloseTo(FOUNDING_CHANCE * (4 / HEYA_FOUNDING_RAMP), 6);
   });
+
+  it("honors lifetime career counters when the bounded window cannot prove the bar", () => {
+    // careerHistory truncates to the last 6 basho — an ex-sekiwake who
+    // declined to maegashira before retiring shows only modest recent rank,
+    // but his lifetime counters carry the real career bar evidence.
+    const world = worldWithParent({ funds: 10_000_000 });
+    const declinedVeteran = accomplished({
+      rank: "maegashira",
+      careerPeakRank: "sekiwake",
+      sanyakuBashoCount: 14,
+      makuuchiBashoCount: 20, // below the 25-basho bar — pass must come via sanyaku count
+      careerHistory: [
+        { rank: "maegashira", division: "makuuchi" },
+        { rank: "maegashira", division: "makuuchi" },
+      ],
+      economics: { retirementFund: FOUNDING_SEED_FUNDS } as any,
+    });
+    expect(evaluateFoundingEligibility(world, declinedVeteran).canFound).toBe(true);
+  });
+
+  it("honors a yokozuna/ozeki career peak even when the final year was lower", () => {
+    // The classic decline-and-retire path: peaked at ozeki, finished at
+    // juryo. careerPeakRank is the lifetime high-water mark.
+    const world = worldWithParent({ funds: 10_000_000 });
+    const fallenOzeki = accomplished({
+      rank: "juryo",
+      division: "juryo",
+      careerPeakRank: "ozeki",
+      careerHistory: [
+        { rank: "juryo", division: "juryo" },
+        { rank: "maegashira", division: "makuuchi" },
+      ],
+      economics: { retirementFund: FOUNDING_SEED_FUNDS } as any,
+    });
+    expect(evaluateFoundingEligibility(world, fallenOzeki).canFound).toBe(true);
+  });
+
+  it("still rejects a career maegashira when counters and window both fall short", () => {
+    const world = worldWithParent({ funds: 10_000_000 });
+    const careerMaegashira = accomplished({
+      rank: "maegashira",
+      sanyakuBashoCount: 0,
+      makuuchiBashoCount: 20, // below the 25-basho bar
+      careerHistory: [{ rank: "maegashira", division: "makuuchi" }],
+      economics: { retirementFund: FOUNDING_SEED_FUNDS } as any,
+    });
+    expect(evaluateFoundingEligibility(world, careerMaegashira).canFound).toBe(false);
+  });
 });
 
 describe("evaluateFoundingEligibility — JSA waiver below HEYA_COUNT_FLOOR", () => {

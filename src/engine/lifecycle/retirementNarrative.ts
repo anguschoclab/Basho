@@ -56,9 +56,15 @@ export function generateRetirementNarrative(
   // RANK_HIERARCHY covers every rank (the old 5-name order array left
   // lower-division ranks at indexOf -1, sorting them ABOVE yokozuna).
   const tierOf = (rank: string) => RANK_HIERARCHY[rank as Rank]?.tier ?? 99;
+  // careerPeakRank is the lifetime high-water mark — the bounded history
+  // only holds the final 6 basho and would miss a peak from years ago.
+  const windowBest = rikishi.careerHistory
+    ?.map((h) => h.rank)
+    .sort((a, b) => tierOf(a) - tierOf(b))[0];
   const highestRank =
-    rikishi.careerHistory?.map((h) => h.rank).sort((a, b) => tierOf(a) - tierOf(b))[0] ??
-    rikishi.rank;
+    [rikishi.careerPeakRank, windowBest, rikishi.rank]
+      .filter((r): r is Rank => r != null)
+      .sort((a, b) => tierOf(a) - tierOf(b))[0] ?? rikishi.rank;
 
   // 1. Ceremony line
   const ceremonyRes = BardEngine.resolve(rng, "events.narrative.retirement_ceremony_summary", {

@@ -152,6 +152,10 @@ export interface RetiredRikishiSummary {
   peakRank: Rank;
   peakRankYear: number;
   peakDivision: Division;
+  /** Lifetime basho counts at sanyaku / makuuchi — carried from the live
+   *  rikishi's counters so archived careers keep founding-bar evidence. */
+  sanyakuBashoCount?: number;
+  makuuchiBashoCount?: number;
 
   // Retirement
   retirementYear: number;

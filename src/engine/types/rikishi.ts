@@ -232,6 +232,21 @@ export interface Rikishi {
   sekiwakeThreeBashoWins?: number;
 
   careerHistory: CareerSnapshot[];
+  /** Lifetime career peak — careerHistory is truncated to the last 6 basho,
+   *  so the record alone cannot prove a high-water mark from years ago.
+   *  Updated in recordBashoPerformance alongside the truncated window. */
+  careerPeakRank?: Rank;
+  careerPeakYear?: number;
+  careerPeakDivision?: Division;
+  /** Lifetime basho counts at sanyaku (Y/O/S/K) and makuuchi — the founding
+   *  career bar (12 sanyaku / 25 makuuchi basho) is unreachable from the
+   *  6-entry history window, so it must be counted here. */
+  sanyakuBashoCount?: number;
+  makuuchiBashoCount?: number;
+  /** Lifetime best CA (0-200) — the bounded history only stores stat
+   *  snapshots for the final 6 basho, so the career-peak ability for
+   *  retiree verdicts must be tracked incrementally. */
+  careerPeakCA?: number;
   milestones?: Milestone[];
   shikonaHistory?: Array<{ shikona: string; fromYear: number; toYear?: number }>;
   /** Phase 5: Alumni & Legacy tracking */

@@ -111,6 +111,12 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "maegashira",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 0,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -258,6 +264,12 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "maegashira",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 0,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -411,6 +423,10 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "ozeki",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -559,6 +575,12 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "sekiwake",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -668,6 +690,12 @@ exports[`publishBanzukeUpdate — golden master > ozeki with consecutive yusho �
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "yokozuna",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -1460,6 +1488,12 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "maegashira",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 0,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -1607,6 +1641,12 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "maegashira",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 0,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -1754,6 +1794,12 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "ozeki",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -1861,6 +1907,12 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "sekiwake",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -1970,6 +2022,12 @@ exports[`publishBanzukeUpdate — golden master > standard post_basho world — 
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "yokozuna",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -2671,6 +2729,12 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "maegashira",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 0,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -2818,6 +2882,12 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "maegashira",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 0,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -2965,6 +3035,12 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "ozeki",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -3072,6 +3148,12 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "sekiwake",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,
@@ -3181,6 +3263,12 @@ exports[`publishBanzukeUpdate — golden master > yokozuna with make-koshi → c
                 "dayResults": []
               }
             ],
+            "careerPeakRank": "yokozuna",
+            "careerPeakYear": 2025,
+            "careerPeakDivision": "makuuchi",
+            "sanyakuBashoCount": 1,
+            "makuuchiBashoCount": 1,
+            "careerPeakCA": 105,
             "careerAbsences": 0,
             "absentFinalDay": false,
             "kihakuIsenScore": 50,

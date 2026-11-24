@@ -23,11 +23,15 @@ export function buildRetiredRikishiSummary(rikishi: Rikishi): RetiredRikishiSumm
   let junYushoCount = 0;
   let sanshoCount = 0;
 
-  // Track peak rank using RANK_HIERARCHY tier (lower = higher rank)
-  let peakRank: Rank = rikishi.rank;
-  let peakRankYear: number = rikishi.retirementYear ?? 0;
-  let peakDivision: Division = rikishi.division;
-  let peakTier = RANK_HIERARCHY[rikishi.rank]?.tier ?? 99;
+  // Track peak rank using RANK_HIERARCHY tier (lower = higher rank).
+  // The live rikishi's careerPeak* is authoritative — careerHistory only
+  // holds the final 6 basho, so a peak set years ago would be invisible here.
+  let peakRank: Rank = rikishi.careerPeakRank ?? rikishi.rank;
+  let peakRankYear: number = rikishi.careerPeakYear ?? rikishi.retirementYear ?? 0;
+  let peakDivision: Division = rikishi.careerPeakDivision ?? rikishi.division;
+  let peakTier = RANK_HIERARCHY[peakRank]?.tier ?? 99;
+  let sanyakuBasho = 0;
+  let makuuchiBasho = 0;
 
   // Per-year aggregates
   const yearMap = new Map<number, CareerYearAggregate>();
@@ -36,6 +40,9 @@ export function buildRetiredRikishiSummary(rikishi: Rikishi): RetiredRikishiSumm
     // Yusho / jun-yusho
     if (snap.isYusho) yushoCount++;
     if (snap.isJunYusho) junYushoCount++;
+    if (snap.division === "makuuchi") makuuchiBasho++;
+    if (snap.rank === "yokozuna" || snap.rank === "ozeki" || snap.rank === "sekiwake" || snap.rank === "komusubi")
+      sanyakuBasho++;
 
     // Sansho (special prizes)
     if (snap.specialPrizes) {
@@ -113,15 +120,20 @@ export function buildRetiredRikishiSummary(rikishi: Rikishi): RetiredRikishiSumm
     peakRank,
     peakRankYear,
     peakDivision,
+    // Lifetime counters win where present; the bounded window only sees the
+    // final year, so use it as a floor for legacy objects.
+    sanyakuBashoCount: Math.max(rikishi.sanyakuBashoCount ?? 0, sanyakuBasho),
+    makuuchiBashoCount: Math.max(rikishi.makuuchiBashoCount ?? 0, makuuchiBasho),
 
     retirementYear: rikishi.retirementYear ?? 0,
     retirementReason: rikishi.retirementReason ?? "Unknown",
     isRetired: true,
 
-    // Potential verdict — post-career so fog no longer applies; the peak is
-    // the best CA captured by the per-basho stat snapshots (fallback: the
-    // retiring sheet itself).
+    // Potential verdict — post-career so fog no longer applies. The live
+    // rikishi's careerPeakCA is the lifetime best; the bounded history's
+    // stat snapshots only cover the final 6 basho (legacy fallback).
     peakAbility: Math.max(
+      rikishi.careerPeakCA ?? 0,
       ...careerHistory
         .filter((s): s is typeof s & { stats: NonNullable<typeof s.stats> } => !!s.stats)
         .map((s) => currentAbility({ stats: s.stats })),
