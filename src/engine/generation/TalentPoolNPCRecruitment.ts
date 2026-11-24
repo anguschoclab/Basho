@@ -250,6 +250,7 @@ export function fillVacanciesForNPCWithBidding(
   }
 
   const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }> = [];
+  const foreignPursuit = new Set<Id>();
   const targetHeyaIds = Object.keys(targetHeyas);
 
   // Precompute rival heya map and balance multipliers to avoid O(H²) scans inside the loop.
@@ -301,6 +302,7 @@ export function fillVacanciesForNPCWithBidding(
         if (candidate.poolType === "foreign") diag("b_skip_age");
         continue;
       }
+      const consumesSlot = candidateConsumesForeignSlot(candidate);
       const bidAmount = computeNpcBid(
         world,
         heya,
@@ -319,6 +321,12 @@ export function fillVacanciesForNPCWithBidding(
       diag(`b_bid_${bidClass}`);
       diag(`b_amt_${bidClass}`, bidAmount);
       bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
+      // §5.4 pursuit reservation: only ABOVE-parity pursuit (pipeline,
+      // believer quirk, bold persona) earns a held vacancy — a fresh stable
+      // at base parity isn't compelled (foreignPipeline.test pins this).
+      if (consumesSlot && slotAggression > 1 && bidAmount > 0) {
+        foreignPursuit.add(heyaId);
+      }
     }
   }
 
@@ -329,6 +337,7 @@ export function fillVacanciesForNPCWithBidding(
     bids,
     targetHeyas,
     foreignOccupied,
+    foreignPursuit,
     tp,
     builder
   );
@@ -400,12 +409,14 @@ function assignWinningBids(
   bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }>,
   targetHeyas: Record<string, number>,
   foreignOccupied: Map<Id, boolean>,
+  foreignPursuit: Set<Id>,
   tp: NonNullable<WorldState["talentPool"]>,
   builder: ReturnType<typeof createImpactBuilder>
 ): { nextCandidates: Record<string, TalentCandidate>; nextPools: typeof tp.pools } {
   const assignedCandidates = new Set<Id>();
   const rosterAdditions = new Map<string, string[]>();
   const assignedHeyaSlots = new Map<Id, number>();
+  const pursuitFulfilled = new Set<Id>();
   for (const heyaId of Object.keys(targetHeyas)) {
     assignedHeyaSlots.set(heyaId, 0);
   }
@@ -418,15 +429,23 @@ function assignWinningBids(
       diag("b_void_assigned");
       continue;
     }
+    const candidate = currentCandidates[bid.candidateId];
+    if (!candidate) continue;
+    const consumesSlot = candidateConsumesForeignSlot(candidate);
+
     const heyaSlotsUsed = assignedHeyaSlots.get(bid.heyaId) ?? 0;
     const heyaVacancies = targetHeyas[bid.heyaId] ?? 0;
-    if (heyaSlotsUsed >= heyaVacancies) {
+    // Non-slot bids can't spend the pursuit-reserved last vacancy — the
+    // hold releases once a foreigner actually signs (pursuit fulfilled).
+    const effectiveVacancies =
+      foreignPursuit.has(bid.heyaId) && !pursuitFulfilled.has(bid.heyaId) && !consumesSlot
+        ? Math.max(0, heyaVacancies - 1)
+        : heyaVacancies;
+    if (heyaSlotsUsed >= effectiveVacancies) {
       diag("b_void_vacancy");
       continue;
     }
 
-    const candidate = currentCandidates[bid.candidateId];
-    if (!candidate) continue;
     // Last-line age gate: a candidate who aged past eligibility mid-process
     // can no longer legally sign — void the bid.
     if (!isCandidateAgeEligible(world, candidate)) {
@@ -436,7 +455,6 @@ function assignWinningBids(
 
     // §5.4 batch enforcement: a slot-consuming foreigner won earlier in this
     // same resolution consumes the heya's slot — later foreign wins are void.
-    const consumesSlot = candidateConsumesForeignSlot(candidate);
     if (consumesSlot && foreignOccupied.get(bid.heyaId)) {
       diag("b_void_slot");
       continue;
@@ -502,6 +520,7 @@ function assignWinningBids(
     assignedHeyaSlots.set(bid.heyaId, heyaSlotsUsed + 1);
     if (consumesSlot) {
       foreignOccupied.set(bid.heyaId, true);
+      pursuitFulfilled.add(bid.heyaId);
       diag("b_win_foreign");
     } else if (candidate.dualCitizen) {
       diag("b_win_dual");

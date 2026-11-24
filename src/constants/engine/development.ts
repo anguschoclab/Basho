@@ -101,12 +101,16 @@ export const PA_BY_RANK: Record<Rank, { mean: number; stdDev: number }> = {
  * ~1.65%/0.75%/0.45%/0.15% per cohort — enough to staff the elite ranks
  * without flooding them.
  */
-export const ELITE_CEILING_TAIL_CHANCE = 0.03;
+export const ELITE_CEILING_TAIL_CHANCE = 0.045;
 export const ELITE_CEILING_TIERS: [Rank, number][] = [
-  ["maegashira", 0.55],
-  ["komusubi", 0.25],
-  ["sekiwake", 0.15],
-  ["ozeki", 0.05],
+  ["maegashira", 0.54],
+  ["komusubi", 0.24],
+  ["sekiwake", 0.14],
+  ["ozeki", 0.06],
+  // Yokozuna-tier ceilings must exist for dominance to emerge: 14-yr probe
+  // measured elite CA compressing to ~62–74 because the tail stopped one
+  // rank short. ~0.09% of recruits (≈1 per ~6 cohort-years across pools).
+  ["yokozuna", 0.02],
 ];
 
 /** Age distribution by rank — Gaussian, biased but not hard-gated. */
