@@ -26,7 +26,7 @@ function mkDivision(
 ): Rikishi {
   return mockRikishi(id, {
     division,
-    rank: division,
+    rank: division as Rikishi["rank"],
     rankNumber,
     side,
   });
