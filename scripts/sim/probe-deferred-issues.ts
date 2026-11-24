@@ -36,6 +36,35 @@ const YEARS = yearsFlag !== -1 ? parseInt(process.argv[yearsFlag + 1]) : 14;
 
 const SANYAKU = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
 
+// C0 — talent-realization metrics (yokozuna drought lives in growth, not the
+// committee): 8 trainable stats → CA mean; PA = potential.stats mean ×
+// ceilingFraction. Prime window 24–30.
+const STAT_KEYS = [
+  "power",
+  "technique",
+  "speed",
+  "stamina",
+  "mental",
+  "adaptability",
+  "balance",
+  "aggression",
+] as const;
+const caOf = (r: Rikishi): number =>
+  STAT_KEYS.reduce((s, k) => s + ((r.stats as Record<string, number> | undefined)?.[k] ?? 0), 0) /
+  STAT_KEYS.length;
+const paOf = (r: Rikishi): number =>
+  (STAT_KEYS.reduce(
+    (s, k) => s + ((r.potential?.stats as Record<string, number> | undefined)?.[k] ?? 0),
+    0
+  ) /
+    STAT_KEYS.length) *
+  (r.potential?.ceilingFraction ?? 1);
+const median = (xs: number[]): number => {
+  if (!xs.length) return 0;
+  const s = [...xs].sort((a, b) => a - b);
+  return s[Math.floor(s.length / 2)];
+};
+
 function foundingGateBreakdown(
   world: Parameters<typeof evaluateFoundingEligibility>[0],
   r: Rikishi
@@ -185,6 +214,46 @@ async function main() {
     );
     console.log(
       `      | O=${ozeki.length} vacStreak=${cur.yokozunaVacancyStreak ?? 0} ozekiForm: ${ozekiForm.join(" ") || "—"}`
+    );
+    // ── C0) Talent realization / dominance spread ─────────────────────────
+    const makuuchi = all.filter((r) => !r.isRetired && r.division === "makuuchi");
+    const caSorted = makuuchi.map(caOf).sort((a, b) => b - a);
+    const top5CA = caSorted.slice(0, 5);
+    const medCA = median(caSorted);
+    const spread = top5CA.length ? top5CA.reduce((a, b) => a + b, 0) / top5CA.length - medCA : 0;
+    // PA-realization at prime: makuuchi 24–30, top-decile PA of that cohort —
+    // how many sit at ≥90% of their ceiling?
+    const prime = makuuchi.filter((r) => {
+      const age = Y - (r.birthYear ?? Y - 25);
+      return age >= 24 && age <= 30 && r.potential;
+    });
+    const paCut = [...prime].map(paOf).sort((a, b) => b - a)[Math.floor(prime.length * 0.1)] ?? 0;
+    const highPa = prime.filter((r) => paOf(r) >= paCut && paCut > 0);
+    const realized90 = highPa.filter((r) => caOf(r) >= 0.9 * paOf(r)).length;
+    // Dominance: last-basho wins of the 5 highest-ranked actives (Y/O absent →
+    // ozeki/sekiwake), plus yusho concentration across the career set.
+    const ranked = [...makuuchi].sort((a, b) => {
+      const order = (r: Rikishi) =>
+        ({ yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3, maegashira: 4 })[
+          r.rank ?? "maegashira"
+        ] ?? 4;
+      return order(a) - order(b) || (a.rankNumber ?? 99) - (b.rankNumber ?? 99);
+    });
+    const topRanked = ranked.slice(0, 5);
+    const lastWins = topRanked.map((r) => (r.careerHistory ?? []).at(-1)?.wins ?? 0);
+    const yushoCounts = new Map<string, number>();
+    for (const r of all) {
+      const n = (r.careerHistory ?? []).filter((e) => e.isYusho && e.division === "makuuchi").length;
+      if (n > 0) yushoCounts.set(r.id, n);
+    }
+    const maxYusho = Math.max(0, ...yushoCounts.values());
+    const repeatWinners = [...yushoCounts.values()].filter((n) => n >= 2).length;
+
+    console.log(
+      `      | C: top5CA=${(top5CA.reduce((a, b) => a + b, 0) / (top5CA.length || 1)).toFixed(0)} ` +
+        `medCA=${medCA.toFixed(0)} spread=${spread.toFixed(1)} | ` +
+        `primePA90=${realized90}/${highPa.length} (cut=${paCut.toFixed(0)}) | ` +
+        `topRankW=[${lastWins.join(",")}] yushoN=${yushoCounts.size} rep=${repeatWinners} max=${maxYusho}`
     );
     console.log(
       `      | yushoW=${yushoWinners.length} ozekiYusho=${ozekiYusho.length} | ` +
