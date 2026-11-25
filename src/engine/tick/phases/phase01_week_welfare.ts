@@ -265,7 +265,8 @@ function orchestrateTransitionsPure(
         builder,
         mediaPressureChanges,
         seriousCount,
-        collectedHeadlines
+        collectedHeadlines,
+        hasNegligence
       );
       break;
 

@@ -36,6 +36,7 @@ import {
   INVESTIGATION_CLOSE_RISK_THRESHOLD,
   SANCTION_FINE_YEN,
   RECRUITMENT_FREEZE_WEEKS,
+  SCANDAL_WELFARE_THRESHOLD,
   MEDIA_PRESSURE_SANCTION,
   SANCTION_LIFT_RISK_THRESHOLD,
   SANCTION_LIFT_WEEKS_THRESHOLD,
@@ -183,7 +184,8 @@ export function handleInvestigationTransition(
   builder: ImpactBuilder,
   mediaPressureChanges: Record<string, number>,
   seriousCount: number,
-  collectedHeadlines: MediaHeadline[]
+  collectedHeadlines: MediaHeadline[],
+  hasNegligence = false
 ): void {
   if (!state.investigation) {
     state.investigation = {
@@ -206,8 +208,18 @@ export function handleInvestigationTransition(
     progress: clamp((state.investigation.progress ?? 0) + progressGain, 0, 100),
   };
 
+  // Sanction requires a LIVE violation — an active serious injury,
+  // negligence, or a scandal-plagued stable. Raw risk alone can be pushed
+  // past the threshold by environmental channels (poor facilities, diet,
+  // recovery choices, accumulated scandals), which let sanctioned counts
+  // explode to ~90% of heyas and strangle the whole intake pipeline
+  // (25-yr diagnostic: 16/18 sanctioned → recruitment froze → collapse).
+  // Environmental-only drift tops out at investigation — prestige erosion
+  // without a recruitment death sentence.
+  const liveViolation =
+    seriousCount > 0 || hasNegligence || (heya.scandalScore ?? 0) >= SCANDAL_WELFARE_THRESHOLD;
   if (
-    state.welfareRisk >= SANCTION_RISK_THRESHOLD ||
+    (state.welfareRisk >= SANCTION_RISK_THRESHOLD && liveViolation) ||
     (seriousCount >= SANCTION_SERIOUS_COUNT && state.welfareRisk >= SANCTION_RISK_WITH_SERIOUS)
   ) {
     transitionToSanctioned(world, heya, state, builder, mediaPressureChanges, collectedHeadlines);
